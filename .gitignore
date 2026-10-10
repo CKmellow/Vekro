@@ -1,0 +1,6 @@
+/.stitch/DESIGN.md
+/docs/PAGES.md
+/docs/COPILOT_PROMPT.md
+.env
+.env.*
+!.env.example
