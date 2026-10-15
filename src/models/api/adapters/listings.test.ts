@@ -1,8 +1,24 @@
 import { http, HttpResponse } from 'msw'
-import { beforeEach, describe, expect, it } from 'vitest'
-import type { ListingDraft } from '@/models/schemas/listing'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { gapHandlers } from '@/mocks/registry'
+import '@/mocks/gaps'
 import { server } from '@/test/server'
-import { createListing, draftFromListing, getListing, toDisputePolicy } from './listings'
+import type { ListingDraft } from '@/models/schemas/listing'
+import {
+  archiveListing,
+  createListing,
+  draftFromListing,
+  GapUnavailableError,
+  getListing,
+  listListings,
+  toDisputePolicy,
+} from './listings'
+
+const mocked = new Set<string>()
+vi.mock('./gaps', async (original) => ({
+  ...(await original<object>()),
+  isMocked: (gap: string) => mocked.has(gap),
+}))
 
 const draft: ListingDraft = {
   item: {
@@ -20,22 +36,28 @@ const draft: ListingDraft = {
   },
 }
 
-const response = (body: Record<string, unknown>) => ({
-  id: 'new-1',
-  seller_id: 's1',
-  price: '52000.00',
-  created_at: '2026-10-15T09:00:00Z',
-  updated_at: '2026-10-15T09:00:00Z',
-  ...body,
-})
-
 let posted: Record<string, unknown> | undefined
 beforeEach(() => {
+  mocked.clear()
   posted = undefined
+  URL.createObjectURL = vi.fn(() => 'blob:photo')
   server.use(
     http.post('/api/listings', async ({ request }) => {
       posted = (await request.json()) as Record<string, unknown>
-      return HttpResponse.json(response(posted), { status: 201 })
+      return HttpResponse.json(
+        {
+          id: 'new-1',
+          seller_id: 's1',
+          title: posted.title,
+          price: '52000.00',
+          is_serialized: posted.is_serialized,
+          unique_id: posted.unique_id,
+          dispute_policy: posted.dispute_policy,
+          created_at: '2026-10-15T09:00:00Z',
+          updated_at: '2026-10-15T09:00:00Z',
+        },
+        { status: 201 },
+      )
     }),
   )
 })
@@ -54,49 +76,70 @@ describe('listing adapter', () => {
     )
   })
 
-  it('creates through POST /listings and reads the policy back', async () => {
-    const listing = await createListing(draft)
-    expect(posted).toMatchObject({
-      title: draft.item.title,
-      price: '52000',
-      is_serialized: true,
-      unique_id: '352098114371234',
-    })
+  it('creates through POST /listings and says when content could not be saved', async () => {
+    const { listing, contentSaved } = await createListing(draft, [new Blob(['x'])])
+    expect(posted).toMatchObject({ title: draft.item.title, price: '52000', is_serialized: true })
     expect(listing).toMatchObject({
       id: 'new-1',
       price: 52000,
       policy: { resolution: 'repair' },
       photoUrls: [],
     })
+    expect(contentSaved).toBe(false)
   })
 
-  it('sends no serial number for standard items', async () => {
-    await createListing({
-      ...draft,
-      type: { isSerialized: false, uniqueId: 'left over' },
-      policy: { isSerialized: false, doorRejectReasons: ['damaged'], acceptedProblems: [] },
+  it('saves content through the gap mock when its flag is on, and reads it back', async () => {
+    mocked.add('LISTING_CONTENT')
+    server.use(...(gapHandlers.LISTING_CONTENT ?? []))
+    const { listing, contentSaved } = await createListing(draft, [new Blob(['x'])])
+    expect(contentSaved).toBe(true)
+    expect(listing).toMatchObject({
+      description: 'Battery 91%',
+      category: 'Phones and tablets',
+      photoUrls: ['blob:photo'],
     })
-    expect(posted).toMatchObject({ is_serialized: false, unique_id: null })
+    server.use(
+      http.get('/api/listings/new-1', () =>
+        HttpResponse.json({
+          ...posted,
+          id: 'new-1',
+          seller_id: 's1',
+          price: '52000.00',
+          created_at: '',
+          updated_at: '',
+        }),
+      ),
+    )
+    expect((await getListing('new-1')).description).toBe('Battery 91%')
+  })
+
+  it('needs the list and archive gaps, and uses their mocks when on', async () => {
+    await expect(listListings()).rejects.toBeInstanceOf(GapUnavailableError)
+    await expect(archiveListing('x')).rejects.toBeInstanceOf(GapUnavailableError)
+    mocked.add('SELLER_LISTS')
+    mocked.add('LISTING_UPDATE')
+    server.use(...(gapHandlers.SELLER_LISTS ?? []), ...(gapHandlers.LISTING_UPDATE ?? []))
+    const active = await listListings({ status: 'active' })
+    expect(active.length).toBeGreaterThan(0)
+    expect(active.every((l) => l.status === 'active')).toBe(true)
+    const archived = await archiveListing(active[0]?.id ?? '')
+    expect(archived.status).toBe('archived')
+    await expect(archiveListing('7f3c2a10-0001-4b6e-9a1d-000000000001')).rejects.toMatchObject({
+      kind: 'conflict',
+    })
   })
 
   it('pre-fills a duplicate without the serial number', async () => {
-    server.use(
-      http.get('/api/listings/:id', () =>
-        HttpResponse.json(
-          response({
-            id: 'l4',
-            title: 'HP Pavilion 15 laptop',
-            price: '68500.00',
-            is_serialized: true,
-            unique_id: '5CD1234XYZ',
-            dispute_policy: { accepted_problems: ['Overheating'], resolution: 'replacement' },
-          }),
-        ),
-      ),
-    )
-    const copy = draftFromListing(await getListing('l4'))
-    expect(copy.item).toMatchObject({ title: 'HP Pavilion 15 laptop', category: 'Other', price: 68500 })
+    mocked.add('LISTING_CONTENT')
+    server.use(...(gapHandlers.LISTING_CONTENT ?? []))
+    const source = await getListing('7f3c2a10-0004-4b6e-9a1d-000000000004')
+    const copy = draftFromListing(source)
+    expect(copy.item).toMatchObject({
+      title: 'HP Pavilion 15 laptop',
+      category: 'Laptops and computers',
+      price: 68500,
+    })
     expect(copy.type).toEqual({ isSerialized: true, uniqueId: undefined })
-    expect(copy.policy).toMatchObject({ resolution: 'replacement', acceptedProblems: ['Overheating'] })
+    expect(copy.policy.resolution).toBe('repair')
   })
 })

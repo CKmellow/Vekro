@@ -9,10 +9,10 @@ Reconciled against `api/openapi.json` on 2026-10-15 (resynced from CKmellow/Vekr
 | Gap | Issue | Needed by (milestone) | Status | Flag | Mock file |
 | --- | --- | --- | --- | --- | --- |
 | P0-1 Single-transaction read | #6 | M6 | Open | `VITE_MOCK_TRANSACTION_READ` | not yet |
-| P0-2 Seller order and listing lists | #7 | M4 | Open | `VITE_MOCK_SELLER_LISTS` | not yet |
+| P0-2 Seller order and listing lists | #7 | M4 | Open | `VITE_MOCK_SELLER_LISTS` | `src/mocks/gaps/listings.ts` |
 | P0-3 Payment instruction in initiate response | #8 | M6 | Open | `VITE_MOCK_PAYMENT_INSTRUCTION` | not yet |
-| P0-5 Listing content fields and public seller profile | #139 | M4 | Open | `VITE_MOCK_LISTING_CONTENT` | not yet |
-| P0-6 Listing update, archive and duplicate | #140 | M4 | Open | `VITE_MOCK_LISTING_UPDATE` | not yet |
+| P0-5 Listing content fields and public seller profile | #139 | M4 | Open | `VITE_MOCK_LISTING_CONTENT` | `src/mocks/gaps/listings.ts` |
+| P0-6 Listing update, archive and duplicate | #140 | M4 | Open | `VITE_MOCK_LISTING_UPDATE` | `src/mocks/gaps/listings.ts` |
 | P0-7 State deadlines on transactions | #141 | M7 | Open | `VITE_MOCK_DEADLINES` | not yet |
 | P1-1 Public order summary | #10 | M6 | Open | `VITE_MOCK_PUBLIC_ORDER` | not yet |
 | P1-2 Phone-verified guest session | #11 | M15 | Open | `VITE_MOCK_PHONE_AUTH` | not yet |
