@@ -34,6 +34,7 @@ export default tseslint.config(
       '.claude',
       '.github',
       'design',
+      'public',
       'src/models/api/schema.d.ts',
     ],
   },

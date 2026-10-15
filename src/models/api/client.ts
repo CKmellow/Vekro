@@ -34,7 +34,7 @@ type Options<O> = ([PathParams<O>] extends [never] ? { path?: never } : { path: 
   }
 
 /** Same-origin base path. Dev: Vite proxies /api to the backend. Prod: the reverse proxy does. */
-export const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '/api'
+export const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api'
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
 
 export function buildUrl(path: string, params?: Record<string, unknown>, query?: Record<string, unknown>) {
