@@ -195,3 +195,10 @@
     }
   }
 }
+
+/* Buyer pages: a faint emerald mesh in the first 240px that fades into sand (DESIGN.md, Layout). */
+@utility bg-mesh {
+  background:
+    radial-gradient(60% 100% at 15% 0%, rgb(44 196 138 / 0.14), transparent 70%),
+    radial-gradient(50% 90% at 90% 0%, rgb(205 239 224 / 0.6), transparent 70%);
+}
