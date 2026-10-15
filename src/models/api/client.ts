@@ -127,5 +127,17 @@ export const api = {
     request('delete', path, options),
 }
 
+/**
+ * Untyped calls for backend-gap mock routes (`/__gaps__/...`, served by MSW only).
+ * Only `models/api/adapters` may use this; every call site carries a `// backend-gap #<n>` tag.
+ */
+export function gapRequest<T>(
+  method: Method,
+  path: string,
+  options: { body?: unknown; query?: Record<string, unknown> } = {},
+): Promise<T> {
+  return request(method, path as never, options as never) as Promise<T>
+}
+
 export type { paths }
 export type Schemas = components['schemas']

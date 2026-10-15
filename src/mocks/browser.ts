@@ -1,5 +1,6 @@
 import { setupWorker } from 'msw/browser'
 import type { Gap } from '@/models/api/adapters/gaps'
+import './gaps'
 import { handlersFor } from './registry'
 
 /** Starts the MSW service worker for the enabled gap flags (dev only). */
