@@ -4,3 +4,5 @@
 .env
 .env.*
 !.env.example
+/LOCAL_EXECUTION_PLAN.md
+__pycache__/

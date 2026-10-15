@@ -1,0 +1,6 @@
+#!/bin/sh
+# Reject co-author trailers and AI attribution. Cyprian is the only author in this repo.
+if grep -qiE '^co-authored-by:|generated (with|by) |made with (copilot|claude)|noreply@anthropic\.com|copilot@' "$1"; then
+  echo "commit-msg: remove co-author or AI attribution lines from the commit message." >&2
+  exit 1
+fi
