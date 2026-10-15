@@ -113,4 +113,46 @@ describe('S7 step 1', () => {
       expect(await screen.findByRole('heading', { name: 'Review' })).toBeInTheDocument()
     },
   )
+
+  it('step 4 publishes and goes to the listing with the success flag', { timeout: 20_000 }, async () => {
+    const { http, HttpResponse } = await import('msw')
+    const { server } = await import('@/test/server')
+    let posted: Record<string, unknown> | undefined
+    server.use(
+      http.post('/api/listings', async ({ request }) => {
+        posted = (await request.json()) as Record<string, unknown>
+        return HttpResponse.json(
+          { id: 'l-new', seller_id: 's1', created_at: '', updated_at: '', ...posted, price: '52000.00' },
+          { status: 201 },
+        )
+      }),
+    )
+    const { createMemoryRouter, RouterProvider } = await import('react-router')
+    const router = createMemoryRouter(
+      [
+        { path: '/seller/listings/new', element: <CreateListingPage /> },
+        { path: '/seller/listings/:id', element: <h1>Listing detail</h1> },
+      ],
+      { initialEntries: ['/seller/listings/new'] },
+    )
+    const { user } = renderWithProviders(<RouterProvider router={router} />)
+    await user.type(screen.getByLabelText('Title'), 'Nike Air Force 1, size 42')
+    await user.type(screen.getByLabelText('Price'), '6500')
+    for (let i = 0; i < 3; i++)
+      await user.click(screen.getAllByRole('button', { name: 'Next' })[0] as HTMLElement)
+    expect(await screen.findByRole('heading', { name: 'Review' })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Your payout' })).toHaveTextContent('KES 6,440')
+    await user.click(screen.getByRole('button', { name: 'Publish and get link' }))
+    await screen.findByRole('heading', { name: 'Listing detail' })
+    expect(`${router.state.location.pathname}${router.state.location.search}`).toBe(
+      '/seller/listings/l-new?published=1',
+    )
+    expect(posted).toMatchObject({
+      title: 'Nike Air Force 1, size 42',
+      price: '6500',
+      is_serialized: false,
+      dispute_policy: { door_reject_reasons: ['damaged', 'wrong_item', 'not_as_described'] },
+    })
+    expect(localStorage.length).toBe(0)
+  })
 })

@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useRef, useState } from 'react'
 import { useForm, type FieldPath } from 'react-hook-form'
+import { useNavigate } from 'react-router'
 import { payoutBreakdown } from '@/lib/fees'
 import { toast } from '@/lib/toast'
 import {
@@ -13,6 +14,8 @@ import {
   type Resolution,
 } from '@/models/domain/listing'
 import { clearDraft, loadDraft, saveDraft } from '@/models/domain/listingDraftStore'
+import { ApiError } from '@/models/api/errors'
+import { useCreateListing } from '@/models/queries/listings'
 import { listingDraft, policyStep, type ListingDraft } from '@/models/schemas/listing'
 import { usePhotoPicker } from './usePhotoPicker'
 import { useSession } from './useSession'
@@ -40,6 +43,9 @@ const EMPTY: ListingDraft = {
 /** S7: the four-step create-listing wizard with a live buyer preview and a draft kept on this device. */
 export function useListingWizard() {
   const session = useSession()
+  const navigate = useNavigate()
+  const create = useCreateListing()
+  const [publishError, setPublishError] = useState<string | null>(null)
   const photos = usePhotoPicker()
   const [step, setStep] = useState(0)
   const [previewOpen, setPreviewOpen] = useState(false)
@@ -76,6 +82,28 @@ export function useListingWizard() {
     if (fields.length && !(await form.trigger(fields))) return
     setStep((s) => Math.min(s + 1, WIZARD_STEPS.length - 1))
   }
+
+  const publish = form.handleSubmit(
+    async (draft) => {
+      setPublishError(null)
+      try {
+        const { listing, contentSaved } = await create.mutateAsync({ draft, photos: photos.readyBlobs() })
+        clearDraft()
+        if (!contentSaved)
+          toast.show('Published. Photos and description will be added once Vekro can store them.', 'info')
+        navigate(`/seller/listings/${listing.id}?published=1`, { replace: true })
+      } catch (error) {
+        setPublishError(
+          error instanceof ApiError && error.kind === 'network'
+            ? "You're offline. Your listing is still here; publish again when you're connected."
+            : error instanceof ApiError && error.kind === 'validation'
+              ? error.message
+              : "We couldn't publish your listing. Try again.",
+        )
+      }
+    },
+    () => setPublishError('Some details need fixing. Check each step.'),
+  )
 
   const values = form.watch()
   const price = Number.isFinite(values.item.price) ? values.item.price : 0
@@ -130,6 +158,15 @@ export function useListingWizard() {
     },
     payout: payoutBreakdown(price),
     policyValues: values.policy,
+    publish,
+    publishing: create.isPending,
+    publishError,
+    review: {
+      item: values.item,
+      categoryLabel: values.item.category,
+      photoCount: photos.photos.length,
+      linkHost: typeof window === 'undefined' ? 'vekro.co.ke' : window.location.host,
+    },
     problemPresets: problemPresets(values.item.category),
     categories: CATEGORIES,
   }

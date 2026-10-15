@@ -11,6 +11,7 @@ import { ImageUploader } from '../../components/ui/ImageUploader'
 import { PriceField } from '../../components/ui/PriceField'
 import { Sheet } from '../../components/ui/Sheet'
 import { PolicyStep } from './listing/PolicyStep'
+import { ReviewStep } from './listing/ReviewStep'
 import { TypeStep } from './listing/TypeStep'
 
 const selectClass =
@@ -130,13 +131,21 @@ export function CreateListingPage() {
               error={w.policy.error}
             />
           )}
-          {w.step > 2 && (
-            <div className="flex flex-col gap-2">
-              <h2 className="type-headline text-text">{w.steps[w.step]}</h2>
-              <p className="type-body-md text-text-muted">
-                This step arrives with the next part of the wizard.
-              </p>
-            </div>
+          {w.step === 3 && (
+            <ReviewStep
+              title={w.review.item.title}
+              category={w.review.categoryLabel}
+              price={w.preview.price}
+              photoCount={w.review.photoCount}
+              photoUrl={w.preview.photoUrl}
+              isSerialized={w.preview.isSerialized}
+              uniqueIdTail={w.preview.uniqueIdTail}
+              policyLine={w.preview.policyLine}
+              payout={w.payout}
+              linkHost={w.review.linkHost}
+              onEdit={w.goTo}
+              error={w.publishError}
+            />
           )}
 
           <div className="hidden items-center gap-3 border-t border-border pt-5 lg:flex">
@@ -148,9 +157,15 @@ export function CreateListingPage() {
             <Button variant="ghost" onClick={w.saveDraft}>
               Save draft
             </Button>
-            <Button className="ml-auto" onClick={w.next} disabled={w.step === w.steps.length - 1}>
-              Next
-            </Button>
+            {w.step === w.steps.length - 1 ? (
+              <Button className="ml-auto" onClick={w.publish} loading={w.publishing}>
+                Publish and get link
+              </Button>
+            ) : (
+              <Button className="ml-auto" onClick={w.next}>
+                Next
+              </Button>
+            )}
           </div>
         </Card>
 
@@ -165,9 +180,15 @@ export function CreateListingPage() {
           <Eye aria-hidden="true" className="size-4" />
           Preview
         </Button>
-        <Button fullWidth onClick={w.next} disabled={w.step === w.steps.length - 1}>
-          Next
-        </Button>
+        {w.step === w.steps.length - 1 ? (
+          <Button fullWidth onClick={w.publish} loading={w.publishing}>
+            Publish
+          </Button>
+        ) : (
+          <Button fullWidth onClick={w.next}>
+            Next
+          </Button>
+        )}
       </div>
       <Sheet open={w.previewOpen} onOpenChange={w.setPreviewOpen} title="What the buyer sees">
         <BuyerPreview data={w.preview} />
