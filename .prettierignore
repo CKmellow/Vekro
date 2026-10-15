@@ -12,3 +12,4 @@ src/models/api/schema.d.ts
 .githooks
 .github
 .vscode
+src/styles/tokens.css
