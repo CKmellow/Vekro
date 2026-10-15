@@ -1,7 +1,7 @@
-import { placeholder } from '@/views/pages/Placeholder'
+import { notReady } from '@/views/pages/shared/system'
 
-// Admin screens (PAGES.md A1 to A4).
-export const A1 = placeholder('A1', 'Vekro Support Console')
-export const A2 = placeholder('A2', 'Escalation queue')
-export const A3 = placeholder('A3', 'Case detail')
-export const A4 = placeholder('A4', 'Transactions')
+// Admin screens (PAGES.md A1 to A4). A1 is the public console login; A2 to A4 render inside AdminLayout.
+export const A1 = notReady('public', 'Support console')
+export const A2 = notReady('admin', 'Escalation queue')
+export const A3 = notReady('admin', 'Case detail')
+export const A4 = notReady('admin', 'Transactions')
