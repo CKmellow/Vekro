@@ -108,3 +108,23 @@ export function allowedSellerActions(resolution: Resolution): SellerAction[] {
 
 /** The last characters buyers check at the door. */
 export const uniqueIdTail = (uniqueId: string, length = 4) => uniqueId.replace(/\s+/g, '').slice(-length)
+
+/** One line for buyers: what they can do if something is wrong. */
+export function policySummary(policy: {
+  isSerialized: boolean
+  doorRejectReasons: DoorRejectReason[]
+  acceptedProblems: string[]
+  resolution?: Resolution
+}): string {
+  if (!policy.isSerialized) {
+    const reasons = DOOR_REJECT_REASONS.filter((r) => policy.doorRejectReasons.includes(r.value)).map(
+      (r) => r.label,
+    )
+    return reasons.length
+      ? `Reject at the door for: ${reasons.join(', ')}.`
+      : 'Inspect at the door before you give your code.'
+  }
+  const resolution = RESOLUTIONS.find((r) => r.value === policy.resolution)?.label
+  const problems = policy.acceptedProblems.length ? ` for ${policy.acceptedProblems.join(', ')}` : ''
+  return `Report a problem within 24 hours of delivery${problems}.${resolution ? ` The seller's fix: ${resolution}.` : ''}`
+}
