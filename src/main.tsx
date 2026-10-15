@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './App'
+import { registerServiceWorker } from './app/registerServiceWorker'
 import { mockedGaps } from './models/api/adapters/gaps'
 import './styles/fonts'
 import './index.css'
@@ -16,6 +17,7 @@ async function enableGapMocks() {
 const root = document.getElementById('root')
 if (!root) throw new Error('Root element #root not found')
 
+void registerServiceWorker()
 void enableGapMocks().then(() =>
   createRoot(root).render(
     <StrictMode>
