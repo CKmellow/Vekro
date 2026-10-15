@@ -1,0 +1,14 @@
+dist
+coverage
+dev-dist
+package-lock.json
+api/openapi.json
+design/**/*.html
+.agents
+.claude
+.github/prompts
+src/models/api/schema.d.ts
+**/*.md
+.githooks
+.github
+.vscode
