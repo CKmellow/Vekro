@@ -29,7 +29,7 @@ export function SegmentedControl<T extends string>({
           <label
             key={segment.value}
             className={cn(
-              'type-body-sm flex min-h-10 shrink-0 cursor-pointer items-center gap-2 rounded-sm px-3 font-semibold text-ink-600',
+              'type-body-sm relative flex min-h-10 shrink-0 cursor-pointer items-center gap-2 rounded-sm px-3 font-semibold text-ink-600',
               'transition-[background-color,box-shadow] duration-(--duration-state) ease-standard',
               'has-checked:bg-surface has-checked:text-text has-checked:shadow-1',
               'has-focus-visible:outline-3 has-focus-visible:outline-emerald-400',

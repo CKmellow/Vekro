@@ -16,8 +16,12 @@ export const listingKeys = {
   detail: (id: string) => ['listings', 'detail', id] as const,
 }
 
-export const useListing = (id: string) =>
-  useQuery({ queryKey: listingKeys.detail(id), queryFn: () => getListing(id) })
+export const useListing = (id: string, options: { enabled?: boolean } = {}) =>
+  useQuery({
+    queryKey: listingKeys.detail(id),
+    queryFn: () => getListing(id),
+    enabled: options.enabled ?? true,
+  })
 
 export const useListings = (filter: ListingFilter = {}) =>
   useQuery({ queryKey: listingKeys.list(filter), queryFn: () => listListings(filter) })
