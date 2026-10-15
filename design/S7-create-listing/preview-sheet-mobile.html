@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Vekro — Create Listing Preview</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts: Bricolage Grotesque, DM Sans, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-fixed-dim": "#ffb94d",
+            "background": "#f7faf5",
+            "plum-50": "#EFEBFC",
+            "coral-500": "#E5484D",
+            "emerald-400": "#2CC48A",
+            "secondary-container": "#fdaf23",
+            "saffron-100": "#FFE8B3",
+            "lake-50": "#E8F1FD",
+            "tertiary-container": "#974846",
+            "sand-100": "#F5F1E7",
+            "on-secondary-container": "#6a4500",
+            "saffron-600": "#B87A00",
+            "on-tertiary-container": "#ffd0cd",
+            "on-tertiary-fixed": "#3e0408",
+            "tertiary-fixed": "#ffdad7",
+            "ink-600": "#44524D",
+            "on-primary-fixed-variant": "#005237",
+            "ink-400": "#8A9792",
+            "emerald-glow": "#3DEBA6",
+            "emerald-700": "#0A6E4C",
+            "on-error": "#ffffff",
+            "surface-container-low": "#f1f5ef",
+            "on-error-container": "#93000a",
+            "secondary": "#815500",
+            "sand-50": "#FBF9F4",
+            "sand-300": "#D8D0BA",
+            "outline": "#6f7a72",
+            "primary-container": "#0a6e4c",
+            "emerald-900": "#06362A",
+            "emerald-950": "#04251C",
+            "emerald-800": "#084D3B",
+            "surface-variant": "#e0e4de",
+            "emerald-500": "#12A672",
+            "surface": "#f7faf5",
+            "sand-200": "#EAE4D4",
+            "saffron-500": "#F2A516",
+            "on-secondary-fixed": "#291800",
+            "error": "#ba1a1a",
+            "on-secondary-fixed-variant": "#624000",
+            "inverse-on-surface": "#eef2ed",
+            "emerald-100": "#CDEFE0",
+            "saffron-50": "#FFF6E0",
+            "surface-container-high": "#e5e9e4",
+            "on-primary": "#ffffff",
+            "inverse-surface": "#2d312e",
+            "on-surface-variant": "#3f4943",
+            "primary": "#005438",
+            "emerald-50": "#E9F8F1",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed-dim": "#ffb3af",
+            "ink-800": "#1B2824",
+            "sand-0": "#FFFFFF",
+            "primary-fixed-dim": "#82d7ae",
+            "ink-950": "#0B1512",
+            "plum-700": "#4F36B0",
+            "outline-variant": "#bec9c1",
+            "surface-container": "#ebefea",
+            "coral-50": "#FDECEC",
+            "on-background": "#181d1a",
+            "inverse-primary": "#82d7ae",
+            "on-secondary": "#ffffff",
+            "on-tertiary-fixed-variant": "#77302f",
+            "on-surface": "#181d1a",
+            "on-primary-fixed": "#002114",
+            "tertiary": "#793130",
+            "surface-tint": "#056c4a",
+            "surface-container-highest": "#e0e4de",
+            "primary-fixed": "#9ef4c9",
+            "surface-dim": "#d7dbd6",
+            "secondary-fixed": "#ffddb2",
+            "on-tertiary": "#ffffff",
+            "plum-500": "#6B4FD8",
+            "error-container": "#ffdad6",
+            "emerald-600": "#0C8A5F",
+            "coral-600": "#C93238",
+            "ink-500": "#5E6D67",
+            "lake-600": "#1F66C8",
+            "lake-500": "#2F80ED",
+            "on-primary-container": "#97edc2",
+            "surface-bright": "#f7faf5"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "40px",
+            "margin": "20px",
+            "space-sm": "8px",
+            "space-md": "16px",
+            "space-lg": "24px",
+            "gutter": "16px",
+            "space-xs": "4px"
+          },
+          "fontFamily": {
+            "title": ["Bricolage Grotesque", "sans-serif"],
+            "display-xl": ["Bricolage Grotesque", "sans-serif"],
+            "display-lg": ["Bricolage Grotesque", "sans-serif"],
+            "body-sm": ["DM Sans", "sans-serif"],
+            "body-lg": ["DM Sans", "sans-serif"],
+            "label": ["DM Sans", "sans-serif"],
+            "headline": ["Bricolage Grotesque", "sans-serif"],
+            "amount": ["Bricolage Grotesque", "sans-serif"],
+            "body-md": ["DM Sans", "sans-serif"],
+            "otp": ["JetBrains Mono", "monospace"],
+            "mono": ["JetBrains Mono", "monospace"]
+          },
+          "fontSize": {
+            "title": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "display-xl": ["44px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "display-lg": ["34px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "body-lg": ["17px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }],
+            "headline": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "amount": ["40px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "otp": ["44px", { "lineHeight": "52px", "fontWeight": "700" }],
+            "mono": ["14px", { "lineHeight": "20px", "fontWeight": "600" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .custom-scroll {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-sand-100 flex justify-center items-center min-h-screen p-0 sm:p-4 text-ink-950 antialiased selection:bg-emerald-100 selection:text-emerald-900 font-body-md text-body-md">
+<!-- Mobile Viewport Canvas (390px fixed container) -->
+<main class="relative w-full max-w-[390px] h-[844px] bg-sand-50 overflow-hidden shadow-2xl rounded-[36px] flex flex-col border border-sand-200">
+<!-- LAYER 1: DIMMED STEP-1 FORM (BACKGROUND CANVAS) -->
+<div class="absolute inset-0 flex flex-col overflow-y-auto custom-scroll pb-10">
+<!-- Top App Bar (Shared Components Anchor execution) -->
+<header class="bg-emerald-900 flex justify-between items-center w-full px-4 h-14 max-w-[390px] mx-auto text-sand-0 shrink-0 z-0"><button aria-label="Go back" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-emerald-800 transition-colors active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-sand-0 text-xl" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="text-center">
+<h1 class="text-title font-title text-sand-0 font-bold leading-none">New listing</h1>
+<span class="text-[11px] font-label uppercase tracking-widest text-emerald-400 font-bold">Step 1 of 2</span>
+</div>
+<button aria-label="Save draft" class="text-xs font-semibold text-sand-0/90 hover:text-sand-0 px-2 py-1 rounded transition-colors" type="button">
+Save draft
+</button></header>
+<!-- Background Form Content -->
+<section class="p-5 space-y-4">
+<!-- Media Uploader Section -->
+<div>
+<span class="block font-label text-[11px] tracking-widest uppercase font-bold text-ink-500 mb-1.5">Item Photos (1 of 6)</span>
+<div class="flex gap-2.5">
+<div class="w-20 h-20 rounded-2xl overflow-hidden border border-sand-200 relative shrink-0">
+<img class="w-full h-full object-cover" data-alt="A pristine dark midnight blue Apple iPhone 13 resting angled on a warm sand travertine surface. The studio lighting produces soft specular highlights across the dual camera lenses and satin aluminum frame. Shot in clean high-key lighting with a tranquil organic color scheme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVpYfmEb9YHNwH1ffVv5fU-02x6VYfTlNDgvQ6m5AYDtZA5kk4d_McWg1WW75IOhoULHAGqCWNj0yw9kpvn7lsCvBZIB9SdKiUBD6nNBJnST2I9OEOV_AXx2GdvXT8Tq0dxk6JUtL3z6CX0y5NIjnxm7Ghd46FeGLrod8B2PWkuKsa4-ut2oUk1ly2flIjSEBXnazE3KQCIM-8_kI8yzYyI-cm4bR41xpFoZygb7UV70viIDsDhAgEyZUhaYav1iaQBAI_zNqEgOY"/>
+<div class="absolute top-1 right-1 bg-emerald-700 text-white rounded-full p-0.5 shadow-sm">
+<span class="material-symbols-outlined text-xs" data-icon="check">check</span>
+</div>
+</div>
+<div class="w-20 h-20 rounded-2xl border-2 border-dashed border-sand-300 flex flex-col items-center justify-center text-ink-400 bg-sand-100">
+<span class="material-symbols-outlined text-xl" data-icon="add_photo_alternate">add_photo_alternate</span>
+<span class="text-[10px] font-bold mt-0.5">Add photo</span>
+</div>
+</div>
+</div>
+<!-- Title Field -->
+<div>
+<label class="block font-label text-[11px] tracking-widest uppercase font-bold text-ink-500 mb-1">Listing Title</label>
+<div class="h-14 px-4 bg-sand-0 border border-sand-200 rounded-xl flex items-center text-ink-950 font-medium">
+            iPhone 13, 128GB, Midnight
+          </div>
+</div>
+<!-- Price Field & Breakdown -->
+<div>
+<label class="block font-label text-[11px] tracking-widest uppercase font-bold text-ink-500 mb-1">Selling Price (KES)</label>
+<div class="h-14 px-4 bg-sand-0 border border-sand-200 rounded-xl flex items-center justify-between">
+<span class="font-headline text-headline text-ink-950 font-bold">52,000</span>
+<span class="text-xs font-mono text-ink-400 uppercase font-bold">KES</span>
+</div>
+<div class="mt-2 p-3 bg-sand-100 rounded-xl flex items-center justify-between text-xs text-ink-600">
+<span>Escrow network fee: <strong class="text-ink-800">KES 130</strong></span>
+<span>You receive: <strong class="text-emerald-700 font-bold">KES 51,870</strong></span>
+</div>
+</div>
+<!-- Condition & Category Grid -->
+<div class="grid grid-cols-2 gap-3 pt-1">
+<div>
+<label class="block font-label text-[11px] tracking-widest uppercase font-bold text-ink-500 mb-1">Category</label>
+<div class="h-12 px-3 bg-sand-0 border border-sand-200 rounded-xl flex items-center justify-between text-sm text-ink-950 font-medium">
+<span>Smartphones</span>
+<span class="material-symbols-outlined text-sm text-ink-400" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div>
+<label class="block font-label text-[11px] tracking-widest uppercase font-bold text-ink-500 mb-1">Condition</label>
+<div class="h-12 px-3 bg-sand-0 border border-sand-200 rounded-xl flex items-center justify-between text-sm text-ink-950 font-medium">
+<span>Like New (9.5/10)</span>
+<span class="material-symbols-outlined text-sm text-ink-400" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- LAYER 2: 40% INK SCRIM OVERLAY -->
+<div class="absolute inset-0 bg-[#0B1512]/40 backdrop-blur-[2px] z-10 transition-opacity"></div>
+<!-- LAYER 3: FOREGROUND BOTTOM SHEET (85% VIEWPORT HEIGHT) -->
+<section class="absolute bottom-0 inset-x-0 h-[85%] bg-sand-0 rounded-t-[28px] z-20 flex flex-col shadow-[0_-8px_40px_rgba(11,21,18,0.22)] border-t border-sand-200">
+<!-- Top Grab Handle -->
+<div class="pt-3 pb-1 flex justify-center w-full">
+<div class="w-9 h-1 bg-sand-300 rounded-full"></div>
+</div>
+<!-- Sheet Header Bar -->
+<div class="px-5 py-2.5 flex items-center justify-between shrink-0">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-700 text-xl" data-icon="visibility">visibility</span>
+<h2 class="font-title text-title text-ink-950 font-bold tracking-tight">What the buyer sees</h2>
+</div>
+<button aria-label="Close preview" class="w-8 h-8 rounded-full bg-sand-100 hover:bg-sand-200 text-ink-600 flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-lg" data-icon="close">close</span>
+</button>
+</div>
+<!-- Sheet Content: Nested Buyer Preview (Scrollable) -->
+<div class="flex-1 overflow-y-auto custom-scroll px-5 py-2 space-y-3">
+<!-- Nested Buyer Preview Frame -->
+<article class="bg-sand-100 rounded-2xl p-3.5 border border-sand-200 shadow-sm space-y-3">
+<!-- Mini Top Bar inside buyer frame -->
+<div class="flex items-center justify-between pb-1 border-b border-sand-200/60">
+<!-- Brand Logo Mark -->
+<div class="flex items-center gap-1.5">
+<div class="w-6 h-6 rounded-md bg-emerald-700 flex items-center justify-center shadow-xs">
+<!-- Geometric V of two strokes -->
+<svg class="text-sand-0 stroke-current stroke-[3] stroke-linecap-round stroke-linejoin-round" fill="none" height="14" viewbox="0 0 24 24" width="14">
+<path d="M4 4l8 16 8-16"></path>
+</svg>
+</div>
+<span class="font-headline font-bold text-sm tracking-tight text-ink-950">Vekro</span>
+</div>
+<!-- Escrow Status Pill -->
+<div class="flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-100 rounded-full px-2.5 py-0.5">
+<span class="material-symbols-outlined text-[13px] text-emerald-700" data-icon="lock" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="text-[11px] font-label font-bold tracking-tight">Protected by Vekro Escrow</span>
+</div>
+</div>
+<!-- Product Image Card -->
+<div class="w-full h-44 rounded-xl overflow-hidden bg-sand-200 relative border border-sand-200">
+<img class="w-full h-full object-cover" data-alt="Close-up clean studio product photograph of an iPhone 13 in Midnight finish lying elegantly on an organic warm ecru architectural podium. Warm sand tones surround the pristine glass backing and anodized dark frame with high clarity. Balanced daylight illumination highlights the immaculate device condition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIwJnuw-ButVbiSpoaNoPN11qzyBOwr-K6m3RSVEofR41K8EiyRQ5vvMCY2oSigMtBcPuAzNuxWAHQpFYed0rN4NP6swX6A-Cly375KOqtj7I7kRy7Ukz45h8VUF3uSUWS1fmndxiOWoKc4YkLQ9bIvypmdXxafPce6xswXuMIXPO1ES2V4toJrUDX91cw9oYj54WelnDTHLk6eiUH1-u33uHDjpOWopNlfcZr4erXK-UCUmQR1tlOXFNM9zfushGo8WLT-RC6Qwg"/>
+</div>
+<!-- Product Titles & Price Hierarchy -->
+<div class="space-y-1">
+<h3 class="font-title text-[19px] leading-tight text-ink-950 font-bold tracking-tight">
+              iPhone 13, 128GB, Midnight
+            </h3>
+<div class="flex items-baseline gap-2">
+<span class="font-amount text-[28px] leading-tight font-extrabold text-emerald-800 tracking-tight">
+                KES 52,000
+              </span>
+<span class="text-[11px] font-bold text-ink-500 font-label uppercase tracking-wider">Fixed Price</span>
+</div>
+</div>
+<!-- Seller Credential Row -->
+<div class="bg-sand-50 rounded-xl p-2.5 border border-sand-200 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs shrink-0">
+                AG
+              </div>
+<div class="leading-snug">
+<div class="flex items-center gap-1">
+<span class="font-bold text-xs text-ink-950">Amina Gadgets</span>
+<span class="material-symbols-outlined text-emerald-600 text-xs" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<p class="text-[11px] text-ink-500 font-medium">Kilimani, Nairobi · 48 completed deals</p>
+</div>
+</div>
+</div>
+<!-- Inspection & Dispute Policy Callout -->
+<div class="bg-sand-0 rounded-[14px] p-3 border border-sand-200 flex gap-2.5 items-start">
+<div class="w-7 h-7 rounded-lg bg-lake-50 text-lake-600 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-base" data-icon="verified_user">verified_user</span>
+</div>
+<div class="space-y-0.5"><p class="text-xs font-bold text-ink-950 leading-tight">If something's wrong</p>
+<p class="text-[11px] leading-relaxed text-ink-500">
+  Reject at the door for Damaged, Wrong item or Not as described. Your money stays in the vault until you confirm.
+</p></div>
+</div>
+<!-- Simulated Buyer Primary Action Button -->
+<div class="pt-1">
+<button class="w-full h-12 bg-emerald-700 text-sand-0 font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm pointer-events-none opacity-95" type="button">
+<span class="material-symbols-outlined text-lg" data-icon="lock">lock</span>
+<span class="text-sm tracking-tight">Pay KES 52,000 with M-Pesa</span>
+</button>
+<p class="text-center text-[10px] text-ink-400 mt-1.5 font-medium">
+              Simulated buyer view · Vekro secures funds until inspection
+            </p>
+</div>
+</article>
+</div>
+<!-- Action Dock: Back to editing button -->
+<footer class="p-4 bg-sand-0 border-t border-sand-200 shrink-0">
+<button class="w-full h-[52px] bg-sand-0 hover:bg-sand-50 active:scale-[0.99] border border-sand-200 text-ink-950 font-title font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-xs" type="button">
+<span class="material-symbols-outlined text-ink-600 text-xl" data-icon="edit">edit</span>
+<span>Back to editing</span>
+</button>
+</footer>
+</section>
+</main>
+</body></html>

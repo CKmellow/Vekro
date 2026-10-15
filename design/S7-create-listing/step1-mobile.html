@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=390, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Vekro · Create Listing (Step 1: Item)</title>
+<!-- Google Fonts: Bricolage Grotesque, DM Sans, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            bricolage: ['"Bricolage Grotesque"', 'sans-serif'],
+            sans: ['"DM Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            sand: {
+              0: '#FFFFFF',
+              50: '#FBF9F4',
+              100: '#F5F1E7',
+              200: '#EAE4D4',
+              300: '#D8D0BA',
+            },
+            ink: {
+              950: '#0B1512',
+              800: '#1B2824',
+              600: '#44524D',
+              500: '#5E6D67',
+              400: '#8A9792',
+            },
+            emerald: {
+              950: '#04251C',
+              900: '#06362A',
+              800: '#084D3B',
+              700: '#0A6E4C',
+              600: '#0C8A5F',
+              500: '#12A672',
+              400: '#2CC48A',
+              glow: '#3DEBA6',
+              100: '#CDEFE0',
+              50: '#E9F8F1',
+            },
+            saffron: {
+              700: '#8A5B00',
+              600: '#B87A00',
+              500: '#F2A516',
+              100: '#FFE8B3',
+              50: '#FFF6E0',
+            },
+            coral: {
+              600: '#C93238',
+              500: '#E5484D',
+              50: '#FDECEC',
+            },
+            lake: {
+              600: '#1F66C8',
+              500: '#2F80ED',
+              50: '#E8F1FD',
+            },
+            plum: {
+              700: '#4F36B0',
+              500: '#6B4FD8',
+              50: '#EFEBFC',
+            }
+          },
+          borderRadius: {
+            'card': '20px',
+            'vault': '28px',
+            'input': '14px',
+            'btn': '14px',
+          },
+          boxShadow: {
+            'vekro-card': '0 1px 2px rgba(11,21,18,0.04), 0 8px 24px rgba(11,21,18,0.06)',
+            'dock': '0 -4px 20px rgba(11,21,18,0.05)',
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Custom styling for precise tokens */
+    body {
+      background-color: #FBF9F4;
+      color: #0B1512;
+      font-family: 'DM Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    input, textarea, select {
+      outline: none;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: #12A672;
+      box-shadow: 0 0 0 3px rgba(18, 166, 114, 0.16);
+    }
+    /* Hide scrollbars for clean presentation */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-sand-50 flex justify-center selection:bg-emerald-100 selection:text-emerald-950">
+<!-- Mobile Container (390px) -->
+<div class="w-full max-w-[390px] min-h-screen flex flex-col relative bg-sand-50 border-x border-sand-200 shadow-sm">
+<!-- Top Bar: Navigation & Action -->
+<header class="sticky top-0 z-30 bg-sand-50/90 backdrop-blur-md px-4 pt-3 pb-3 border-b border-sand-200 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<button aria-label="Go back" class="w-9 h-9 rounded-full flex items-center justify-center text-ink-950 hover:bg-sand-100 active:scale-95 transition-all" type="button">
+<svg class="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<h1 class="font-bricolage text-xl font-bold tracking-tight text-ink-950">New listing</h1>
+</div>
+<button class="text-sm font-medium text-ink-500 hover:text-ink-950 active:scale-95 px-2 py-1 rounded transition-colors" type="button">
+        Save draft
+      </button>
+</header>
+<!-- Main Form Scroll Area -->
+<main class="flex-1 px-4 pt-4 pb-32 space-y-6">
+<!-- 1. Compact Stepper (4 nodes: "Item" current with label, 2, 3, 4) -->
+<section aria-label="Progress steps" class="bg-sand-0 rounded-card p-4 border border-sand-200/80 shadow-vekro-card">
+<div class="flex items-center justify-between relative">
+<!-- Stepper line behind nodes -->
+<div class="absolute left-4 right-4 top-4 h-[2px] bg-sand-200 -z-0"></div>
+<!-- Step 1: Active ("Item") -->
+<div class="flex flex-col items-center gap-1.5 z-10">
+<div class="w-8 h-8 rounded-full bg-emerald-700 text-sand-0 flex items-center justify-center font-bricolage text-sm font-bold shadow-sm ring-4 ring-emerald-50">
+              1
+            </div>
+<span class="font-sans text-[11px] font-bold text-emerald-800 tracking-tight">Item</span>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center gap-1.5 z-10">
+<div class="w-8 h-8 rounded-full bg-sand-100 border border-sand-200 text-ink-400 flex items-center justify-center font-sans text-xs font-semibold">
+              2
+            </div>
+<span class="font-sans text-[11px] font-medium text-ink-400">Item type</span>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center gap-1.5 z-10">
+<div class="w-8 h-8 rounded-full bg-sand-100 border border-sand-200 text-ink-400 flex items-center justify-center font-sans text-xs font-semibold">
+              3
+            </div>
+<span class="font-sans text-[11px] font-medium text-ink-400">Dispute policy</span>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col items-center gap-1.5 z-10">
+<div class="w-8 h-8 rounded-full bg-sand-100 border border-sand-200 text-ink-400 flex items-center justify-center font-sans text-xs font-semibold">
+              4
+            </div>
+<span class="font-sans text-[11px] font-medium text-ink-400">Review</span>
+</div>
+</div>
+</section>
+<!-- 2. Photos Section (label "PHOTOS" "2/4", 2-column grid: Tile 1 photo, Tile 2 failed coral, Tile 3 dashed add) -->
+<section class="space-y-2.5">
+<div class="flex items-center justify-between px-1">
+<label class="font-sans text-xs font-bold text-ink-500 tracking-[0.08em] uppercase">Photos</label>
+<span class="font-mono text-xs font-semibold text-ink-400 bg-sand-100 px-2 py-0.5 rounded-full border border-sand-200">2/4</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<!-- Tile 1: Photo uploaded with COVER badge & size chip "182 KB" -->
+<div class="relative aspect-square rounded-input overflow-hidden border border-sand-200 bg-sand-100 group shadow-sm">
+<img alt="iPhone 13, 128GB, Midnight" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYC1X2UhK7s_FUVi7OIQFpR1vzwpYGFR7lsAYjY4xEbqiFvVyXKfvM7ZDGaSWEwOZh4nSKWm4xG4o2KYcCCy-bQ1nJ_TGkrIrALxiT2fzqyx32cdel7cA4b55MyvHXoxVyMs8wQfRgvxnDcMQIEVaSxKl3f0wt7RHl21sKC_2-awX3E_f5B7UTEU4pIH5oNQJxEb8L3J430x8BaNPk9kN5clQBEQdzAH5NLXfNrtq7J-42ILNVt4D7oG0yOztmpqMSVdkIMKjQvCs"/>
+<!-- Badges overlay -->
+<div class="absolute inset-x-2 top-2 flex items-center justify-between pointer-events-none">
+<span class="bg-ink-950/80 backdrop-blur-sm text-sand-0 font-sans text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full uppercase">
+                Cover
+              </span>
+<button aria-label="Remove photo" class="pointer-events-auto w-6 h-6 rounded-full bg-ink-950/70 text-sand-0 flex items-center justify-center hover:bg-coral-600 transition-colors" type="button">
+<svg class="w-3.5 h-3.5 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<div class="absolute bottom-2 left-2 pointer-events-none">
+<span class="bg-sand-0/90 backdrop-blur-sm text-ink-600 font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded border border-sand-200/60 shadow-xs">
+                182 KB
+              </span>
+</div>
+</div>
+<!-- Tile 2: Coral-tint failed tile with "Try again" -->
+<div class="relative aspect-square rounded-input border border-coral-500/40 bg-coral-50 p-3 flex flex-col items-center justify-center text-center shadow-xs">
+<!-- Coral failure icon -->
+<div class="w-9 h-9 rounded-full bg-coral-500/10 text-coral-600 flex items-center justify-center mb-2">
+<svg class="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 7.5h.008v.008H12v-.008z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<p class="font-sans text-xs font-semibold text-coral-600 leading-tight">Upload failed</p>
+<span class="font-mono text-[10px] text-coral-500 mt-0.5 mb-2">Network timeout</span>
+<!-- Try again action button -->
+<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-sand-0 text-coral-600 border border-coral-500/30 font-sans text-[11px] font-bold hover:bg-coral-50 active:scale-95 transition-all shadow-xs" type="button">
+<svg class="w-3 h-3 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+              Try again
+            </button>
+</div>
+<!-- Tile 3: Dashed "Add photo" -->
+<button class="aspect-square rounded-input border-2 border-dashed border-sand-300 hover:border-emerald-500 bg-sand-0/50 hover:bg-emerald-50/30 flex flex-col items-center justify-center text-center p-3 transition-colors active:scale-98 group" type="button">
+<div class="w-10 h-10 rounded-full bg-sand-100 group-hover:bg-emerald-100 text-ink-500 group-hover:text-emerald-700 flex items-center justify-center transition-colors mb-2">
+<svg class="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 4.5v15m7.5-7.5h-15" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="font-sans text-xs font-bold text-ink-800 group-hover:text-emerald-800">Add photo</span>
+<span class="font-sans text-[10px] text-ink-400 mt-0.5">JPG, PNG up to 10MB</span>
+</button>
+<!-- Empty slot preview (dashed faint) -->
+<div class="aspect-square rounded-input border border-dashed border-sand-200 bg-sand-50/50 flex flex-col items-center justify-center text-center p-3 opacity-60">
+<span class="font-sans text-[11px] font-medium text-ink-400">Photo 4</span>
+</div>
+</div>
+</section>
+<!-- 3. Form Fields Card -->
+<section class="bg-sand-0 rounded-card p-5 border border-sand-200/80 shadow-vekro-card space-y-4">
+<!-- TITLE Field -->
+<div class="space-y-1.5">
+<label class="block font-sans text-xs font-bold text-ink-500 tracking-[0.08em] uppercase" for="item-title">
+            Title
+          </label>
+<div class="relative">
+<input class="w-full h-14 px-4 rounded-input border border-sand-200 bg-sand-0 text-ink-950 font-sans text-[15px] font-medium transition-all" id="item-title" type="text" value="iPhone 13, 128GB, Midnight"/>
+<div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-600">
+<svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- CATEGORY Field (select "Phones and tablets") -->
+<div class="space-y-1.5">
+<label class="block font-sans text-xs font-bold text-ink-500 tracking-[0.08em] uppercase" for="item-category">
+            Category
+          </label>
+<div class="relative">
+<select class="w-full h-14 px-4 pr-10 rounded-input border border-sand-200 bg-sand-0 text-ink-950 font-sans text-[15px] font-medium appearance-none transition-all" id="item-category">
+<option selected="">Phones and tablets</option>
+<option>Laptops &amp; Computers</option>
+<option>Audio &amp; Wearables</option>
+<option>Cameras &amp; Drones</option>
+<option>Fashion &amp; Apparel</option>
+</select>
+<div class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-ink-400">
+<svg class="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19.5 8.25l-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- DESCRIPTION Field (with counter "74/600") -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between">
+<label class="block font-sans text-xs font-bold text-ink-500 tracking-[0.08em] uppercase" for="item-desc">
+              Description
+            </label>
+<span class="font-mono text-[11px] font-medium text-ink-400">74/600</span>
+</div>
+<textarea class="w-full p-3.5 rounded-input border border-sand-200 bg-sand-0 text-ink-950 font-sans text-[14px] leading-relaxed resize-none transition-all" id="item-desc" rows="3">Battery health 91%. Clean unit with original box, cable, and silicone case. Minimal cosmetic marks.</textarea>
+</div>
+<!-- PRICE Field (large mono "KES 52,000" + Fee calculation breakdown) -->
+<div class="space-y-1.5 pt-1">
+<label class="block font-sans text-xs font-bold text-ink-500 tracking-[0.08em] uppercase" for="item-price">
+            Price
+          </label>
+<div class="relative">
+<input class="w-full h-14 px-4 rounded-input border border-sand-200 bg-sand-50/70 text-ink-950 font-mono text-[19px] font-bold tracking-tight transition-all" id="item-price" type="text" value="KES 52,000"/>
+</div>
+<!-- Net Payout breakdown tile -->
+<div class="bg-sand-100 rounded-input p-3 border border-sand-200 text-xs space-y-1">
+<div class="flex items-center justify-between text-ink-500 font-sans">
+<span>Network fee</span>
+<span class="font-mono font-medium text-ink-800">KES 130</span>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-sand-200/80">
+<span class="font-sans font-bold text-ink-950">You receive</span>
+<span class="font-mono font-bold text-emerald-700 text-sm">KES 51,870</span>
+</div>
+</div>
+</div>
+<!-- BUYER NAME (OPTIONAL) Field -->
+<div class="space-y-1.5 pt-1">
+<div class="flex items-center justify-between">
+<label class="block font-sans text-xs font-bold text-ink-500 tracking-[0.08em] uppercase" for="buyer-name">
+              Buyer name (optional)
+            </label>
+<span class="font-sans text-[11px] text-ink-400">For a private link to one buyer.</span>
+</div>
+<input class="w-full h-14 px-4 rounded-input border border-sand-200 bg-sand-0 text-ink-950 font-sans text-[15px] placeholder:text-ink-400 transition-all" id="buyer-name" placeholder="e.g. Brian Otieno" type="text"/>
+</div>
+</section>
+<!-- Seller Identity verification mini-card (Amina Gadgets) -->
+<section class="bg-sand-100/70 rounded-card p-3.5 border border-sand-200 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-emerald-950 text-emerald-400 font-bricolage text-xs font-bold flex items-center justify-center">
+            AG
+          </div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-sans text-xs font-bold text-ink-950">Amina Gadgets</span>
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+</div>
+<span class="font-mono text-[11px] text-ink-500">+254 722 *** 904 · Kilimani</span>
+</div>
+</div>
+</section>
+</main>
+<!-- 4. Sticky Bottom Action Dock (Frosted glass backdrop) -->
+<div class="fixed bottom-0 left-0 right-0 max-w-[390px] mx-auto z-40 bg-sand-50/85 backdrop-blur-md border-t border-sand-200 px-4 py-3 shadow-dock">
+<div class="flex items-center gap-3">
+<!-- Secondary button "Preview" with eye icon (white, sand border, 52px tall) -->
+<button class="flex-1 h-[52px] rounded-btn bg-sand-0 border border-sand-200 text-ink-950 font-sans font-bold text-[15px] flex items-center justify-center gap-2 hover:bg-sand-100 active:scale-[0.98] transition-all shadow-xs" type="button">
+<svg class="w-4 h-4 stroke-[2] text-ink-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+          Preview
+        </button>
+<!-- Primary button "Next" (Emerald-700, white text, 52px tall, 14px radius, soft inner top highlight) -->
+<button class="flex-[1.4] h-[52px] rounded-btn bg-emerald-700 hover:bg-emerald-800 text-sand-0 font-bricolage font-bold text-[16px] flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-sm ring-1 ring-white/20" type="button">
+<span>Next</span>
+<svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</body>
+</html>

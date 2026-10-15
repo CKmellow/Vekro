@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vekro Seller Console - Create Listing (Step 3: Dispute policy)</title>
+<!-- Google Fonts: Bricolage Grotesque, DM Sans, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "inverse-primary": "#82d7ae",
+            "saffron-500": "#F2A516",
+            "on-background": "#181d1a",
+            "background": "#f7faf5",
+            "on-tertiary-fixed-variant": "#77302f",
+            "secondary-container": "#fdaf23",
+            "on-secondary": "#ffffff",
+            "lake-600": "#1F66C8",
+            "sand-100": "#F5F1E7",
+            "on-error-container": "#93000a",
+            "plum-700": "#4F36B0",
+            "emerald-100": "#CDEFE0",
+            "ink-950": "#0B1512",
+            "plum-50": "#EFEBFC",
+            "tertiary-fixed-dim": "#ffb3af",
+            "primary": "#005438",
+            "saffron-600": "#B87A00",
+            "emerald-500": "#12A672",
+            "surface-container": "#ebefea",
+            "sand-0": "#FFFFFF",
+            "inverse-on-surface": "#eef2ed",
+            "emerald-700": "#0A6E4C",
+            "on-secondary-fixed-variant": "#624000",
+            "emerald-900": "#06362A",
+            "plum-500": "#6B4FD8",
+            "emerald-800": "#084D3B",
+            "sand-50": "#FBF9F4",
+            "outline": "#6f7a72",
+            "lake-500": "#2F80ED",
+            "on-secondary-container": "#6a4500",
+            "surface-dim": "#d7dbd6",
+            "secondary-fixed": "#ffddb2",
+            "primary-container": "#0a6e4c",
+            "ink-400": "#8A9792",
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#f1f5ef",
+            "ink-800": "#1B2824",
+            "sand-300": "#D8D0BA",
+            "inverse-surface": "#2d312e",
+            "saffron-50": "#FFF6E0",
+            "emerald-50": "#E9F8F1",
+            "on-error": "#ffffff",
+            "surface-variant": "#e0e4de",
+            "on-primary-fixed": "#002114",
+            "coral-500": "#E5484D",
+            "tertiary-container": "#974846",
+            "primary-fixed": "#9ef4c9",
+            "surface-bright": "#f7faf5",
+            "on-surface": "#181d1a",
+            "tertiary-fixed": "#ffdad7",
+            "emerald-600": "#0C8A5F",
+            "surface-container-highest": "#e0e4de",
+            "tertiary": "#793130",
+            "on-secondary-fixed": "#291800",
+            "ink-500": "#5E6D67",
+            "coral-600": "#C93238",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed": "#3e0408",
+            "outline-variant": "#bec9c1",
+            "surface": "#f7faf5",
+            "ink-600": "#44524D",
+            "secondary": "#815500",
+            "on-surface-variant": "#3f4943",
+            "error": "#ba1a1a",
+            "primary-fixed-dim": "#82d7ae",
+            "on-primary": "#ffffff",
+            "surface-container-high": "#e5e9e4",
+            "emerald-950": "#04251C",
+            "surface-container-lowest": "#ffffff",
+            "saffron-100": "#FFE8B3",
+            "secondary-fixed-dim": "#ffb94d",
+            "coral-50": "#FDECEC",
+            "sand-200": "#EAE4D4",
+            "surface-tint": "#056c4a",
+            "on-primary-fixed-variant": "#005237",
+            "lake-50": "#E8F1FD",
+            "emerald-400": "#2CC48A",
+            "on-tertiary-container": "#ffd0cd",
+            "on-primary-container": "#97edc2",
+            "emerald-glow": "#3DEBA6"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "20": "20px",
+            "14": "14px",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "4px",
+            "space-lg": "24px",
+            "margin": "20px",
+            "gutter": "16px",
+            "space-xl": "40px",
+            "space-sm": "8px",
+            "space-md": "16px"
+          },
+          "fontFamily": {
+            "mono": ["JetBrains Mono", "monospace"],
+            "body-lg": ["DM Sans", "sans-serif"],
+            "title": ["Bricolage Grotesque", "sans-serif"],
+            "otp": ["JetBrains Mono", "monospace"],
+            "label": ["DM Sans", "sans-serif"],
+            "body-md": ["DM Sans", "sans-serif"],
+            "body-sm": ["DM Sans", "sans-serif"],
+            "headline": ["Bricolage Grotesque", "sans-serif"],
+            "display-xl": ["Bricolage Grotesque", "sans-serif"],
+            "display-lg": ["Bricolage Grotesque", "sans-serif"],
+            "amount": ["Bricolage Grotesque", "sans-serif"]
+          },
+          "fontSize": {
+            "mono": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "body-lg": ["17px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "title": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "otp": ["44px", { "lineHeight": "52px", "fontWeight": "700" }],
+            "label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }],
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "headline": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "display-xl": ["44px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "display-lg": ["34px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800" }],
+            "amount": ["40px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }]
+          },
+          "boxShadow": {
+            "warm-card": "0 1px 2px rgba(11,21,18,0.04), 0 8px 24px rgba(11,21,18,0.06)",
+            "phone-depth": "0 24px 48px -12px rgba(4,37,28,0.14), 0 4px 16px rgba(11,21,18,0.04)"
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FBF9F4;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #EAE4D4;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-sand-50 text-ink-950 font-body-md antialiased min-h-screen flex selection:bg-emerald-100 selection:text-emerald-900">
+<!-- ========================================================================= -->
+<!-- LEFT SIDEBAR COMPONENT (Shared Components JSON execution)                -->
+<!-- ========================================================================= -->
+<aside class="fixed top-0 left-0 h-screen w-[264px] z-40 flex flex-col justify-between p-4 bg-emerald-950 shrink-0 text-emerald-100">
+<!-- Top Branding & Navigation Area -->
+<div class="flex flex-col gap-6">
+<!-- Brand Identity -->
+<div class="flex items-center gap-3 px-2 pt-2">
+<div class="w-10 h-10 rounded-xl bg-emerald-800 flex items-center justify-center border border-emerald-700/50 shadow-inner">
+<!-- Clean V logo mark -->
+<svg class="text-sand-0" fill="none" height="22" viewbox="0 0 24 24" width="22">
+<path d="M4 4L12 20L20 4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.75"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="text-headline font-headline font-bold text-sand-0 tracking-tight leading-tight">Vekro</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-emerald-100 hover:bg-emerald-900/60 transition-colors duration-150 font-body-md cursor-pointer active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Orders (with Badge) -->
+<a class="flex items-center justify-between px-3 py-2.5 rounded-lg text-emerald-100 hover:bg-emerald-900/60 transition-colors duration-150 font-body-md cursor-pointer active:scale-[0.98]" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px]" data-icon="shopping_bag">shopping_bag</span>
+<span>Orders</span>
+</div>
+<span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-saffron-100 text-saffron-600">3</span>
+</a>
+<!-- Listings (ACTIVE STATE) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-emerald-700 text-sand-0 font-body-md font-semibold cursor-pointer shadow-sm" href="#">
+<span class="material-symbols-outlined text-[20px] fill" data-icon="inventory_2" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span>Listings</span>
+</a>
+<!-- Returns (with Badge) -->
+<a class="flex items-center justify-between px-3 py-2.5 rounded-lg text-emerald-100 hover:bg-emerald-900/60 transition-colors duration-150 font-body-md cursor-pointer active:scale-[0.98]" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px]" data-icon="assignment_return">assignment_return</span>
+<span>Returns</span>
+</div>
+<span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-saffron-100 text-saffron-600">1</span>
+</a>
+<!-- Analytics -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-emerald-100 hover:bg-emerald-900/60 transition-colors duration-150 font-body-md cursor-pointer active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="analytics">analytics</span>
+<span>Analytics</span>
+</a>
+<!-- Notifications -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-emerald-100 hover:bg-emerald-900/60 transition-colors duration-150 font-body-md cursor-pointer active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span>Notifications</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-emerald-100 hover:bg-emerald-900/60 transition-colors duration-150 font-body-md cursor-pointer active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Actions & Verified Seller Details -->
+<div class="flex flex-col gap-3 pt-4 border-t border-emerald-900/80">
+<!-- Mint Create listing CTA Button -->
+<button class="w-full h-11 rounded-14 bg-emerald-glow text-emerald-950 font-title font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-400 active:scale-[0.98] transition-all duration-150 shadow-sm">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+<span>Create listing</span>
+</button>
+<!-- Seller Profile Row -->
+<div class="flex items-center gap-3 p-2 rounded-lg bg-emerald-900/50 hover:bg-emerald-900 transition-colors cursor-pointer">
+<div class="w-8 h-8 rounded-full bg-emerald-800 text-emerald-100 font-headline font-bold text-xs flex items-center justify-center border border-emerald-700 shrink-0">
+          AG
+        </div>
+<div class="flex flex-col min-w-0">
+<span class="text-xs font-medium text-sand-0 truncate">Amina Gadgets</span>
+<div class="flex items-center gap-1 text-[11px] text-emerald-400 font-label">
+<span class="material-symbols-outlined text-[13px] fill" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="truncate">Verified seller</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- TOP APP BAR COMPONENT (Shared Components JSON execution)                  -->
+<!-- ========================================================================= -->
+<header class="h-[72px] pl-[288px] pr-8 flex items-center justify-between w-full fixed top-0 right-0 z-30 bg-sand-0 border-b border-sand-200">
+<!-- Left: Search Box -->
+<div class="relative w-80">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400 text-lg" data-icon="search">search</span>
+<input class="w-full h-10 pl-10 pr-4 rounded-xl bg-sand-50 border border-sand-200 text-ink-950 placeholder-ink-400 text-body-sm focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition" placeholder="Order ID or item..." type="text"/>
+</div>
+<!-- Right Cluster: Actions & Avatar -->
+<div class="flex items-center gap-4">
+<!-- Help -->
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-ink-500 hover:text-ink-950 hover:bg-sand-100 transition duration-150" title="Help &amp; Support">
+<span class="material-symbols-outlined text-xl" data-icon="help_outline">help_outline</span>
+</button>
+<!-- Notifications with Coral Alert Dot -->
+<button class="relative w-10 h-10 rounded-full flex items-center justify-center text-ink-500 hover:text-ink-950 hover:bg-sand-100 transition duration-150" title="Notifications">
+<span class="material-symbols-outlined text-xl" data-icon="notifications">notifications</span>
+<span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-coral-500 ring-2 ring-sand-0"></span>
+</button>
+<!-- Vertical divider -->
+<div class="h-6 w-px bg-sand-200"></div>
+<!-- Seller Avatar -->
+<div class="flex items-center gap-3 pl-1">
+<div class="w-9 h-9 rounded-full bg-sand-100 text-emerald-800 font-headline font-bold text-sm flex items-center justify-center border border-sand-200 shadow-sm">
+          AG
+        </div>
+<div class="hidden lg:flex flex-col">
+<span class="text-body-sm font-semibold text-ink-950 leading-tight">Amina Gadgets</span>
+</div>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN CONTENT CANVAS                                                       -->
+<!-- ========================================================================= -->
+<main class="ml-[264px] pt-[72px] min-h-screen flex-1 p-8 lg:p-10 max-w-[1176px]">
+<!-- Wizard Header Area -->
+<div class="mb-8">
+<!-- Breadcrumb -->
+<div class="flex items-center gap-2 text-body-sm text-ink-500 mb-2">
+<a class="hover:text-emerald-700 transition" href="#">Listings</a>
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+<span class="text-ink-800 font-medium">New listing wizard</span>
+</div>
+<!-- Main Headline -->
+<div class="flex flex-col md:flex-row md:items-baseline md:justify-between gap-3 mb-6">
+<div>
+<h1 class="text-display-lg font-headline text-ink-950 font-bold tracking-tight">Create a listing</h1>
+</div>
+</div>
+<!-- Stepper Component -->
+<div class="w-full bg-sand-0 border border-sand-200 rounded-20 p-5 shadow-warm-card">
+<div class="grid grid-cols-4 relative">
+<!-- Step 1: Item (Completed) -->
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-emerald-700 text-sand-0 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-base font-bold" data-icon="check">check</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-label text-ink-400 uppercase tracking-wider">Step 1</span>
+<span class="text-body-sm font-semibold text-ink-950">Item</span>
+</div>
+</div>
+<!-- Connecting bar 1-2 -->
+<div class="hidden md:block absolute left-[21%] top-4 w-[6%] h-[2px] bg-emerald-700 -translate-y-1/2"></div>
+<!-- Step 2: Item type (Completed) -->
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-emerald-700 text-sand-0 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-base font-bold" data-icon="check">check</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-label text-ink-400 uppercase tracking-wider">Step 2</span>
+<span class="text-body-sm font-semibold text-ink-950">Item type</span>
+</div>
+</div>
+<!-- Connecting bar 2-3 -->
+<div class="hidden md:block absolute left-[46%] top-4 w-[6%] h-[2px] bg-emerald-700 -translate-y-1/2"></div>
+<!-- Step 3: Dispute policy (Active / Current) -->
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-emerald-700 text-sand-0 font-headline font-bold text-sm flex items-center justify-center shrink-0 ring-4 ring-emerald-100 shadow-sm">
+              3
+            </div>
+<div class="flex flex-col">
+<span class="text-xs font-label text-emerald-700 uppercase tracking-wider font-bold">Step 3</span>
+<span class="text-body-sm font-bold text-emerald-800">Dispute policy</span>
+</div>
+</div>
+<!-- Connecting bar 3-4 -->
+<div class="hidden md:block absolute left-[71%] top-4 w-[6%] h-[2px] bg-sand-200 -translate-y-1/2"></div>
+<!-- Step 4: Review (Upcoming) -->
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-sand-100 border border-sand-300 text-ink-400 font-headline font-bold text-sm flex items-center justify-center shrink-0">
+              4
+            </div>
+<div class="flex flex-col">
+<span class="text-xs font-label text-ink-400 uppercase tracking-wider">Step 4</span>
+<span class="text-body-sm font-medium text-ink-400">Review</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ===================================================================== -->
+<!-- TWO-COLUMN WORKFLOW GRID                                              -->
+<!-- Left: Guided Dispute Controls (approx 720px)                          -->
+<!-- Right: Sticky Live Buyer Preview (approx 360px)                       -->
+<!-- ===================================================================== -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- LEFT COLUMN: Forms & Explainer (Span 7 or 8 cols) -->
+<div class="lg:col-span-7 flex flex-col gap-6">
+<!-- Card 1: Read-only Explainer Card -->
+<div class="bg-emerald-50 border border-emerald-100 rounded-20 p-6 md:p-7 shadow-sm">
+<div class="flex items-center gap-3 mb-5">
+<div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-700">
+<!-- Lucide-style 2px line shield icon -->
+<svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="22">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+</svg>
+</div>
+<div>
+<h2 class="text-title font-title text-emerald-950 font-bold leading-tight">How it works for standard items</h2>
+</div>
+</div>
+<!-- 3 Guided Rows -->
+<div class="space-y-4">
+<!-- Row 1 -->
+<div class="flex items-start gap-3.5 bg-sand-0/80 p-3.5 rounded-14 border border-emerald-100/70">
+<div class="w-7 h-7 rounded-full bg-emerald-700 text-sand-0 font-headline font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                1
+              </div>
+<div class="text-body-md text-ink-950 font-medium leading-relaxed">
+                The buyer inspects the item at the door.
+              </div>
+</div>
+<!-- Row 2 -->
+<div class="flex items-start gap-3.5 bg-sand-0/80 p-3.5 rounded-14 border border-emerald-100/70">
+<div class="w-7 h-7 rounded-full bg-emerald-700 text-sand-0 font-headline font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                2
+              </div>
+<div class="text-body-md text-ink-950 font-medium leading-relaxed">
+                If it's right, they enter their delivery code and the money is released to you.
+              </div>
+</div>
+<!-- Row 3 -->
+<div class="flex items-start gap-3.5 bg-sand-0/80 p-3.5 rounded-14 border border-emerald-100/70">
+<div class="w-7 h-7 rounded-full bg-emerald-700 text-sand-0 font-headline font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                3
+              </div>
+<div class="text-body-md text-ink-950 font-medium leading-relaxed">
+                If it's wrong, they reject at the door and the item comes back to you.
+              </div>
+</div>
+</div>
+</div>
+<!-- Card 2: Dispute Reasons Configuration Card -->
+<div class="bg-sand-0 border border-sand-200 rounded-20 p-6 md:p-7 shadow-warm-card">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-title font-title text-ink-950 font-bold">Buyer may reject at the door for:</h3>
+</div>
+<p class="text-body-sm text-ink-500 mb-6">Pick the reasons a buyer can reject at the door.</p>
+<!-- Interactive Reason Rows -->
+<div class="space-y-3">
+<!-- Reason 1: Damaged -->
+<label class="flex items-center justify-between p-4 rounded-14 bg-sand-50 border border-sand-200 hover:border-emerald-500 transition-colors cursor-pointer group">
+<div class="flex items-center gap-3.5">
+<div class="w-8 h-8 rounded-lg bg-sand-100 flex items-center justify-center text-ink-600 group-hover:text-emerald-700 transition">
+<span class="material-symbols-outlined text-[19px]" data-icon="broken_image">broken_image</span>
+</div>
+<div>
+<span class="text-body-md font-semibold text-ink-950 block">Damaged</span>
+<span class="text-xs text-ink-500">Physical cracks, scratches, or shattered components</span>
+</div>
+</div>
+<input checked="" class="w-5 h-5 rounded text-emerald-700 focus:ring-emerald-700 border-sand-300 transition" type="checkbox"/>
+</label>
+<!-- Reason 2: Wrong item -->
+<label class="flex items-center justify-between p-4 rounded-14 bg-sand-50 border border-sand-200 hover:border-emerald-500 transition-colors cursor-pointer group">
+<div class="flex items-center gap-3.5">
+<div class="w-8 h-8 rounded-lg bg-sand-100 flex items-center justify-center text-ink-600 group-hover:text-emerald-700 transition">
+<span class="material-symbols-outlined text-[19px]" data-icon="swap_horiz">swap_horiz</span>
+</div>
+<div>
+<span class="text-body-md font-semibold text-ink-950 block">Wrong item</span>
+<span class="text-xs text-ink-500">Incorrect colorway, model, or mismatched specification</span>
+</div>
+</div>
+<input checked="" class="w-5 h-5 rounded text-emerald-700 focus:ring-emerald-700 border-sand-300 transition" type="checkbox"/>
+</label>
+<!-- Reason 3: Not as described -->
+<label class="flex items-center justify-between p-4 rounded-14 bg-sand-50 border border-sand-200 hover:border-emerald-500 transition-colors cursor-pointer group">
+<div class="flex items-center gap-3.5">
+<div class="w-8 h-8 rounded-lg bg-sand-100 flex items-center justify-center text-ink-600 group-hover:text-emerald-700 transition">
+<span class="material-symbols-outlined text-[19px]" data-icon="rule">rule</span>
+</div>
+<div>
+<span class="text-body-md font-semibold text-ink-950 block">Not as described</span>
+<span class="text-xs text-ink-500">Functional discrepancy or omitted condition faults</span>
+</div>
+</div>
+<input checked="" class="w-5 h-5 rounded text-emerald-700 focus:ring-emerald-700 border-sand-300 transition" type="checkbox"/>
+</label>
+</div>
+<!-- Informational Helper Copy -->
+<div class="mt-6 flex items-start gap-3 p-3.5 rounded-xl bg-sand-100 border border-sand-200">
+<span class="material-symbols-outlined text-emerald-700 text-lg mt-0.5 shrink-0" data-icon="info">info</span>
+<p class="text-body-sm text-ink-600">
+              These reasons show on your <strong class="text-ink-950 font-semibold">Trust Link</strong> so buyers know the rules up front.
+            </p>
+</div>
+</div>
+<!-- Footer Navigation Controls -->
+<div class="flex items-center justify-between pt-4 pb-12">
+<div class="flex items-center gap-3">
+<button class="h-12 px-5 rounded-14 border border-sand-200 bg-sand-0 text-ink-600 hover:text-ink-950 hover:bg-sand-100 font-title font-semibold text-sm inline-flex items-center gap-2 transition duration-150">
+<span class="material-symbols-outlined text-base" data-icon="arrow_back">arrow_back</span>
+<span>Back</span>
+</button>
+<button class="h-12 px-5 rounded-14 text-ink-500 hover:text-ink-950 hover:bg-sand-100 font-title font-semibold text-sm transition duration-150">
+              Save draft
+            </button>
+</div>
+<!-- THE ONE Primary Action Button per screen -->
+<button class="h-[52px] px-8 rounded-14 bg-emerald-700 text-sand-0 font-title font-bold text-base hover:bg-emerald-800 active:scale-[0.98] transition-all duration-150 shadow-sm flex items-center gap-2">
+<span>Next</span>
+<span class="material-symbols-outlined text-lg" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- RIGHT COLUMN: Sticky Live Buyer Preview (Span 5 cols) -->
+<div class="lg:col-span-5 sticky top-24">
+<!-- Preview Indicator Header -->
+<div class="flex items-center gap-2 mb-3">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+<span class="w-2 h-2 rounded-full bg-emerald-500 -ml-3.5"></span>
+<span class="text-xs font-label uppercase tracking-widest font-bold text-ink-500">Live Buyer Preview</span>
+</div>
+<!-- Smartphone Device Frame Mockup (390px scaled container) -->
+<div class="w-full max-w-[390px] mx-auto bg-ink-950 p-3 rounded-[40px] shadow-phone-depth ring-1 ring-ink-950/20">
+<!-- Inner Screen -->
+<div class="bg-sand-50 rounded-[32px] overflow-hidden border border-sand-200/40 text-ink-950 flex flex-col relative">
+<!-- Phone Status Bar & Dynamic Island -->
+<div class="h-10 px-6 pt-2 flex items-center justify-between text-xs font-mono font-bold text-ink-950 z-20">
+<span>9:41</span>
+<!-- Dynamic Island pill -->
+<div class="w-24 h-4 bg-ink-950 rounded-full mx-auto"></div>
+<div class="flex items-center gap-1.5 text-ink-800">
+<span class="material-symbols-outlined text-[14px]" data-icon="signal_cellular_alt">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="wifi">wifi</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="battery_full">battery_full</span>
+</div>
+</div>
+<!-- Buyer View Container Scrollable -->
+<div class="p-4 space-y-4 max-h-[580px] overflow-y-auto">
+<!-- Buyer Checkout Top Header -->
+<div class="flex items-center justify-between border-b border-sand-200 pb-2.5">
+<div class="flex items-center gap-1.5">
+<div class="w-5 h-5 rounded-md bg-emerald-800 flex items-center justify-center">
+<svg class="text-sand-0" fill="none" height="11" viewbox="0 0 24 24" width="11">
+<path d="M4 4L12 20L20 4" stroke="currentColor" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+</div>
+<span class="font-headline font-bold text-sm tracking-tight text-ink-950">Vekro</span>
+</div>
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold"><span class="material-symbols-outlined text-[11px] fill" data-icon="lock" style="font-variation-settings: 'FILL' 1;">lock</span><span>Protected by Vekro Escrow</span></div>
+</div>
+<!-- Product Overview Card -->
+<div class="bg-sand-0 rounded-20 p-3.5 border border-sand-200 shadow-sm flex gap-3.5">
+<div class="w-20 h-20 rounded-xl overflow-hidden bg-sand-100 shrink-0 border border-sand-200">
+<img alt="Clean studio product photograph of iPhone 13 in Midnight" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1XR2ZILDmcrKDgVpfvL7qVCgVOKiww6-emjjI4YOKKHeMXT4AUXIPUvCsJtOzQay8zyIIqY3iTqrFXNh1XKQoBClVgfHXgmLxRzwH7In8RsvMYHbzXF5bv_0TNuSw_z0KfAe6fCbGVTdeJQwgs35U-lFQfB72EnfLayV3Fu43pptc5LES1nYwiQVB_1uI4OaHo0z7GApR2B7ld65hiy0fX5H3f5hx4fqVUltWM983f8h5hPMzxvGBXxng"/>
+</div>
+<div class="flex flex-col justify-between py-0.5">
+<div>
+<h4 class="font-title font-bold text-sm text-ink-950 leading-tight">iPhone 13, 128GB, Midnight</h4>
+</div>
+<div class="font-amount font-bold text-base text-emerald-700">
+                    KES 52,000
+                  </div>
+</div>
+</div>
+<!-- Seller Badge Row -->
+<div class="flex items-center justify-between px-3 py-2 rounded-xl bg-sand-100 border border-sand-200 text-xs">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-emerald-800 text-sand-0 font-bold text-[10px] flex items-center justify-center">
+                    AG
+                  </div>
+<span class="font-semibold text-ink-950">Amina Gadgets</span>
+</div>
+<span class="text-ink-500 font-mono text-[11px]">Kilimani, Nairobi</span>
+</div>
+<!-- Live Highlighted Dispute Policy Card -->
+<div class="bg-sand-0 rounded-20 p-4 border-2 border-emerald-500 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 w-16 h-16 bg-emerald-50 rounded-bl-full -z-0"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 text-emerald-800 mb-2">
+<span class="material-symbols-outlined text-lg fill" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-title font-bold text-xs uppercase tracking-wide">IF SOMETHING'S WRONG</span>
+</div>
+<p class="text-xs font-semibold text-ink-950 leading-snug mb-1">
+                    Reject at the door for:
+                  </p>
+<p class="text-xs text-emerald-800 font-bold mb-3">
+                    Damaged • Wrong item • Not as described
+                  </p>
+<div class="p-2.5 rounded-xl bg-sand-50 border border-sand-200 text-[11px] text-ink-600 leading-relaxed">Check the item before you enter your 6-digit delivery code. Entering it releases the money to the seller.</div>
+</div>
+</div>
+<!-- Live Buyer CTA Button in Preview -->
+<div class="pt-1">
+<button class="w-full h-12 rounded-14 bg-emerald-700 text-sand-0 font-title font-bold text-sm flex items-center justify-center gap-2 shadow-sm cursor-default">
+<span class="material-symbols-outlined text-base fill" data-icon="lock" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span>Pay KES 52,000 with M-Pesa</span>
+</button>
+</div>
+</div>
+<!-- Home indicator bar -->
+<div class="h-5 flex items-center justify-center">
+<div class="w-28 h-1 bg-ink-950/20 rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Explanatory Caption under Mockup -->
+<div class="text-center mt-3.5">
+<p class="text-xs text-ink-500 font-medium">Your money stays in the vault until you accept the item.</p>
+</div>
+</div>
+</div>
+</main>
+</body></html>
