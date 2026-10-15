@@ -1,4 +1,4 @@
-import { act, screen } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
@@ -44,13 +44,26 @@ describe('router', () => {
 
   it('lazy-loads public buyer routes without a session', async () => {
     renderAt('/pay/3fa85f64')
-    expect(await screen.findByRole('heading', { name: "This page isn't ready yet" })).toBeInTheDocument()
-    expect(screen.getByText('Order summary and pay')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Still under construction' })).toBeInTheDocument()
+    expect(screen.getByText(/building the Order summary page/)).toBeInTheDocument()
+  })
+
+  it('sends visitors from / to log in until the landing page ships', async () => {
+    signedInAs(null)
+    const { router } = renderAt('/')
+    await screen.findByRole('heading', { name: 'Log in to Vekro' })
+    expect(router.state.location.pathname).toBe('/login')
+  })
+
+  it('sends a signed-in seller from / to their listings', async () => {
+    signedInAs('seller')
+    const { router } = renderAt('/')
+    await waitFor(() => expect(router.state.location.pathname).toBe('/seller/listings'))
   })
 
   it('sends unbuilt public pages to built pages only', async () => {
-    renderAt('/')
-    await screen.findByRole('heading', { name: "This page isn't ready yet" })
+    renderAt('/help')
+    await screen.findByRole('heading', { name: 'Still under construction' })
     expect(screen.getByRole('link', { name: 'Seller log in' })).toHaveAttribute('href', '/login')
     expect(screen.getByRole('link', { name: 'Start selling' })).toHaveAttribute('href', '/register')
   })
@@ -75,7 +88,7 @@ describe('router', () => {
   it('says the session expired when it ends under a signed-in seller', async () => {
     signedInAs('seller')
     const { router, client } = renderAt('/seller/orders')
-    await screen.findByText('Orders', { selector: 'p' })
+    await screen.findByText(/building the Orders page/)
     signedInAs(null)
     await act(() => client.invalidateQueries({ queryKey: ['session', 'me'] }))
     await screen.findByRole('heading', { name: 'Log in to Vekro' })
@@ -86,21 +99,22 @@ describe('router', () => {
   it('sends anonymous users to the admin login for console routes', async () => {
     signedInAs(null)
     const { router } = renderAt('/admin')
-    await screen.findByText('Support console', { selector: 'p' })
+    await screen.findByText(/building the Support console page/)
     expect(router.state.location.pathname).toBe('/admin/login')
   })
 
   it('lets a seller into seller routes', async () => {
     signedInAs('seller')
     renderAt('/seller')
-    expect(await screen.findByRole('heading', { name: "This page isn't ready yet" })).toBeInTheDocument()
-    expect(screen.getByText('Dashboard', { selector: 'p' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Still under construction' })).toBeInTheDocument()
+    expect(screen.getByText(/building the Dashboard page/)).toBeInTheDocument()
+    expect(document.title).toBe('Dashboard · Vekro')
   })
 
   it('keeps the seller nav on unbuilt seller pages and points back to listings', async () => {
     signedInAs('seller')
     renderAt('/seller/analytics')
-    await screen.findByRole('heading', { name: "This page isn't ready yet" })
+    await screen.findByRole('heading', { name: 'Still under construction' })
     expect(screen.getByRole('link', { name: 'Go to your listings' })).toHaveAttribute(
       'href',
       '/seller/listings',

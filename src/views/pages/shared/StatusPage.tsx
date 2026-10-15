@@ -16,8 +16,6 @@ interface StatusPageProps {
   secondary?: Action
   /** Large mark above the title: a status code ("404") or an icon tile. */
   illustration?: ReactNode
-  /** Small label above the title, e.g. the name of the page that isn't ready. */
-  eyebrow?: string
   /** Browser tab title; defaults to the page title. */
   documentTitle?: string
   /**
@@ -34,7 +32,6 @@ export function StatusPage({
   primary,
   secondary,
   illustration,
-  eyebrow,
   documentTitle,
   fullPage = true,
 }: StatusPageProps) {
@@ -54,7 +51,6 @@ export function StatusPage({
         </Link>
       )}
       {illustration}
-      {eyebrow && <p className="type-label text-text-muted">{eyebrow}</p>}
       <h1 id="status-title" className="type-headline max-w-md text-balance text-text">
         {title}
       </h1>

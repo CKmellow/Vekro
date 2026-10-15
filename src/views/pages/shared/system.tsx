@@ -1,4 +1,4 @@
-import { Hammer } from 'lucide-react'
+import { ConstructionScene } from '@/views/components/ui/ConstructionScene'
 import { StatusPage } from './StatusPage'
 
 /** Actions that always lead to a built page, for visitors outside the seller area. */
@@ -48,20 +48,12 @@ export function NotReadyPage({ name, area }: { name: string; area: NotReadyArea 
   return (
     <StatusPage
       fullPage={area === 'public'}
-      illustration={
-        <span
-          aria-hidden="true"
-          className="grid size-14 place-items-center rounded-md bg-sand-100 text-ink-600"
-        >
-          <Hammer className="size-7" />
-        </span>
-      }
-      eyebrow={name}
-      title="This page isn't ready yet"
+      illustration={<ConstructionScene className="mb-2" />}
+      title="Still under construction"
       body={
         area === 'seller'
-          ? "We're still building it. Your listings and payout details are saved."
-          : "We're still building it. Please check back soon."
+          ? `We're building the ${name} page. Your listings and payout details are saved, so you can keep selling in the meantime.`
+          : `We're building the ${name} page. Check back soon.`
       }
       documentTitle={name}
       {...NOT_READY_ACTIONS[area]}
