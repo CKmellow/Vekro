@@ -29,6 +29,19 @@
   --duration-state: 220ms;
   --duration-sheet: 360ms;
   --duration-moment: 600ms;
+
+  /* Wrong code: the row shakes once. The reduced-motion rule below cancels it. */
+  --animate-shake: shake 360ms var(--ease-standard) 1;
+  @keyframes shake {
+    20%,
+    60% {
+      transform: translateX(-6px);
+    }
+    40%,
+    80% {
+      transform: translateX(6px);
+    }
+  }
 }
 
 /* Composite type styles: one class per DESIGN.md typography token. */
