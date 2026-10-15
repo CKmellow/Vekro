@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vekro Seller Portal - Authentication Error States</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@100..900&amp;family=DM+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary-fixed-dim": "#ffb94d",
+            "on-background": "#181d1a",
+            "surface-container-high": "#e5e9e4",
+            "emerald-600": "#0C8A5F",
+            "on-tertiary": "#ffffff",
+            "on-secondary": "#ffffff",
+            "surface-container": "#ebefea",
+            "sand-0": "#FFFFFF",
+            "emerald-50": "#E9F8F1",
+            "on-error-container": "#93000a",
+            "error": "#ba1a1a",
+            "ink-800": "#1B2824",
+            "primary": "#005438",
+            "on-tertiary-fixed-variant": "#77302f",
+            "surface": "#f7faf5",
+            "sand-200": "#EAE4D4",
+            "emerald-800": "#084D3B",
+            "on-tertiary-container": "#ffd0cd",
+            "on-secondary-fixed": "#291800",
+            "error-container": "#ffdad6",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed": "#ffdad7",
+            "coral-600": "#C93238",
+            "inverse-surface": "#2d312e",
+            "sand-300": "#D8D0BA",
+            "on-secondary-container": "#6a4500",
+            "lake-50": "#E8F1FD",
+            "plum-500": "#6B4FD8",
+            "on-surface": "#181d1a",
+            "on-secondary-fixed-variant": "#624000",
+            "ink-500": "#5E6D67",
+            "lake-600": "#1F66C8",
+            "surface-bright": "#f7faf5",
+            "plum-700": "#4F36B0",
+            "emerald-glow": "#3DEBA6",
+            "tertiary-fixed-dim": "#ffb3af",
+            "emerald-950": "#04251C",
+            "ink-600": "#44524D",
+            "sand-50": "#FBF9F4",
+            "plum-50": "#EFEBFC",
+            "on-surface-variant": "#3f4943",
+            "lake-500": "#2F80ED",
+            "coral-500": "#E5484D",
+            "coral-50": "#FDECEC",
+            "ink-400": "#8A9792",
+            "on-tertiary-fixed": "#3e0408",
+            "saffron-50": "#FFF6E0",
+            "inverse-on-surface": "#eef2ed",
+            "on-error": "#ffffff",
+            "ink-950": "#0B1512",
+            "tertiary": "#793130",
+            "saffron-100": "#FFE8B3",
+            "primary-fixed-dim": "#82d7ae",
+            "emerald-900": "#06362A",
+            "saffron-500": "#F2A516",
+            "on-primary": "#ffffff",
+            "surface-container-highest": "#e0e4de",
+            "inverse-primary": "#82d7ae",
+            "surface-container-low": "#f1f5ef",
+            "on-primary-fixed": "#002114",
+            "primary-container": "#0a6e4c",
+            "surface-dim": "#d7dbd6",
+            "sand-100": "#F5F1E7",
+            "primary-fixed": "#9ef4c9",
+            "outline": "#6f7a72",
+            "saffron-600": "#B87A00",
+            "on-primary-container": "#97edc2",
+            "surface-variant": "#e0e4de",
+            "secondary-container": "#fdaf23",
+            "on-primary-fixed-variant": "#005237",
+            "background": "#f7faf5",
+            "emerald-700": "#0A6E4C",
+            "emerald-100": "#CDEFE0",
+            "tertiary-container": "#974846",
+            "outline-variant": "#bec9c1",
+            "emerald-500": "#12A672",
+            "secondary-fixed": "#ffddb2",
+            "surface-tint": "#056c4a",
+            "secondary": "#815500",
+            "emerald-400": "#2CC48A"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1.25rem",
+            "3xl": "1.75rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            "otp": ["JetBrains Mono"],
+            "label": ["DM Sans"],
+            "mono": ["JetBrains Mono"],
+            "display-xl": ["Bricolage Grotesque"],
+            "display-lg": ["Bricolage Grotesque"],
+            "amount": ["Bricolage Grotesque"],
+            "body-sm": ["DM Sans"],
+            "body-lg": ["DM Sans"],
+            "headline": ["Bricolage Grotesque"],
+            "body-md": ["DM Sans"],
+            "title": ["Bricolage Grotesque"]
+          },
+          fontSize: {
+            "otp": ["44px", { lineHeight: "52px", fontWeight: "700" }],
+            "label": ["12px", { lineHeight: "16px", letterSpacing: "0.08em", fontWeight: "700" }],
+            "mono": ["14px", { lineHeight: "20px", fontWeight: "600" }],
+            "display-xl": ["44px", { lineHeight: "48px", letterSpacing: "-0.03em", fontWeight: "800" }],
+            "display-lg": ["34px", { lineHeight: "38px", letterSpacing: "-0.025em", fontWeight: "800" }],
+            "amount": ["40px", { lineHeight: "44px", letterSpacing: "-0.03em", fontWeight: "800" }],
+            "body-sm": ["13px", { lineHeight: "18px", fontWeight: "500" }],
+            "body-lg": ["17px", { lineHeight: "26px", fontWeight: "400" }],
+            "headline": ["24px", { lineHeight: "30px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "body-md": ["15px", { lineHeight: "22px", fontWeight: "400" }],
+            "title": ["18px", { lineHeight: "24px", letterSpacing: "-0.01em", fontWeight: "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-1 {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    /* Vault highlight styling */
+    .vault-inner-border {
+      box-shadow: inset 0 1px 1px 0 rgba(61, 235, 166, 0.25), 0 20px 40px -15px rgba(4, 37, 28, 0.6);
+    }
+    .card-soft-shadow {
+      box-shadow: 0 4px 6px -1px rgba(27, 40, 36, 0.04), 0 20px 30px -4px rgba(27, 40, 36, 0.07);
+    }
+  </style>
+</head>
+<body class="bg-sand-50 text-ink-800 antialiased selection:bg-emerald-100 selection:text-emerald-900 min-h-screen flex flex-col font-body-md text-body-md">
+<!-- Main Viewport Layout: 1440px target split layout (Left 55% / Right 45%) -->
+<main class="flex-1 w-full flex flex-col lg:flex-row min-h-screen">
+<!-- LEFT 55% PANEL: Emerald Vault Gradient -->
+<section class="lg:w-[55%] relative flex flex-col justify-between p-8 sm:p-12 lg:p-16 overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-800 text-sand-0">
+<!-- Ambient Radial Glow and Texture Accents -->
+<div class="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-emerald-glow opacity-15 blur-3xl pointer-events-none"></div>
+<div class="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-emerald-600 opacity-10 blur-3xl pointer-events-none"></div>
+<div class="absolute inset-0 bg-[radial-gradient(#3DEBA6_1px,transparent_1px)] [background-size:24px_24px] opacity-5 pointer-events-none"></div>
+<!-- Top Section: Brand Lockup & CBK Regulatory Pill -->
+<div class="relative z-10 flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-emerald-700 flex items-center justify-center shadow-inner"><svg fill="none" height="20" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.75" viewbox="0 0 24 24" width="20"><path d="M4 4l8 16L20 4"></path></svg></div>
+<span class="font-headline text-headline text-sand-0 font-bold tracking-tight text-[26px]">Vekro</span>
+</div>
+</div>
+<!-- Middle Section: Hero Headline, Reassurance, and Mini Vault Card -->
+<div class="relative z-10 my-10 lg:my-auto max-w-xl">
+<h1 class="font-display-xl text-display-xl font-extrabold tracking-tight text-sand-0 mb-3">
+          Welcome back
+        </h1>
+<p class="font-body-lg text-body-lg text-emerald-100/90 mb-10 max-w-lg leading-relaxed">
+          Your money is safe in the vault. Let's get your orders moving.
+        </p>
+<!-- Mini Vault Card (28px radius, Emerald-900 surface, inner glow) -->
+<div class="relative rounded-[28px] bg-emerald-900/90 p-7 border border-emerald-glow/20 vault-inner-border backdrop-blur-md">
+<!-- Card Header & Status -->
+<div class="flex items-center justify-between pb-4 border-b border-emerald-800/80">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-emerald-800 flex items-center justify-center border border-emerald-glow/30 text-emerald-glow">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+<div>
+<span class="font-mono text-mono text-sand-200 block tracking-tight">VK-7K3P9Q</span>
+<span class="font-label text-[10px] text-emerald-400 font-bold tracking-wider uppercase">PROTECTED ESCROW</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-800/80 border border-emerald-500/40 text-emerald-glow font-body-sm text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-glow"></span>
+              Paid, ready to dispatch
+            </span>
+</div>
+<!-- Held Amount Display -->
+<div class="">
+<span class="font-label text-[11px] tracking-widest text-emerald-400 font-bold block mb-1 uppercase">AMOUNT HELD</span>
+<div class="font-amount text-amount text-sand-0 font-extrabold tracking-tight flex items-baseline gap-2">
+              KES 52,000
+            </div>
+</div>
+<!-- Order Item & Location -->
+<!-- Financial Breakdown Note -->
+</div>
+</div>
+<!-- Footer Trust Marks -->
+</section>
+<!-- RIGHT 45% PANEL: Warm Sand (#FBF9F4) with Side-by-Side Form Cards -->
+<section class="lg:w-[45%] bg-sand-50 p-6 sm:p-10 lg:p-12 flex flex-col justify-center items-center overflow-y-auto">
+<div class="w-full max-w-5xl">
+<!-- Header Note for Screen Variant Demonstration -->
+<!-- 2 Side-by-Side Form Cards Container (Grid) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+<!-- ==================== CARD A: WRONG DETAILS ==================== -->
+<div class="flex flex-col">
+<!-- Header Label Chip -->
+<div class="mb-2 self-start">
+<span class="font-label text-[11px] font-bold tracking-wider text-ink-500 uppercase bg-sand-200/50 px-2.5 py-1 rounded-full border border-sand-300/60">
+                WRONG DETAILS
+              </span>
+</div>
+<!-- Form Card A -->
+<div class="w-full rounded-[20px] bg-sand-0 p-6 card-soft-shadow border border-sand-200/70 flex flex-col justify-between">
+<div>
+<!-- Headline & Subline -->
+<div class="mb-5">
+<h3 class="font-headline text-headline text-ink-800 font-bold mb-1">
+                    Log in to Vekro
+                  </h3>
+<p class="font-body-sm text-body-sm text-ink-500">
+                    Enter your phone number to access your seller vault.
+                  </p>
+</div>
+<!-- Coral Tint Error Banner -->
+<div class="mb-5 p-3.5 rounded-xl bg-coral-50 border border-coral-500/20 flex items-start gap-2.5">
+<span class="material-symbols-outlined text-coral-600 text-[20px] shrink-0 mt-0.5">error</span>
+<p class="text-[13px] leading-snug font-medium text-coral-600">
+                    Phone or password doesn't match. Check them and try again.
+                  </p>
+</div>
+<!-- Form Inputs -->
+<form class="space-y-4" onsubmit="event.preventDefault()">
+<!-- Phone Number Field -->
+<div>
+<label class="block font-label text-[11px] font-bold tracking-wider text-ink-800 uppercase mb-1.5">
+                      PHONE NUMBER
+                    </label>
+<div class="relative flex items-center h-[56px] rounded-[14px] border border-sand-200 bg-sand-0 px-3.5 focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-50 transition-all">
+<!-- Flag-free Chip -->
+<span class="font-mono text-mono text-ink-600 font-bold pr-2.5 mr-2.5 border-r border-sand-200">
+                        +254
+                      </span>
+<input class="w-full font-mono text-mono text-ink-800 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none" readonly="" type="text" value="722 118 904"/>
+<!-- Subtle Status Icon -->
+<span class="material-symbols-outlined text-ink-400 text-[20px]">check_circle</span>
+</div>
+</div>
+<!-- Password Field (Error State) -->
+<div>
+<label class="block font-label text-[11px] font-bold tracking-wider text-ink-800 uppercase mb-1.5">
+                      PASSWORD
+                    </label>
+<div class="relative flex items-center h-[56px] rounded-[14px] border-2 border-coral-500 bg-sand-0 px-3.5 ring-2 ring-coral-50 transition-all">
+<input class="w-full font-mono text-mono text-ink-800 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none tracking-widest" type="password" value="Password123"/>
+<button class="text-coral-600 hover:text-coral-500 p-1" title="Toggle visibility" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+<!-- Helper Error Text Underneath -->
+</div>
+<!-- Forgot Password Link -->
+<!-- Primary Button 'Log in' -->
+<button class="w-full h-[52px] rounded-[14px] bg-emerald-700 hover:bg-emerald-800 text-sand-0 font-body-md font-bold flex items-center justify-center gap-2 shadow-sm active:scale-[0.99] transition-all" type="submit">
+<span>Log in</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</form>
+</div>
+<!-- Card Footer Note -->
+<div class="mt-6 pt-4 border-t border-sand-100 text-center">
+<span class="font-body-sm text-body-sm text-ink-500">
+                  New here? 
+                  <a class="text-emerald-700 font-bold hover:underline" href="#">Create an account</a>
+</span>
+</div>
+</div>
+</div>
+<!-- ==================== CARD B: TOO MANY ATTEMPTS ==================== -->
+<div class="flex flex-col">
+<!-- Header Label Chip -->
+<div class="mb-2 self-start">
+<span class="font-label text-[11px] font-bold tracking-wider text-ink-500 uppercase bg-sand-200/50 px-2.5 py-1 rounded-full border border-sand-300/60">
+                TOO MANY ATTEMPTS
+              </span>
+</div>
+<!-- Form Card B -->
+<div class="w-full rounded-[20px] bg-sand-0 p-6 card-soft-shadow border border-sand-200/70 flex flex-col justify-between">
+<div>
+<!-- Headline & Subline -->
+<div class="mb-5">
+<h3 class="font-headline text-headline text-ink-800 font-bold mb-1">
+                    Log in to Vekro
+                  </h3>
+<p class="font-body-sm text-body-sm text-ink-500">
+                    Enter your phone number to access your seller vault.
+                  </p>
+</div>
+<!-- Saffron Tint Banner with 56px Countdown Ring -->
+<div class="mb-5 p-3.5 rounded-xl bg-saffron-50 border border-saffron-100 flex items-center gap-3.5">
+<!-- 56px Circular Countdown Ring -->
+<div class="relative w-14 h-14 shrink-0 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90 transform" viewbox="0 0 56 56">
+<circle cx="28" cy="28" fill="none" r="23" stroke="#FFE8B3" stroke-width="3.5"></circle>
+<circle cx="28" cy="28" fill="none" r="23" stroke="#F2A516" stroke-dasharray="144.5" stroke-dashoffset="35" stroke-linecap="round" stroke-width="3.5"></circle>
+</svg>
+<span class="absolute font-mono text-[11px] font-bold text-saffron-600">
+                      04:59
+                    </span>
+</div>
+<div>
+<h4 class="font-body-sm font-bold text-saffron-600 mb-0.5">Too many attempts.</h4>
+<p class="text-[12px] leading-snug font-medium text-saffron-600">
+                      For your security, try again in 5 minutes.
+                    </p>
+</div>
+</div>
+<!-- Form Inputs (Disabled States) -->
+<form class="space-y-4" onsubmit="event.preventDefault()">
+<!-- Phone Number Field (Disabled) -->
+<div>
+<label class="block font-label text-[11px] font-bold tracking-wider text-ink-400 uppercase mb-1.5">
+                      PHONE NUMBER
+                    </label>
+<div class="relative flex items-center h-[56px] rounded-[14px] bg-sand-100 border border-sand-200 px-3.5 opacity-80 cursor-not-allowed">
+<span class="font-mono text-mono text-ink-400 font-bold pr-2.5 mr-2.5 border-r border-sand-200">
+                        +254
+                      </span>
+<input class="w-full font-mono text-mono text-ink-400 bg-transparent border-0 p-0 focus:ring-0 cursor-not-allowed" disabled="" type="text" value="722 118 904"/>
+<span class="material-symbols-outlined text-ink-400 text-[18px]">lock</span>
+</div>
+</div>
+<!-- Password Field (Disabled) -->
+<div>
+<label class="block font-label text-[11px] font-bold tracking-wider text-ink-400 uppercase mb-1.5">
+                      PASSWORD
+                    </label>
+<div class="relative flex items-center h-[56px] rounded-[14px] bg-sand-100 border border-sand-200 px-3.5 opacity-80 cursor-not-allowed">
+<input class="w-full font-mono text-mono text-ink-400 bg-transparent border-0 p-0 focus:ring-0 cursor-not-allowed tracking-widest" disabled="" type="password" value="Password123"/>
+<span class="material-symbols-outlined text-ink-400 text-[20px]">visibility_off</span>
+</div>
+</div>
+<!-- Disabled Forgot Password Alignment Spacer -->
+<!-- Primary Button 'Log in' (Disabled) -->
+<button class="w-full h-[52px] rounded-[14px] bg-emerald-700 opacity-40 text-sand-0 font-body-md font-bold flex items-center justify-center gap-2 cursor-not-allowed" disabled="" type="button">
+<span>Log in</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</form>
+</div>
+<!-- Security Channel Badge & Footer -->
+<div class="mt-5 space-y-3">
+<div class="pt-3 border-t border-sand-100 text-center">
+<span class="font-body-sm text-body-sm text-ink-500">
+                    New here? 
+                    <a class="text-emerald-700 font-bold hover:underline" href="#">Create an account</a>
+</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Minimal Standard Footer from Shared Components JSON -->
+<footer class="w-full bg-sand-50 border-t border-sand-200/50">
+<div class="w-full max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+<p class="font-body-sm text-body-sm text-ink-500">© 2025 Vekro Escrow Ltd.</p>
+<div class="flex flex-wrap items-center gap-6">
+<a class="font-body-sm text-body-sm text-ink-500 hover:text-ink-800 transition-colors" href="#">Security Architecture</a>
+<a class="font-body-sm text-body-sm text-ink-500 hover:text-ink-800 transition-colors" href="#">Terms of Service</a>
+<a class="font-body-sm text-body-sm text-ink-500 hover:text-ink-800 transition-colors" href="#">Privacy Policy</a>
+<a class="font-body-sm text-body-sm text-ink-500 hover:text-ink-800 transition-colors" href="#">Contact Support</a>
+</div>
+</div>
+</footer>
+</body></html>

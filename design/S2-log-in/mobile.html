@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Seller Log In | Vekro</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "ink-950": "#0B1512",
+            "sand-0": "#FFFFFF",
+            "emerald-900": "#06362A",
+            "emerald-800": "#084D3B",
+            "plum-700": "#4F36B0",
+            "surface-container-highest": "#e0e4de",
+            "on-error-container": "#93000a",
+            "sand-100": "#F5F1E7",
+            "lake-600": "#1F66C8",
+            "inverse-primary": "#82d7ae",
+            "tertiary-fixed-dim": "#ffb3af",
+            "primary-fixed-dim": "#82d7ae",
+            "secondary-fixed-dim": "#ffb94d",
+            "surface-dim": "#d7dbd6",
+            "on-tertiary-fixed": "#3e0408",
+            "on-tertiary": "#ffffff",
+            "primary": "#005438",
+            "inverse-on-surface": "#eef2ed",
+            "saffron-50": "#FFF6E0",
+            "emerald-50": "#E9F8F1",
+            "plum-50": "#EFEBFC",
+            "surface-container-low": "#f1f5ef",
+            "sand-50": "#FBF9F4",
+            "outline": "#6f7a72",
+            "secondary-fixed": "#ffddb2",
+            "background": "#f7faf5",
+            "emerald-100": "#CDEFE0",
+            "lake-500": "#2F80ED",
+            "saffron-500": "#F2A516",
+            "on-secondary": "#ffffff",
+            "on-background": "#181d1a",
+            "inverse-surface": "#2d312e",
+            "plum-500": "#6B4FD8",
+            "surface-variant": "#e0e4de",
+            "saffron-600": "#B87A00",
+            "emerald-700": "#0A6E4C",
+            "emerald-500": "#12A672",
+            "ink-800": "#1B2824",
+            "on-error": "#ffffff",
+            "on-secondary-container": "#6a4500",
+            "on-primary-container": "#97edc2",
+            "ink-400": "#8A9792",
+            "sand-300": "#D8D0BA",
+            "on-secondary-fixed-variant": "#624000",
+            "tertiary-container": "#974846",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed": "#002114",
+            "emerald-950": "#04251C",
+            "on-primary": "#ffffff",
+            "primary-container": "#0a6e4c",
+            "error-container": "#ffdad6",
+            "on-primary-fixed-variant": "#005237",
+            "secondary": "#815500",
+            "on-secondary-fixed": "#291800",
+            "ink-500": "#5E6D67",
+            "error": "#ba1a1a",
+            "tertiary": "#793130",
+            "emerald-400": "#2CC48A",
+            "surface-tint": "#056c4a",
+            "saffron-100": "#FFE8B3",
+            "on-tertiary-fixed-variant": "#77302f",
+            "emerald-glow": "#3DEBA6",
+            "on-surface": "#181d1a",
+            "surface-container": "#ebefea",
+            "surface-bright": "#f7faf5",
+            "ink-600": "#44524D",
+            "coral-600": "#C93238",
+            "surface-container-high": "#e5e9e4",
+            "secondary-container": "#fdaf23",
+            "on-tertiary-container": "#ffd0cd",
+            "surface": "#f7faf5",
+            "primary-fixed": "#9ef4c9",
+            "tertiary-fixed": "#ffdad7",
+            "on-surface-variant": "#3f4943",
+            "outline-variant": "#bec9c1",
+            "lake-50": "#E8F1FD",
+            "coral-500": "#E5484D",
+            "emerald-600": "#0C8A5F",
+            "sand-200": "#EAE4D4",
+            "coral-50": "#FDECEC"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1.5rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "4px",
+            "space-lg": "24px",
+            "margin": "20px",
+            "gutter": "16px",
+            "space-xl": "40px",
+            "space-sm": "8px",
+            "space-md": "16px"
+          },
+          "fontFamily": {
+            "body-md": ["DM Sans", "sans-serif"],
+            "body-sm": ["DM Sans", "sans-serif"],
+            "display-lg": ["Bricolage Grotesque", "sans-serif"],
+            "body-lg": ["DM Sans", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"],
+            "label": ["DM Sans", "sans-serif"],
+            "title": ["Bricolage Grotesque", "sans-serif"],
+            "headline": ["Bricolage Grotesque", "sans-serif"],
+            "amount": ["Bricolage Grotesque", "sans-serif"],
+            "otp": ["JetBrains Mono", "monospace"],
+            "display-xl": ["Bricolage Grotesque", "sans-serif"]
+          },
+          "fontSize": {
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "display-lg": ["34px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800" }],
+            "body-lg": ["17px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "mono": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }],
+            "title": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "amount": ["40px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "otp": ["44px", { "lineHeight": "52px", "fontWeight": "700" }],
+            "display-xl": ["44px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-sand-50 font-body-md text-ink-950 antialiased min-h-screen flex items-center justify-center p-0 sm:p-4 selection:bg-emerald-100 selection:text-emerald-950">
+<!-- Mobile Viewport Container (Strictly 390px max-width mobile design) -->
+<main class="w-full max-w-[390px] min-h-screen sm:min-h-[844px] bg-sand-50 relative flex flex-col overflow-hidden shadow-2xl sm:rounded-[36px]">
+<!-- 1. Emerald Header Strip (approx 200px) -->
+<header class="relative w-full h-[210px] bg-gradient-to-br from-emerald-950 to-emerald-800 px-space-md pt-space-md pb-12 flex flex-col justify-between overflow-hidden shrink-0">
+<!-- Ambient Glow Top-Right -->
+<div aria-hidden="true" class="pointer-events-none absolute -top-12 -right-12 w-48 h-48 rounded-full bg-emerald-glow opacity-[0.18] blur-3xl"></div>
+<!-- Top Bar: Shared Component Implementation matching JSON specs -->
+<div class="flex justify-between items-center w-full z-10">
+<!-- Leading Icon: arrow_back with JSON interaction tokens -->
+<button aria-label="Go back" class="p-2 -ml-2 rounded-full text-sand-0 hover:bg-emerald-800/40 active:scale-95 transition-all duration-150 inline-flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<!-- Brand Cluster: Logo Mark + Wordmark -->
+<div class="flex items-center gap-2">
+<!-- Logo Mark: Emerald rounded square with crisp white two-stroke V -->
+<div class="w-7 h-7 rounded-lg bg-emerald-700 flex items-center justify-center shadow-inner">
+<svg class="w-4 h-4 text-sand-0" fill="none" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 4.5L8 12.5L13 4.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+</div>
+<!-- Headline text per JSON specification -->
+<span class="font-title text-title font-bold text-sand-0 tracking-tight">Vekro</span>
+</div>
+<!-- Trailing Icon: help_outline per JSON specifications -->
+<button aria-label="Help" class="p-2 -mr-2 rounded-full text-sand-0 hover:bg-emerald-800/40 active:scale-95 transition-all duration-150 inline-flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[22px]">help_outline</span>
+</button>
+</div>
+<!-- Header Content: Welcome Back & Subtitle -->
+<div class="relative z-10 mt-1">
+<h1 class="font-display-lg text-[32px] leading-tight font-extrabold text-sand-0 tracking-tight">
+          Welcome back
+        </h1>
+<p class="font-body-sm text-[14px] leading-snug text-sand-200 mt-1">
+          Log in to manage your orders and payouts.
+        </p>
+</div>
+</header>
+<!-- 2. White Form Card Overlapping Header -->
+<div class="relative z-20 -mt-10 px-margin flex-1 pb-10 flex flex-col">
+<div class="w-full bg-sand-0 rounded-[28px] p-6 flex flex-col gap-5 border border-sand-200/50" style="box-shadow: 0 1px 2px rgba(11,21,18,0.04), 0 8px 24px rgba(11,21,18,0.06);">
+<!-- a. Plum-tint Banner -->
+<div class="bg-plum-50 text-plum-700 rounded-xl px-3.5 py-3 flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[19px] shrink-0 mt-0.5" data-icon="shield">shield</span>
+<p class="font-body-sm text-[13px] leading-tight font-medium text-plum-700">
+            This area is for sellers. Log in with a seller account.
+          </p>
+</div>
+<!-- b. Form Title -->
+<div class="pt-0.5">
+<h2 class="font-title text-[24px] leading-7 font-bold text-ink-950 tracking-tight">
+            Log in to Vekro
+          </h2>
+</div>
+<!-- Form Elements -->
+<form class="flex flex-col gap-4" onsubmit="event.preventDefault();">
+<!-- c. PHONE NUMBER Field -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label text-label uppercase tracking-wider text-ink-500 font-bold" for="seller-phone">
+              PHONE NUMBER
+            </label>
+<div class="h-[56px] w-full rounded-[14px] border border-sand-200 bg-sand-0 flex items-center px-4 transition-colors focus-within:border-emerald-700 focus-within:ring-1 focus-within:ring-emerald-700">
+<!-- Prefix chip with soft neutral dot -->
+<div class="flex items-center gap-1.5 pr-2.5 border-r border-sand-200 select-none">
+<span class="w-1.5 h-1.5 rounded-full bg-ink-400"></span>
+<span class="font-mono text-mono text-ink-800">+254</span>
+</div>
+<!-- Number input styled in JetBrains Mono -->
+<input autocomplete="tel-national" class="flex-1 min-w-0 bg-transparent border-0 pl-3 pr-2 py-0 font-mono text-mono font-semibold text-ink-950 focus:ring-0 focus:outline-none" id="seller-phone" type="tel" value="722 118 904"/>
+<!-- Trailing checkmark icon -->
+<div class="shrink-0 w-5 h-5 rounded-full bg-emerald-50 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px] text-emerald-700 font-bold" data-icon="check">check</span>
+</div>
+</div>
+</div>
+<!-- d. PASSWORD Field -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label text-label uppercase tracking-wider text-ink-500 font-bold" for="seller-password">
+              PASSWORD
+            </label>
+<div class="h-[56px] w-full rounded-[14px] border border-sand-200 bg-sand-0 flex items-center justify-between px-4 transition-colors focus-within:border-emerald-700 focus-within:ring-1 focus-within:ring-emerald-700">
+<!-- Masked Password value -->
+<input autocomplete="current-password" class="w-full bg-transparent border-0 p-0 font-mono text-ink-950 tracking-widest text-[16px] focus:ring-0 focus:outline-none" id="seller-password" type="password" value="secretpassword123"/>
+<!-- Trailing eye visibility toggle icon -->
+<button aria-label="Toggle password visibility" class="shrink-0 p-1 rounded hover:bg-sand-100 text-ink-500 active:scale-95 transition-all duration-150 inline-flex items-center justify-center" onclick="const pass = document.getElementById('seller-password'); const icon = this.querySelector('span'); if (pass.type === 'password') { pass.type = 'text'; icon.textContent = 'visibility_off'; } else { pass.type = 'password'; icon.textContent = 'visibility'; }" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<!-- e. Primary Action Button -->
+<button class="mt-2 w-full h-[52px] rounded-[14px] bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition-all duration-150 text-sand-0 font-title text-[17px] font-bold flex items-center justify-center gap-1.5 shadow-sm" type="submit">
+<span>Log in</span>
+<span class="text-lg leading-none select-none">→</span>
+</button>
+</form>
+<!-- f. Account Link -->
+<div class="text-center pt-1 pb-1">
+<p class="font-body-md text-[14px] text-ink-500">
+            New here? 
+            <a class="text-emerald-700 font-bold hover:underline ml-0.5 transition-colors" href="#signup">
+              Create an account
+            </a>
+</p>
+</div>
+</div>
+</div>
+</main>
+</body></html>
