@@ -1,12 +1,14 @@
 import type { ButtonHTMLAttributes } from 'react'
 import { cn } from '@/lib/cn'
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost'
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'destructive' | 'ghost'
 
 const variants: Record<ButtonVariant, string> = {
   primary: 'h-13 bg-primary text-on-primary shadow-highlight hover:bg-primary-hover active:bg-emerald-900',
   secondary: 'h-13 border border-border bg-surface text-text hover:bg-sand-100 active:bg-sand-200',
   danger: 'h-13 border border-coral-500 bg-surface text-coral-600 hover:bg-coral-50 active:bg-coral-50',
+  /** Solid coral: only for the final step of a confirmation. */
+  destructive: 'h-13 bg-coral-600 text-sand-0 hover:brightness-95 active:brightness-90',
   ghost: 'h-11 bg-transparent text-ink-600 hover:bg-sand-100 active:bg-sand-200',
 }
 

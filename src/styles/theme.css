@@ -42,6 +42,17 @@
       transform: translateX(6px);
     }
   }
+
+  /* Skeleton: warm sand shimmer, 1.4s. Reduced motion leaves static sand blocks. */
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
 }
 
 /* Composite type styles: one class per DESIGN.md typography token. */
