@@ -55,7 +55,7 @@ describe('router', () => {
   it('sends anonymous users to the seller login with a return URL', async () => {
     signedInAs(null)
     const { router } = renderAt('/seller/orders?segment=held')
-    await screen.findByRole('heading', { name: 'Log in' })
+    await screen.findByRole('heading', { name: 'Log in to Vekro' })
     expect(router.state.location.pathname).toBe('/login')
     expect(router.state.location.search).toBe(
       `?returnTo=${encodeURIComponent('/seller/orders?segment=held')}`,
@@ -68,7 +68,7 @@ describe('router', () => {
     await screen.findByRole('heading', { name: 'Orders' })
     signedInAs(null)
     await act(() => client.invalidateQueries({ queryKey: ['session', 'me'] }))
-    await screen.findByRole('heading', { name: 'Log in' })
+    await screen.findByRole('heading', { name: 'Log in to Vekro' })
     expect(new URLSearchParams(router.state.location.search).get('reason')).toBe('expired')
     expect(new URLSearchParams(router.state.location.search).get('returnTo')).toBe('/seller/orders')
   })
