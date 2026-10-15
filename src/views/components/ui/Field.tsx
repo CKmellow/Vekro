@@ -55,11 +55,11 @@ export function Field({
           id={messageId}
           role={error ? 'alert' : undefined}
           className={cn(
-            'type-body-sm flex items-center gap-1.5',
+            'type-body-sm flex items-start gap-1.5',
             error ? 'text-coral-600' : 'text-text-muted',
           )}
         >
-          {error && <CircleAlert aria-hidden="true" className="size-4 shrink-0" />}
+          {error && <CircleAlert aria-hidden="true" className="mt-px size-4 shrink-0" />}
           {message}
         </p>
       )}
