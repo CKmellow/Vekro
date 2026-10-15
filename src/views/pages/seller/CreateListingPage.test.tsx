@@ -34,7 +34,7 @@ describe('S7 step 1', () => {
     expect(preview).toHaveTextContent('iPhone 13, 128GB, Midnight')
     expect(preview).toHaveTextContent('KES 52,000')
     await user.click(screen.getAllByRole('button', { name: 'Next' })[0] as HTMLElement)
-    expect(await screen.findByRole('heading', { name: 'Item type' })).toBeInTheDocument()
+    expect(await screen.findByRole('radio', { name: /^Standard item/ })).toBeChecked()
   })
 
   it('saves the draft on this device and restores it with a toast', async () => {
@@ -46,5 +46,21 @@ describe('S7 step 1', () => {
     renderPage()
     expect(await screen.findByLabelText('Title')).toHaveValue('Kitenge wrap dress')
     expect(toast.current().at(-1)?.message).toBe('Draft restored')
+  })
+
+  it('step 2 needs the serial number for serial-numbered items', async () => {
+    const { user } = renderPage()
+    await user.type(screen.getByLabelText('Title'), 'iPhone 13, 128GB, Midnight')
+    await user.type(screen.getByLabelText('Price'), '52000')
+    await user.click(screen.getAllByRole('button', { name: 'Next' })[0] as HTMLElement)
+    await user.click(await screen.findByRole('radio', { name: /^Serial-numbered item/ }))
+    await user.click(screen.getAllByRole('button', { name: 'Next' })[0] as HTMLElement)
+    expect(await screen.findByText('Enter the IMEI or serial number')).toBeInTheDocument()
+    await user.type(screen.getByLabelText('Unique ID (IMEI or serial)'), '35 209 811 437 1234')
+    expect(screen.getByRole('complementary', { name: 'Live buyer preview' })).toHaveTextContent(
+      'Serial ends 1234',
+    )
+    await user.click(screen.getAllByRole('button', { name: 'Next' })[0] as HTMLElement)
+    expect(await screen.findByRole('heading', { name: 'Dispute policy' })).toBeInTheDocument()
   })
 })

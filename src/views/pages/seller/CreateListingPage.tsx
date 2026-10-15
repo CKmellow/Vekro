@@ -10,6 +10,7 @@ import { Field, TextArea, TextField } from '../../components/ui/Field'
 import { ImageUploader } from '../../components/ui/ImageUploader'
 import { PriceField } from '../../components/ui/PriceField'
 import { Sheet } from '../../components/ui/Sheet'
+import { TypeStep } from './listing/TypeStep'
 
 const selectClass =
   'type-body-lg h-14 w-full appearance-none rounded-md border border-border bg-surface px-4 text-text focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 focus:outline-none'
@@ -103,7 +104,16 @@ export function CreateListingPage() {
               />
             </>
           )}
-          {w.step > 0 && (
+          {w.step === 1 && (
+            <TypeStep
+              isSerialized={w.preview.isSerialized}
+              onSelect={w.selectType}
+              uniqueId={register('type.uniqueId')}
+              uniqueIdError={formState.errors.type?.uniqueId?.message}
+              uniqueIdTail={w.preview.uniqueIdTail}
+            />
+          )}
+          {w.step > 1 && (
             <div className="flex flex-col gap-2">
               <h2 className="type-headline text-text">{w.steps[w.step]}</h2>
               <p className="type-body-md text-text-muted">
