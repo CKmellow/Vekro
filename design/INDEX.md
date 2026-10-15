@@ -2,8 +2,10 @@
 
 Every Stitch screen for Vekro, its exports and its review status.
 
-- Stitch project: **Vekro**, ID `TBD` (set in #3)
-- Design system: created from `.stitch/DESIGN.md` (#3)
+- Stitch project: **Vekro**, ID `4950346905124660155` (https://stitch.withgoogle.com/projects/4950346905124660155)
+- Design system: "Vekro" (asset `assets/3f76e23767ff46c69a4931548f3cd1b2`), created from `.stitch/DESIGN.md` on 2026-10-15. Theme read back: light mode, primary `#0a6e4c` (emerald-700), secondary override `#f2a516` (saffron-500), headlines Bricolage Grotesque, body and labels DM Sans, mono JetBrains Mono, 80 named colours, the full type scale and spacing.
+- Known deviation: Stitch set roundness to `ROUND_EIGHT`; DESIGN.md asks for 14px controls, 20px cards and 28px vault cards. `update_design_system` rejects every payload through the MCP, so prompts restate the radius scale explicitly. To fix by hand: Stitch > Vekro > Design system > Roundness > 12.
+- Uploaded DESIGN.md source screen: `17679250463712788980`.
 - Status values: Not started, Draft, In review, Approved. Only Cyprian sets Approved.
 - Exports live in `design/<ID>-<slug>/`: `mobile.png` and/or `desktop.png`, variant PNGs, the matching `.html`, `prompt.md` and `notes.md`.
 - Review checklist: [`docs/DESIGN_REVIEW_CHECKLIST.md`](../docs/DESIGN_REVIEW_CHECKLIST.md)
