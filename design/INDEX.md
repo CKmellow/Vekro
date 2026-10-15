@@ -12,7 +12,7 @@ Every Stitch screen for Vekro, its exports and its review status.
 
 | ID | Name | Folder | Device | Milestone | Stitch screens | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| D0 | Design System Sheet | `D0-design-system-sheet/` | desktop | M0 | | Not started |
+| D0 | Design System Sheet | `D0-design-system-sheet/` | desktop | M0 | Foundations [`f11db728…`](https://stitch.withgoogle.com/projects/4950346905124660155), Components [`e711257c…`](https://stitch.withgoogle.com/projects/4950346905124660155) | In review |
 | B1 | Order summary and pay | `B1-order-summary/` | mobile | M5 | | Not started |
 | B2 | Payment in progress | `B2-payment/` | mobile | M5 | | Not started |
 | B3 | Order tracker | `B3-order-tracker/` | mobile | M5 | | Not started |
