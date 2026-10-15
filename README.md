@@ -21,3 +21,10 @@ The `commit-msg` hook rejects co-author trailers and AI attribution lines.
 - `CLAUDE.md` holds the standing rules for coding agents.
 - Design and UI skills live in `.agents/skills/` (pinned in `skills-lock.json`) and are exposed to Claude Code through `.claude/skills/`.
 - `.vscode/mcp.json` connects VS Code to the Stitch MCP server. The API key is prompted for, never committed.
+- Claude Code: copy `.env.example` to `.env`, set `STITCH_API_KEY`, then register the server at local scope so the key stays out of the repo:
+
+  ```sh
+  set -a; . ./.env; set +a
+  claude mcp add --transport http -s local stitch https://stitch.googleapis.com/mcp --header "X-Goog-Api-Key: $STITCH_API_KEY"
+  claude mcp list   # stitch: Connected
+  ```
