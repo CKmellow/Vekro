@@ -1,9 +1,9 @@
 import { placeholder } from '../Placeholder'
 export { LogInPage as S2 } from './LogInPage'
+export { PayoutSetupPage as S3 } from './PayoutSetupPage'
 export { SignUpPage as S1 } from './SignUpPage'
 
 // Seller screens (PAGES.md S1 to S14).
-export const S3 = placeholder('S3', 'Payout setup')
 export const S4 = placeholder('S4', 'Dashboard')
 export const S5 = placeholder('S5', 'Orders')
 export const S6 = placeholder('S6', 'Order detail')
