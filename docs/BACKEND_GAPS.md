@@ -9,17 +9,17 @@ Reconciled against `api/openapi.json` on 2026-10-15 (resynced from CKmellow/Vekr
 | Gap | Issue | Needed by (milestone) | Status | Flag | Mock file |
 | --- | --- | --- | --- | --- | --- |
 | P0-1 Single-transaction read | #6 | M6 | Open | `VITE_MOCK_TRANSACTION_READ` | not yet |
-| P0-2 Seller order and listing lists | #7 | M4 | Open | `VITE_MOCK_SELLER_LISTS` | `src/mocks/gaps/listings.ts` |
+| P0-2 Seller order and listing lists | #7 | M4 | Open (listings mocked; orders in M9) | `VITE_MOCK_SELLER_LISTS` | `src/mocks/gaps/listings.ts` |
 | P0-3 Payment instruction in initiate response | #8 | M6 | Open | `VITE_MOCK_PAYMENT_INSTRUCTION` | not yet |
-| P0-5 Listing content fields and public seller profile | #139 | M4 | Open | `VITE_MOCK_LISTING_CONTENT` | `src/mocks/gaps/listings.ts` |
-| P0-6 Listing update, archive and duplicate | #140 | M4 | Open | `VITE_MOCK_LISTING_UPDATE` | `src/mocks/gaps/listings.ts` |
+| P0-5 Listing content fields and public seller profile | #139 | M4 | Open (mocked) | `VITE_MOCK_LISTING_CONTENT` | `src/mocks/gaps/listings.ts` |
+| P0-6 Listing update, archive and duplicate | #140 | M4 | Open (mocked) | `VITE_MOCK_LISTING_UPDATE` | `src/mocks/gaps/listings.ts` |
 | P0-7 State deadlines on transactions | #141 | M7 | Open | `VITE_MOCK_DEADLINES` | not yet |
 | P1-1 Public order summary | #10 | M6 | Open | `VITE_MOCK_PUBLIC_ORDER` | not yet |
 | P1-2 Phone-verified guest session | #11 | M15 | Open | `VITE_MOCK_PHONE_AUTH` | not yet |
 | P1-3 Buyer order history | #12 | M15 | Open | `VITE_MOCK_BUYER_ORDERS` | not yet |
 | P1-5 Order timeline for buyer and seller | #142 | M7 | Open | `VITE_MOCK_TIMELINE` | not yet |
 | P1-6 Payment failure reason and STK resend | #143 | M6 | Open | `VITE_MOCK_PAYMENT_STATUS` | not yet |
-| P1-7 Seller profile and payout settings update | #144 | M4 | Open | `VITE_MOCK_SELLER_PROFILE` | not yet |
+| P1-7 Seller profile and payout settings update | #144 | M4 | Open (mocked) | `VITE_MOCK_SELLER_PROFILE` | `src/mocks/gaps/sellerProfile.ts` |
 | P1-8 Notifications mark as read | #145 | M9 | Open | `VITE_MOCK_NOTIFICATION_READ` | not yet |
 | P1-9 Seller disagree-and-escalate | #146 | M12 | Open | `VITE_MOCK_ESCALATE` | not yet |
 | P1-10 Admin transaction search | #147 | M14 | Open | `VITE_MOCK_ADMIN_SEARCH` | not yet |
