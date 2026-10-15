@@ -3,6 +3,7 @@
 /docs/PAGES.md
 /docs/COPILOT_PROMPT.md
 /LOCAL_EXECUTION_PLAN.md
+/CLAUDE.md
 
 # Secrets and local env
 .env
