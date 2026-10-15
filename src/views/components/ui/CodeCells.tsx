@@ -92,8 +92,8 @@ export function CodeCells({
         ))}
       </div>
       {error && (
-        <p id={`${id}-error`} role="alert" className="type-body-sm flex items-center gap-1.5 text-coral-600">
-          <CircleAlert aria-hidden="true" className="size-4 shrink-0" />
+        <p id={`${id}-error`} role="alert" className="type-body-sm flex items-start gap-1.5 text-coral-600">
+          <CircleAlert aria-hidden="true" className="mt-px size-4 shrink-0" />
           {error}
         </p>
       )}

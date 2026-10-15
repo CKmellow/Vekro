@@ -25,7 +25,7 @@ export function PhoneField({
   const [touched, setTouched] = useState(false)
   const shownError = error ?? (touched && value && !isValidNational(value) ? PHONE_ERROR : undefined)
   return (
-    <Field label={label} hint={hint} error={shownError} valid={isValidNational(value)}>
+    <Field label={label} hint={hint} error={shownError} valid={!disabled && isValidNational(value)}>
       {({ id, describedBy }) => (
         <div
           className={cn(
