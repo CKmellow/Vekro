@@ -35,6 +35,13 @@ function renderAt(path: string) {
 }
 
 describe('router', () => {
+  it('serves the component gallery in dev builds', async () => {
+    renderAt('/dev/ui')
+    expect(
+      await screen.findByRole('heading', { name: 'Vekro components', level: 1 }, { timeout: 3000 }),
+    ).toBeInTheDocument()
+  })
+
   it('lazy-loads public buyer routes without a session', async () => {
     renderAt('/pay/3fa85f64')
     expect(await screen.findByRole('heading', { name: 'Order summary and pay' })).toBeInTheDocument()

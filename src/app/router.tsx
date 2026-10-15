@@ -9,6 +9,7 @@ const buyer = () => import('@/views/pages/buyer/routes')
 const seller = () => import('@/views/pages/seller/routes')
 const admin = () => import('@/views/pages/admin/routes')
 const shared = () => import('@/views/pages/shared/routes')
+const dev = () => import('@/views/pages/dev/UiGallery')
 
 type Module = Record<string, React.ComponentType>
 const page =
@@ -87,6 +88,9 @@ export const routes: RouteObject[] = [
           },
         ],
       },
+
+      // Component gallery, dev builds only (the branch is dropped from production bundles).
+      ...(import.meta.env.DEV ? [{ path: '/dev/ui', lazy: page(dev, 'UiGallery') }] : []),
 
       { path: '*', element: <NotFoundPage /> },
     ],
