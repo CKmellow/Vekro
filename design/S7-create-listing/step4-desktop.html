@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-[#FBF9F4]" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1440, initial-scale=1.0" name="viewport"/>
+<title>Vekro · Create Listing (Step 4 Review)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            emerald: {
+              950: '#04251C',
+              900: '#06362A',
+              800: '#084D3B',
+              700: '#0A6E4C',
+              600: '#0C8A5F',
+              500: '#12A672',
+              400: '#2CC48A',
+              glow: '#3DEBA6',
+              100: '#CDEFE0',
+              50: '#E9F8F1',
+            },
+            sand: {
+              0: '#FFFFFF',
+              50: '#FBF9F4',
+              100: '#F5F1E7',
+              200: '#EAE4D4',
+              300: '#D8D0BA',
+            },
+            ink: {
+              950: '#0B1512',
+              800: '#1B2824',
+              600: '#44524D',
+              500: '#5E6D67',
+              400: '#8A9792',
+            },
+            saffron: {
+              700: '#8A5B00',
+              600: '#B87A00',
+              500: '#F2A516',
+              100: '#FFE8B3',
+              50: '#FFF6E0',
+            },
+            coral: {
+              600: '#C93238',
+              500: '#E5484D',
+              50: '#FDECEC',
+            },
+            lake: {
+              600: '#1F66C8',
+              500: '#2F80ED',
+              50: '#E8F1FD',
+            },
+            plum: {
+              700: '#4F36B0',
+              500: '#6B4FD8',
+              50: '#EFEBFC',
+            }
+          },
+          fontFamily: {
+            title: ['Bricolage Grotesque', 'sans-serif'],
+            body: ['DM Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          boxShadow: {
+            card: '0 1px 2px rgba(11,21,18,0.04), 0 8px 24px rgba(11,21,18,0.06)',
+            vault: '0 20px 50px rgba(6,54,42,0.35)',
+            phone: '0 24px 64px -12px rgba(11,21,18,0.18), 0 4px 16px rgba(11,21,18,0.06)',
+            dock: '0 -4px 20px rgba(11,21,18,0.05)',
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      font-family: 'DM Sans', sans-serif;
+      color: #0B1512;
+      background-color: #FBF9F4;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-headline, .font-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Vault surface gradient */
+    .vault-surface {
+      background: linear-gradient(140deg, #04251C 0%, #084D3B 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 20px 50px rgba(6,54,42,0.35);
+      position: relative;
+    }
+    .vault-surface::after {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, rgba(61,235,166,0.18) 0%, rgba(61,235,166,0) 70%);
+      pointer-events: none;
+      border-radius: 9999px;
+    }
+    /* Custom scrollbar for preview */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex bg-[#FBF9F4] selection:bg-emerald-100 selection:text-emerald-950">
+<!-- ========================================================================= -->
+<!-- 1. SELLER DESKTOP SIDEBAR (264px) in Emerald-950                          -->
+<!-- ========================================================================= -->
+<aside class="w-[264px] min-w-[264px] bg-[#04251C] text-white flex flex-col justify-between border-r border-[#084D3B]/40 shrink-0 select-none z-30">
+<div class="p-5 flex flex-col gap-6">
+<!-- Brand Logo & Wordmark -->
+<div class="flex items-center gap-3 px-2 pt-1">
+<!-- Vekro mark: emerald rounded square with white "V" of two strokes -->
+<div class="w-10 h-10 rounded-[12px] bg-emerald-700 flex items-center justify-center shadow-md shadow-emerald-950/50 border border-emerald-500/30 shrink-0">
+<svg fill="none" height="22" viewbox="0 0 24 24" width="22">
+<path d="M5 6L12 19L19 6" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="font-title text-[22px] font-extrabold tracking-tight text-white leading-tight">Vekro</span>
+</div>
+</div>
+<!-- Navigation List -->
+<nav class="flex flex-col gap-1 pt-2">
+<!-- Dashboard -->
+<a class="flex items-center justify-between px-3.5 py-2.5 rounded-[12px] text-white/70 hover:text-white hover:bg-[#06362A] transition-all text-[14px] font-medium group" href="#">
+<div class="flex items-center gap-3">
+<svg class="w-5 h-5 text-white/60 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<rect height="7" rx="1.5" width="7" x="3" y="3"></rect>
+<rect height="7" rx="1.5" width="7" x="14" y="3"></rect>
+<rect height="7" rx="1.5" width="7" x="14" y="14"></rect>
+<rect height="7" rx="1.5" width="7" x="3" y="14"></rect>
+</svg>
+<span>Dashboard</span>
+</div>
+</a>
+<!-- Orders (with saffron badge "3") -->
+<a class="flex items-center justify-between px-3.5 py-2.5 rounded-[12px] text-white/70 hover:text-white hover:bg-[#06362A] transition-all text-[14px] font-medium group" href="#">
+<div class="flex items-center gap-3">
+<svg class="w-5 h-5 text-white/60 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Orders</span>
+</div>
+<span class="bg-[#FFE8B3] text-[#8A5B00] font-mono text-[11px] font-bold px-2 py-0.5 rounded-full">3</span>
+</a>
+<!-- Listings (ACTIVE: Emerald-700 pill, white text) -->
+<a class="flex items-center justify-between px-3.5 py-2.5 rounded-[12px] bg-emerald-700 text-white font-semibold text-[14px] shadow-sm" href="#">
+<div class="flex items-center gap-3">
+<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Listings</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-[#3DEBA6] animate-pulse"></span>
+</a>
+<!-- Returns (with saffron badge "1") -->
+<a class="flex items-center justify-between px-3.5 py-2.5 rounded-[12px] text-white/70 hover:text-white hover:bg-[#06362A] transition-all text-[14px] font-medium group" href="#">
+<div class="flex items-center gap-3">
+<svg class="w-5 h-5 text-white/60 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Returns</span>
+</div>
+<span class="bg-[#FFE8B3] text-[#8A5B00] font-mono text-[11px] font-bold px-2 py-0.5 rounded-full">1</span>
+</a>
+<!-- Analytics -->
+<a class="flex items-center justify-between px-3.5 py-2.5 rounded-[12px] text-white/70 hover:text-white hover:bg-[#06362A] transition-all text-[14px] font-medium group" href="#">
+<div class="flex items-center gap-3">
+<svg class="w-5 h-5 text-white/60 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Analytics</span>
+</div>
+</a>
+<!-- Notifications -->
+<a class="flex items-center justify-between px-3.5 py-2.5 rounded-[12px] text-white/70 hover:text-white hover:bg-[#06362A] transition-all text-[14px] font-medium group" href="#">
+<div class="flex items-center gap-3">
+<svg class="w-5 h-5 text-white/60 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Notifications</span>
+</div>
+</a>
+<!-- Settings -->
+<a class="flex items-center justify-between px-3.5 py-2.5 rounded-[12px] text-white/70 hover:text-white hover:bg-[#06362A] transition-all text-[14px] font-medium group" href="#">
+<div class="flex items-center gap-3">
+<svg class="w-5 h-5 text-white/60 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Settings</span>
+</div>
+</a>
+</nav>
+</div>
+<!-- Sidebar Bottom: Mint "Create listing" CTA + Seller Profile Row -->
+<div class="p-5 flex flex-col gap-4 border-t border-[#084D3B]/40 bg-[#021A13]/40">
+<!-- Mint (#3DEBA6) Create Listing CTA -->
+<button class="w-full h-11 bg-[#3DEBA6] hover:bg-[#2CC48A] text-[#04251C] font-semibold text-[14px] rounded-[14px] flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-sm">
+<svg class="w-4 h-4 text-[#04251C]" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Create listing</span>
+</button>
+<!-- Seller Profile Row: AG · Amina Gadgets · Verified seller -->
+<div class="flex items-center gap-3 px-1 py-1">
+<div class="w-10 h-10 rounded-full bg-[#084D3B] border border-emerald-500/40 text-[#3DEBA6] font-title font-bold flex items-center justify-center text-[14px] shrink-0">
+          AG
+        </div>
+<div class="flex flex-col min-w-0">
+<span class="text-[14px] font-semibold text-white truncate leading-snug">Amina Gadgets</span>
+<div class="flex items-center gap-1.5 text-[11px] text-[#2CC48A]">
+<svg class="w-3 h-3 text-[#3DEBA6]" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span class="font-medium">Verified seller</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- 2. MAIN DESKTOP WORKSPACE (1176px remainder)                             -->
+<!-- ========================================================================= -->
+<div class="flex-1 flex flex-col min-h-screen min-w-0">
+<!-- 72px White Top Bar -->
+<header class="h-[72px] bg-white border-b border-[#EAE4D4] px-8 flex items-center justify-between shrink-0 sticky top-0 z-20">
+<!-- Search Field: "Order ID or item" -->
+<div class="relative w-80">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ink-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<path d="M21 21l-4.35-4.35" stroke-linecap="round"></path>
+</svg>
+</div>
+<input class="w-full h-11 pl-10 pr-4 bg-[#F5F1E7] border border-transparent rounded-[12px] text-[14px] text-ink-950 placeholder:text-ink-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all font-body" placeholder="Order ID or item" type="text"/>
+</div>
+<!-- Right Topbar Controls -->
+<div class="flex items-center gap-5">
+<!-- Bell with coral dot -->
+<button aria-label="Notifications" class="relative p-2.5 rounded-[10px] text-ink-600 hover:text-ink-950 hover:bg-[#F5F1E7] transition-colors">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="absolute top-2 right-2 w-2.5 h-2.5 bg-[#E5484D] rounded-full ring-2 ring-white"></span>
+</button>
+<!-- Help Link -->
+<a class="text-[13px] font-semibold text-emerald-700 hover:text-emerald-800 transition-colors" href="#">
+          Support
+        </a>
+</div>
+</header>
+<!-- Wizard Main Content Area -->
+<main class="flex-1 p-8 overflow-y-auto">
+<div class="max-w-[1110px] mx-auto flex flex-col gap-8 pb-12">
+<!-- 1. Header & Stepper -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-[#EAE4D4]">
+<div>
+<div class="flex items-center gap-2 text-ink-500 text-[13px] mb-1 font-medium">
+<span>Listings</span>
+<svg class="w-3.5 h-3.5 text-ink-400" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-emerald-700 font-semibold">New listing wizard</span>
+</div>
+<h1 class="font-headline text-[32px] font-extrabold text-ink-950 tracking-tight leading-tight">
+              Create a listing
+            </h1>
+</div>
+<!-- Stepper: First three done (checks), "Review" current -->
+<div class="flex items-center gap-3 bg-white px-5 py-3 rounded-[16px] border border-[#EAE4D4] shadow-sm">
+<!-- Step 1 Done -->
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-emerald-700 text-white flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[13px] font-medium text-ink-800">Item</span>
+</div>
+<div class="w-6 h-[2px] bg-emerald-600"></div>
+<!-- Step 2 Done -->
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-emerald-700 text-white flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[13px] font-medium text-ink-800">Item type</span>
+</div>
+<div class="w-6 h-[2px] bg-emerald-600"></div>
+<!-- Step 3 Done -->
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-emerald-700 text-white flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[13px] font-medium text-ink-800">Dispute policy</span>
+</div>
+<div class="w-6 h-[2px] bg-emerald-600"></div>
+<!-- Step 4 Current: Review -->
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-emerald-700 text-white flex items-center justify-center font-title text-[13px] font-bold ring-4 ring-emerald-100">
+                4
+              </div>
+<span class="text-[13px] font-bold text-emerald-800">Review</span>
+</div>
+</div>
+</div>
+<!-- 2 & 3 & 4. Two-Column Layout (Left: 720px Summary Cards / Right: 360px Sticky Live Buyer Preview) -->
+<div class="flex flex-col lg:flex-row items-start gap-8">
+<!-- LEFT COLUMN (720px summary cards) -->
+<div class="w-full lg:w-[720px] flex flex-col gap-5 shrink-0">
+<!-- Notice Banner: Pre-publish notice -->
+<div class="bg-[#FFF6E0] border border-[#FFE8B3] rounded-[16px] p-4 flex items-start gap-3.5">
+<div class="w-8 h-8 rounded-full bg-[#FFE8B3] flex items-center justify-center shrink-0 mt-0.5">
+<svg class="w-4 h-4 text-[#8A5B00]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="12" x2="12" y1="8" y2="12"></line>
+<line x1="12" x2="12.01" y1="16" y2="16"></line>
+</svg>
+</div>
+<div class="text-[13.5px] leading-relaxed text-[#8A5B00]">Check everything before you publish. Once a buyer pays, the price and policy can't change.</div>
+</div>
+<!-- Card 1: "Item" summary card -->
+<div class="bg-white rounded-[20px] p-6 border border-[#EAE4D4] shadow-card flex flex-col gap-4">
+<div class="flex items-center justify-between pb-3 border-b border-[#F5F1E7]">
+<div class="flex items-center gap-2">
+<span class="text-ink-300">•</span>
+<h2 class="font-title text-[18px] font-bold text-ink-950">Item</h2>
+</div>
+<button class="text-emerald-700 hover:text-emerald-800 text-[14px] font-semibold transition-colors flex items-center gap-1 group">
+<span>Edit</span>
+<svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<div class="flex items-center gap-5">
+<!-- Thumbnail -->
+<div class="w-24 h-24 rounded-[14px] bg-[#0B1512] flex items-center justify-center p-2 border border-[#EAE4D4] shrink-0 relative overflow-hidden group">
+<!-- Phone SVG representation -->
+<svg class="w-14 h-18 text-emerald-400/80" fill="none" viewbox="0 0 48 80">
+<rect fill="#14261F" height="76" rx="8" stroke="currentColor" stroke-width="3" width="40" x="4" y="2"></rect>
+<circle cx="24" cy="10" fill="currentColor" r="2"></circle>
+<rect fill="#06362A" height="40" rx="4" stroke="#2CC48A" stroke-width="1.5" width="24" x="12" y="20"></rect>
+<path d="M16 34L22 40L32 28" stroke="#3DEBA6" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+<span class="absolute bottom-1 right-1 bg-black/70 text-white font-mono text-[10px] px-1.5 py-0.5 rounded-[6px]">
+                    3 photos
+                  </span>
+</div>
+<!-- Item Details -->
+<div class="flex flex-col gap-1 flex-1 min-w-0">
+<div class="flex items-center gap-2">
+<span class="text-[12px] font-semibold text-ink-500 uppercase tracking-wider font-body">Phones and tablets</span>
+</div>
+<h3 class="font-title text-[20px] font-bold text-ink-950 truncate">
+                    iPhone 13, 128GB, Midnight
+                  </h3>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-headline text-[22px] font-extrabold text-ink-950">
+                      KES 52,000
+                    </span>
+<span class="text-[12px] text-ink-500 font-medium">fixed price</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: "Item type" summary card -->
+<div class="bg-white rounded-[20px] p-6 border border-[#EAE4D4] shadow-card flex flex-col gap-4">
+<div class="flex items-center justify-between pb-3 border-b border-[#F5F1E7]">
+<div class="flex items-center gap-2">
+<span class="text-ink-300">•</span>
+<h2 class="font-title text-[18px] font-bold text-ink-950">Item type</h2>
+</div>
+<button class="text-emerald-700 hover:text-emerald-800 text-[14px] font-semibold transition-colors flex items-center gap-1 group">
+<span>Edit</span>
+<svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#FBF9F4] p-4 rounded-[14px] border border-[#EAE4D4]">
+<div class="flex items-center gap-3">
+<!-- Lake pill "Serial-numbered" -->
+<span class="inline-flex items-center gap-1.5 bg-[#E8F1FD] text-[#1F66C8] font-body text-[13px] font-semibold px-3 py-1.5 rounded-full">
+<svg class="w-4 h-4 text-[#1F66C8]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<rect height="16" rx="2" width="18" x="3" y="4"></rect>
+<line x1="7" x2="17" y1="8" y2="8"></line>
+<line x1="7" x2="13" y1="12" y2="12"></line>
+<line x1="7" x2="10" y1="16" y2="16"></line>
+</svg>
+<span>Serial-numbered</span>
+</span>
+</div>
+<!-- Mono "IMEI ends 1234" -->
+<div class="flex items-center gap-2">
+<span class="font-mono text-[14px] font-bold text-ink-950 bg-white px-3 py-1.5 rounded-[8px] border border-[#EAE4D4]">
+                    IMEI ends 1234
+                  </span>
+</div>
+</div>
+</div>
+<!-- Card 3: "Dispute policy" summary card -->
+<div class="bg-white rounded-[20px] p-6 border border-[#EAE4D4] shadow-card flex flex-col gap-4">
+<div class="flex items-center justify-between pb-3 border-b border-[#F5F1E7]">
+<div class="flex items-center gap-2">
+<span class="text-ink-300">•</span>
+<h2 class="font-title text-[18px] font-bold text-ink-950">Dispute policy</h2>
+</div>
+<button class="text-emerald-700 hover:text-emerald-800 text-[14px] font-semibold transition-colors flex items-center gap-1 group">
+<span>Edit</span>
+<svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<!-- Saffron badge "24-hour check" -->
+<div class="flex items-center gap-2">
+<span class="text-[12px] font-bold uppercase tracking-wider text-ink-500">Inspection Window</span>
+<span class="inline-flex items-center gap-1.5 bg-[#FFF6E0] text-[#8A5B00] font-body text-[13px] font-bold px-3 py-1 rounded-full border border-[#FFE8B3]">
+<svg class="w-3.5 h-3.5 text-[#8A5B00]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+<span>24-hour check</span>
+</span>
+</div>
+<span class="text-[12.5px] text-ink-500">Buyer can report within 24 hours of delivery</span>
+</div>
+<!-- Eligible defect chips -->
+<div class="pt-2">
+<div class="flex flex-wrap gap-2">
+<span class="bg-[#F5F1E7] text-ink-800 text-[13px] font-medium px-3 py-1.5 rounded-[10px] border border-[#EAE4D4] flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                      Won't power on
+                    </span>
+<span class="bg-[#F5F1E7] text-ink-800 text-[13px] font-medium px-3 py-1.5 rounded-[10px] border border-[#EAE4D4] flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                      Screen or touch problem
+                    </span>
+<span class="bg-[#F5F1E7] text-ink-800 text-[13px] font-medium px-3 py-1.5 rounded-[10px] border border-[#EAE4D4] flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                      Battery drains fast
+                    </span>
+</div>
+</div>
+<!-- Selected Resolution Policy Chip: "Resolution: Repair then release" -->
+<div class="mt-2 pt-3 border-t border-[#F5F1E7] flex items-center justify-between bg-[#E9F8F1] px-4 py-3 rounded-[12px] border border-emerald-200">
+<div class="flex items-center gap-2.5">
+<div class="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center shrink-0">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="font-title text-[14px] font-bold text-emerald-900">
+                      Resolution: Repair then release
+                    </span>
+</div>
+<span class="text-[12px] text-emerald-800 font-medium">
+                    You fix it, buyer confirms, then you're paid
+                  </span>
+</div>
+</div>
+</div>
+<!-- Card 4: "Your payout" fee breakdown card -->
+<div class="bg-white rounded-[20px] p-6 border border-[#EAE4D4] shadow-card flex flex-col gap-4">
+<div class="flex items-center justify-between pb-3 border-b border-[#F5F1E7]">
+<div class="flex items-center gap-2">
+<span class="text-ink-300">•</span>
+<h2 class="font-title text-[18px] font-bold text-ink-950">Your payout</h2>
+</div>
+</div>
+<!-- Fee breakdown rows -->
+<div class="flex flex-col gap-3 py-1">
+<!-- Price: KES 52,000 -->
+<div class="flex items-center justify-between text-[15px]">
+<span class="text-ink-600 font-body">Price</span>
+<span class="font-mono text-[16px] font-bold text-ink-950">KES 52,000</span>
+</div>
+<!-- Estimated network fee: KES 130 -->
+<div class="flex items-center justify-between text-[15px]">
+<div class="flex items-center gap-1.5">
+<span class="text-ink-600 font-body">Estimated network fee</span>
+</div>
+<span class="font-mono text-[16px] font-semibold text-coral-600">- KES 130</span>
+</div>
+<!-- Thin stacked bar -->
+<div class="py-2">
+<div class="w-full h-3 bg-[#EAE4D4] rounded-full overflow-hidden flex">
+<div class="bg-emerald-700 h-full rounded-l-full" style="width: 99.75%;"></div>
+<div class="bg-[#E5484D] h-full rounded-r-full" style="width: 0.25%;"></div>
+</div>
+</div>
+<!-- You receive: KES 51,870 (bold emerald) -->
+<div class="flex items-center justify-between pt-3 border-t border-[#F5F1E7]">
+<div class="flex flex-col">
+<span class="font-title text-[16px] font-bold text-ink-950">You receive</span>
+<span class="text-[12px] text-ink-500">Sent to your M-Pesa after the buyer accepts the item</span>
+</div>
+<span class="font-headline text-[24px] font-extrabold text-emerald-700">
+                    KES 51,870
+                  </span>
+</div>
+</div>
+</div>
+<!-- Card 5: "Link preview" card (WhatsApp style) -->
+<div class="bg-white rounded-[20px] p-6 border border-[#EAE4D4] shadow-card flex flex-col gap-4">
+<div class="flex items-center justify-between pb-3 border-b border-[#F5F1E7]">
+<div class="flex items-center gap-2">
+<span class="text-ink-300">•</span>
+<h2 class="font-title text-[18px] font-bold text-ink-950">Link preview</h2>
+</div>
+<span class="text-[12px] text-ink-500 font-medium">How it looks on WhatsApp</span>
+</div>
+<!-- Chat-bubble style card -->
+<div class="bg-[#ECE5DD] p-5 rounded-[18px] border border-[#D8D0BA]/60 flex justify-start">
+<div class="max-w-[420px] bg-white rounded-[14px] p-3 shadow-sm border border-emerald-900/10 flex flex-col gap-2.5 relative">
+<!-- Small chat bubble arrow -->
+<div class="absolute -left-2 top-3 w-0 h-0 border-t-[8px] border-t-white border-l-[8px] border-l-transparent"></div>
+<!-- Product preview image & info -->
+<div class="rounded-[10px] bg-[#04251C] overflow-hidden flex flex-col border border-emerald-800/40">
+<div class="h-32 bg-gradient-to-tr from-[#04251C] to-[#084D3B] flex items-center justify-center p-3 relative">
+<!-- Escrow badge -->
+<div class="absolute top-2 left-2 bg-[#06362A]/90 text-[#3DEBA6] border border-[#2CC48A]/30 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#3DEBA6]"></span>
+                        VEKRO ESCROW PROTECTED
+                      </div>
+<div class="flex items-center gap-3">
+<div class="w-16 h-20 bg-[#0B1512] rounded-lg border border-emerald-400/40 flex items-center justify-center">
+<svg class="w-10 h-14 text-emerald-400" fill="none" viewbox="0 0 48 80">
+<rect fill="#14261F" height="76" rx="8" stroke="currentColor" stroke-width="3" width="40" x="4" y="2"></rect>
+<rect fill="#06362A" height="40" rx="4" width="24" x="12" y="20"></rect>
+</svg>
+</div>
+<div class="text-white">
+<div class="text-[12px] text-emerald-300 font-semibold uppercase font-mono">Amina Gadgets</div>
+<div class="text-[15px] font-title font-bold text-white leading-tight">iPhone 13, 128GB</div>
+<div class="text-[16px] font-headline font-black text-[#3DEBA6]">KES 52,000</div>
+</div>
+</div>
+</div>
+<div class="p-3 bg-[#FBF9F4] flex flex-col gap-1 border-t border-[#EAE4D4]">
+<span class="font-title text-[15px] font-bold text-ink-950">
+                        iPhone 13, 128GB · KES 52,000
+                      </span>
+<p class="text-[13px] text-ink-600 font-body">
+                        Pay safely with Vekro escrow
+                      </p>
+<span class="font-mono text-[12px] text-emerald-700 font-semibold tracking-tight pt-0.5">
+                        vekro.co.ke/pay/VK-4299
+                      </span>
+</div>
+</div>
+<!-- WhatsApp message time stamp -->
+<div class="flex justify-end items-center gap-1 text-[11px] text-ink-400 font-body"><span>14:32</span><svg class="w-3.5 h-3.5 text-[#2CC48A]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7m-14 4l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+</div>
+</div>
+</div>
+<!-- 3. Wizard Footer Actions -->
+<div class="bg-white rounded-[20px] p-5 border border-[#EAE4D4] shadow-card flex flex-col sm:flex-row items-center justify-between gap-4 mt-2">
+<div class="flex items-center gap-3 w-full sm:w-auto">
+<!-- Ghost "Back" button -->
+<button class="h-11 px-5 bg-transparent hover:bg-[#F5F1E7] text-ink-600 font-semibold text-[14px] rounded-[14px] transition-all flex items-center justify-center gap-1.5 active:scale-95">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Back</span>
+</button>
+<!-- Ghost "Save draft" button -->
+<button class="h-11 px-5 bg-[#F5F1E7] hover:bg-[#EAE4D4] text-ink-800 font-semibold text-[14px] rounded-[14px] transition-all flex items-center justify-center gap-1.5 active:scale-95">
+<svg class="w-4 h-4 text-ink-600" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Save draft</span>
+</button>
+</div>
+<!-- ONE Primary Emerald Button: "Publish and get link" (52px tall, 14px radius, Emerald-700) -->
+<button class="w-full sm:w-auto h-[52px] px-8 bg-emerald-700 hover:bg-emerald-800 text-white font-title text-[16px] font-bold rounded-[14px] shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
+<span>Publish and get link</span>
+<svg class="w-5 h-5 text-[#3DEBA6]" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+</div>
+<!-- RIGHT COLUMN (360px sticky "LIVE BUYER PREVIEW") -->
+<div class="w-full lg:w-[360px] lg:sticky lg:top-[96px] shrink-0 flex flex-col gap-3">
+<!-- Sticky Preview Header Badge -->
+<div class="flex items-center justify-between px-2">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+</div>
+</div>
+<!-- Phone Frame -->
+<div class="w-[360px] bg-[#0B1512] rounded-[44px] p-3 shadow-phone border-[5px] border-[#1B2824] relative overflow-hidden">
+<!-- Phone Dynamic Island / Camera Notch -->
+<div class="w-24 h-4 bg-black rounded-full mx-auto mb-2 flex items-center justify-center gap-2">
+<div class="w-2 h-2 rounded-full bg-white/20"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-[#084D3B]/60"></div>
+</div>
+<!-- Inner Screen (390px simulated in 336px inner width) -->
+<div class="w-full bg-[#FBF9F4] rounded-[34px] overflow-hidden flex flex-col text-ink-950 font-body relative max-h-[670px] overflow-y-auto no-scrollbar">
+<!-- Mesh gradient accent at top (240px fading to sand) -->
+<div class="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-[#04251C]/10 via-[#0C8A5F]/5 to-transparent pointer-events-none"></div>
+<!-- Buyer Topbar -->
+<div class="px-4 py-3 flex items-center justify-between relative z-10">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-[8px] bg-emerald-700 flex items-center justify-center text-white">
+<svg fill="none" height="14" viewbox="0 0 24 24" width="14">
+<path d="M5 6L12 19L19 6" stroke="#FFFFFF" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+</div>
+<span class="font-title text-[16px] font-extrabold text-ink-950">Vekro</span>
+</div>
+<span class="text-[11px] font-mono font-semibold bg-[#E9F8F1] text-emerald-800 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                    Escrow Protected
+                  </span>
+</div>
+<!-- Buyer Content -->
+<div class="px-4 pb-20 flex flex-col gap-3.5 relative z-10">
+<!-- Seller Header Info -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-emerald-800 text-[#3DEBA6] font-title font-bold text-[11px] flex items-center justify-center">
+                        AG
+                      </div>
+<div class="flex flex-col">
+<span class="text-[12px] font-bold text-ink-950 leading-tight">Amina Gadgets</span>
+<span class="text-[10px] text-ink-500">Kilimani, Nairobi</span>
+</div>
+</div>
+<span class="font-mono text-[10px] text-ink-400">VK-4299</span>
+</div>
+<!-- Product Hero Card in Buyer View -->
+<div class="bg-white rounded-[16px] p-3 border border-[#EAE4D4] shadow-sm flex gap-3">
+<div class="w-16 h-16 rounded-[10px] bg-[#04251C] flex items-center justify-center shrink-0">
+<svg class="w-8 h-12 text-[#3DEBA6]" fill="none" viewbox="0 0 48 80">
+<rect fill="#06362A" height="76" rx="8" stroke="currentColor" stroke-width="3" width="40" x="4" y="2"></rect>
+</svg>
+</div>
+<div class="flex flex-col justify-center min-w-0">
+<span class="text-[13px] font-title font-bold text-ink-950 leading-snug truncate">
+                        iPhone 13, 128GB, Midnight
+                      </span>
+<span class="text-[11px] text-ink-500">IMEI ends 1234 · 24h check</span>
+<span class="font-headline text-[15px] font-extrabold text-emerald-800 mt-0.5">
+                        KES 52,000
+                      </span>
+</div>
+</div>
+<!-- THE VAULT CARD (28px radius, emerald gradient, glowing lock) -->
+<div class="vault-surface rounded-[24px] p-4 text-white flex flex-col gap-3 overflow-hidden">
+<div class="flex items-center justify-between">
+<!-- Status dot -->
+<span class="inline-flex items-center gap-1 text-[10px] text-[#3DEBA6] bg-emerald-900/60 px-2 py-0.5 rounded-full border border-emerald-500/30 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-[#3DEBA6] animate-pulse"></span>
+                        Ready to lock
+                      </span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-headline text-[24px] font-extrabold text-white tracking-tight">
+                          KES 52,000
+                        </span>
+</div>
+<!-- 48px Lock Ring (closed breathing glow) -->
+<div class="w-12 h-12 rounded-full border-2 border-emerald-400 bg-emerald-900/80 flex items-center justify-center shadow-lg shadow-emerald-400/20">
+<svg class="w-5 h-5 text-[#3DEBA6]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<rect height="10" rx="2" width="14" x="5" y="11"></rect>
+<circle cx="12" cy="16" r="1.5"></circle>
+<path d="M8 11V7a4 4 0 018 0v4"></path>
+</svg>
+</div>
+</div>
+<!-- Microcopy reassurance -->
+<div class="pt-2 border-t border-emerald-800/60 text-[11px] text-emerald-100/90 leading-tight flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-[#3DEBA6] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Funds release only after you inspect and enter your delivery code.</span>
+</div>
+</div>
+<!-- The Money Path (Buyer -> Vekro Vault -> Seller) -->
+<div class="bg-white rounded-[16px] p-3 border border-[#EAE4D4] shadow-sm flex flex-col gap-2">
+<div class="flex items-center justify-between relative px-2 py-1">
+<!-- Track line -->
+<div class="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-[2px] bg-[#EAE4D4]"></div>
+<!-- Node 1: Buyer (Current active) -->
+<div class="flex flex-col items-center gap-1 z-10 bg-white px-1">
+<div class="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center text-[10px] font-bold ring-2 ring-emerald-200">
+                          1
+                        </div>
+<span class="text-[10px] font-bold text-emerald-800">You Pay</span>
+</div>
+<!-- Node 2: Vekro Vault -->
+<div class="flex flex-col items-center gap-1 z-10 bg-white px-1">
+<div class="w-6 h-6 rounded-full bg-[#F5F1E7] border border-emerald-700 text-emerald-800 flex items-center justify-center text-[10px] font-bold">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<rect height="10" rx="2" width="14" x="5" y="11"></rect>
+<path d="M8 11V7a4 4 0 018 0v4"></path>
+</svg>
+</div>
+<span class="text-[10px] font-medium text-ink-600">Vault</span>
+</div>
+<!-- Node 3: Seller -->
+<div class="flex flex-col items-center gap-1 z-10 bg-white px-1">
+<div class="w-6 h-6 rounded-full bg-[#F5F1E7] text-ink-400 flex items-center justify-center text-[10px] font-bold">
+                          3
+                        </div>
+<span class="text-[10px] font-medium text-ink-400">Seller</span>
+</div>
+</div>
+</div>
+<!-- Delivery Code Reassurance Note -->
+<div class="bg-[#F5F1E7] rounded-[14px] p-3 text-[11.5px] text-ink-600 leading-relaxed border border-[#EAE4D4]">
+<strong>Delivery code reminder:</strong> When the courier arrives, open the package and check the item before you confirm.
+                  </div>
+</div>
+<!-- Sticky Mobile Action Dock in Preview -->
+<div class="absolute bottom-0 left-0 right-0 p-3 bg-white/90 backdrop-blur-md border-t border-[#EAE4D4] z-20 flex flex-col gap-1.5 shadow-dock">
+<div class="h-11 bg-emerald-700 text-white rounded-[12px] font-title font-bold text-[14px] flex items-center justify-center gap-2 shadow-sm">Pay KES 52,000 with M-Pesa</div>
+</div>
+</div>
+</div>
+<!-- Preview helper footer caption -->
+</div>
+</div>
+</div>
+</main>
+</div>
+</body>
+</html>
