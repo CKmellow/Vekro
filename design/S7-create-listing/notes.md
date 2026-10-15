@@ -1,6 +1,6 @@
 # S7 Create listing: notes
 
-Status: In review. Routes `/seller/listings/new` and `/seller/listings/:id/edit`. Devices: desktop 1440px, mobile 390px. Covers #31 (steps 1 and 2) and #32 (steps 3 and 4).
+Status: Approved by Cyprian (2026-10-15). Routes `/seller/listings/new` and `/seller/listings/:id/edit`. Devices: desktop 1440px, mobile 390px. Covers #31 (steps 1 and 2) and #32 (steps 3 and 4).
 
 ## Stitch screens
 
