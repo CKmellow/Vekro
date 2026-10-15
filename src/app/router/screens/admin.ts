@@ -1,4 +1,4 @@
-import { placeholder } from '../Placeholder'
+import { placeholder } from '@/views/pages/Placeholder'
 
 // Admin screens (PAGES.md A1 to A4).
 export const A1 = placeholder('A1', 'Vekro Support Console')

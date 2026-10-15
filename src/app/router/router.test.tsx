@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { renderWithProviders } from '@/test/render'
 import { server } from '@/test/server'
 import { RouteError } from './RouteError'
-import { routes } from './router'
+import { routes } from '.'
 
 const user = (role: 'buyer' | 'seller' | 'admin') => ({
   id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',

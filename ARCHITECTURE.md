@@ -6,7 +6,9 @@ The Vekro frontend is a React single-page app split into Model, View and Control
 
 ```
 src/
-  app/          router, providers, route guards, error boundary
+  app/          providers, query client, service worker
+    router/     route table, guards, shells, route error boundary
+      screens/  screen-id maps per area (buyer, seller, admin, shared), lazy-loaded
   models/
     api/        generated OpenAPI types, the typed fetch client, error mapping
       adapters/ the only code that knows about backend gaps (mocks, flags, normalizers)
@@ -15,7 +17,7 @@ src/
     queries/    TanStack Query hooks and query keys
   controllers/  one hook per screen or feature
   views/
-    pages/      route-level screens: buyer, seller, admin, shared
+    pages/      page components only, by area: buyer, seller, admin, shared
     components/ ui (primitives) and domain (VaultCard, MoneyPath, ...)
     layouts/    buyer, seller and admin shells
   lib/          dependency-free helpers: money, phone, time, copy

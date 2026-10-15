@@ -1,4 +1,4 @@
-import { placeholder } from '../Placeholder'
+import { placeholder } from '@/views/pages/Placeholder'
 
 // Buyer screens (PAGES.md B1 to B9). Each is replaced by its real page when built.
 export const B1 = placeholder('B1', 'Order summary and pay')
