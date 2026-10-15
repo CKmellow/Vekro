@@ -3,9 +3,17 @@ import { useEffect, useRef, useState } from 'react'
 import { useForm, type FieldPath } from 'react-hook-form'
 import { payoutBreakdown } from '@/lib/fees'
 import { toast } from '@/lib/toast'
-import { CATEGORIES, policySummary, problemPresets } from '@/models/domain/listing'
+import {
+  CATEGORIES,
+  DOOR_REJECT_REASONS,
+  policySummary,
+  problemPresets,
+  RESOLUTIONS,
+  type DoorRejectReason,
+  type Resolution,
+} from '@/models/domain/listing'
 import { clearDraft, loadDraft, saveDraft } from '@/models/domain/listingDraftStore'
-import { listingDraft, type ListingDraft } from '@/models/schemas/listing'
+import { listingDraft, policyStep, type ListingDraft } from '@/models/schemas/listing'
 import { usePhotoPicker } from './usePhotoPicker'
 import { useSession } from './useSession'
 
@@ -14,7 +22,7 @@ export const WIZARD_STEPS = ['Item', 'Item type', 'Dispute policy', 'Review'] as
 const STEP_FIELDS: FieldPath<ListingDraft>[][] = [
   ['item.title', 'item.category', 'item.description', 'item.price', 'item.buyerName'],
   ['type.isSerialized', 'type.uniqueId'],
-  ['policy'],
+  [],
   [],
 ]
 
@@ -35,6 +43,7 @@ export function useListingWizard() {
   const photos = usePhotoPicker()
   const [step, setStep] = useState(0)
   const [previewOpen, setPreviewOpen] = useState(false)
+  const [touchedPolicy, setTouchedPolicy] = useState(false)
   const restored = useRef(false)
   const form = useForm<ListingDraft>({
     resolver: zodResolver(listingDraft),
@@ -58,6 +67,11 @@ export function useListingWizard() {
   useEffect(() => form.setValue('policy.isSerialized', isSerialized), [isSerialized, form])
 
   const next = async () => {
+    if (step === 2) {
+      // The policy is set through buttons, not registered inputs, so it is checked with its own schema.
+      setTouchedPolicy(true)
+      if (!policyStep.safeParse(form.getValues('policy')).success) return
+    }
     const fields = STEP_FIELDS[step] ?? []
     if (fields.length && !(await form.trigger(fields))) return
     setStep((s) => Math.min(s + 1, WIZARD_STEPS.length - 1))
@@ -75,6 +89,27 @@ export function useListingWizard() {
     back: () => setStep((s) => Math.max(0, s - 1)),
     goTo: (index: number) => setStep(index),
     selectType: (serial: boolean) => form.setValue('type.isSerialized', serial, { shouldDirty: true }),
+    policy: {
+      reasons: DOOR_REJECT_REASONS,
+      resolutions: RESOLUTIONS,
+      toggleReason: (reason: DoorRejectReason) => {
+        const current = form.getValues('policy.doorRejectReasons')
+        const next = current.includes(reason) ? current.filter((r) => r !== reason) : [...current, reason]
+        form.setValue('policy.doorRejectReasons', next)
+      },
+      toggleProblem: (problem: string) => {
+        const current = form.getValues('policy.acceptedProblems')
+        const next = current.includes(problem) ? current.filter((p) => p !== problem) : [...current, problem]
+        form.setValue('policy.acceptedProblems', next)
+      },
+      addProblem: (problem: string) => {
+        const label = problem.trim().slice(0, 60)
+        const current = form.getValues('policy.acceptedProblems')
+        if (label && !current.includes(label)) form.setValue('policy.acceptedProblems', [...current, label])
+      },
+      setResolution: (resolution: Resolution) => form.setValue('policy.resolution', resolution),
+      error: touchedPolicy ? policyStep.safeParse(values.policy).error?.issues[0]?.message : undefined,
+    },
     photos,
     saveDraft: () => {
       if (saveDraft(form.getValues())) toast.show('Draft saved on this device')
@@ -94,6 +129,7 @@ export function useListingWizard() {
       policyLine: policySummary(values.policy),
     },
     payout: payoutBreakdown(price),
+    policyValues: values.policy,
     problemPresets: problemPresets(values.item.category),
     categories: CATEGORIES,
   }

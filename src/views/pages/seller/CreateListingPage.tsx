@@ -10,6 +10,7 @@ import { Field, TextArea, TextField } from '../../components/ui/Field'
 import { ImageUploader } from '../../components/ui/ImageUploader'
 import { PriceField } from '../../components/ui/PriceField'
 import { Sheet } from '../../components/ui/Sheet'
+import { PolicyStep } from './listing/PolicyStep'
 import { TypeStep } from './listing/TypeStep'
 
 const selectClass =
@@ -113,7 +114,23 @@ export function CreateListingPage() {
               uniqueIdTail={w.preview.uniqueIdTail}
             />
           )}
-          {w.step > 1 && (
+          {w.step === 2 && (
+            <PolicyStep
+              isSerialized={w.policyValues.isSerialized}
+              reasons={w.policy.reasons}
+              selectedReasons={w.policyValues.doorRejectReasons}
+              onToggleReason={w.policy.toggleReason}
+              presets={w.problemPresets}
+              acceptedProblems={w.policyValues.acceptedProblems}
+              onToggleProblem={w.policy.toggleProblem}
+              onAddProblem={w.policy.addProblem}
+              resolutions={w.policy.resolutions}
+              resolution={w.policyValues.resolution}
+              onResolution={w.policy.setResolution}
+              error={w.policy.error}
+            />
+          )}
+          {w.step > 2 && (
             <div className="flex flex-col gap-2">
               <h2 className="type-headline text-text">{w.steps[w.step]}</h2>
               <p className="type-body-md text-text-muted">

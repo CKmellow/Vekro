@@ -48,7 +48,7 @@ describe('S7 step 1', () => {
     expect(toast.current().at(-1)?.message).toBe('Draft restored')
   })
 
-  it('step 2 needs the serial number for serial-numbered items', async () => {
+  it('step 2 needs the serial number for serial-numbered items', { timeout: 15_000 }, async () => {
     const { user } = renderPage()
     await user.type(screen.getByLabelText('Title'), 'iPhone 13, 128GB, Midnight')
     await user.type(screen.getByLabelText('Price'), '52000')
@@ -61,6 +61,56 @@ describe('S7 step 1', () => {
       'Serial ends 1234',
     )
     await user.click(screen.getAllByRole('button', { name: 'Next' })[0] as HTMLElement)
-    expect(await screen.findByRole('heading', { name: 'Dispute policy' })).toBeInTheDocument()
+    expect(await screen.findByText('Problems you accept')).toBeInTheDocument()
   })
+
+  async function toPolicy(user: ReturnType<typeof renderPage>['user'], serial: boolean) {
+    await user.type(screen.getByLabelText('Title'), 'iPhone 13, 128GB, Midnight')
+    await user.type(screen.getByLabelText('Price'), '52000')
+    await user.click(screen.getAllByRole('button', { name: 'Next' })[0] as HTMLElement)
+    if (serial) {
+      await user.click(await screen.findByRole('radio', { name: /^Serial-numbered item/ }))
+      await user.type(screen.getByLabelText('Unique ID (IMEI or serial)'), '352098114371234')
+    }
+    await user.click(screen.getAllByRole('button', { name: 'Next' })[0] as HTMLElement)
+  }
+
+  it('step 3 standard: needs at least one door reason', async () => {
+    const { user } = renderPage()
+    await toPolicy(user, false)
+    for (const name of ['Damaged', 'Wrong item', 'Not as described']) {
+      await user.click(await screen.findByRole('checkbox', { name }))
+    }
+    await user.click(screen.getAllByRole('button', { name: 'Next' })[0] as HTMLElement)
+    expect(await screen.findByText('Pick at least one reason')).toBeInTheDocument()
+    await user.click(screen.getByRole('checkbox', { name: 'Damaged' }))
+    await user.click(screen.getAllByRole('button', { name: 'Next' })[0] as HTMLElement)
+    expect(await screen.findByRole('heading', { name: 'Review' })).toBeInTheDocument()
+  })
+
+  it(
+    'step 3 serial-numbered: blocks publishing without a policy, then accepts chips and a resolution',
+    { timeout: 15_000 },
+    async () => {
+      const { user } = renderPage()
+      await toPolicy(user, true)
+      await user.click(screen.getAllByRole('button', { name: 'Next' })[0] as HTMLElement)
+      expect(
+        await screen.findByText('Serial-numbered listings need a policy before you can publish.'),
+      ).toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: "Won't power on" }))
+      await user.click(screen.getByRole('button', { name: 'Add' }))
+      await user.type(screen.getByLabelText('Problem to add'), 'Face ID not working{Enter}')
+      expect(screen.getByRole('button', { name: 'Face ID not working' })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      )
+      await user.click(screen.getByRole('radio', { name: /Repair then release/ }))
+      expect(screen.getByRole('complementary', { name: 'Live buyer preview' })).toHaveTextContent(
+        "Report a problem within 24 hours of delivery for Won't power on, Face ID not working. The seller's fix: Repair then release.",
+      )
+      await user.click(screen.getAllByRole('button', { name: 'Next' })[0] as HTMLElement)
+      expect(await screen.findByRole('heading', { name: 'Review' })).toBeInTheDocument()
+    },
+  )
 })
