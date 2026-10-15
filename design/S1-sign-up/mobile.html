@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vekro - Seller Sign Up</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Bricolage Grotesque, DM Sans, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed-dim": "#82d7ae",
+            "surface-container-high": "#e5e9e4",
+            "on-secondary-fixed-variant": "#624000",
+            "saffron-100": "#FFE8B3",
+            "ink-500": "#5E6D67",
+            "coral-600": "#C93238",
+            "emerald-400": "#2CC48A",
+            "on-error-container": "#93000a",
+            "inverse-on-surface": "#eef2ed",
+            "saffron-600": "#B87A00",
+            "on-secondary-fixed": "#291800",
+            "sand-100": "#F5F1E7",
+            "on-secondary": "#ffffff",
+            "surface-container": "#ebefea",
+            "secondary-container": "#fdaf23",
+            "surface-tint": "#056c4a",
+            "on-surface": "#181d1a",
+            "on-error": "#ffffff",
+            "emerald-700": "#0A6E4C",
+            "surface-bright": "#f7faf5",
+            "secondary-fixed-dim": "#ffb94d",
+            "sand-300": "#D8D0BA",
+            "emerald-900": "#06362A",
+            "on-secondary-container": "#6a4500",
+            "on-primary-fixed-variant": "#005237",
+            "on-primary-fixed": "#002114",
+            "sand-200": "#EAE4D4",
+            "saffron-500": "#F2A516",
+            "inverse-surface": "#2d312e",
+            "emerald-500": "#12A672",
+            "ink-950": "#0B1512",
+            "emerald-950": "#04251C",
+            "emerald-800": "#084D3B",
+            "tertiary-container": "#974846",
+            "ink-800": "#1B2824",
+            "primary": "#005438",
+            "surface-variant": "#e0e4de",
+            "emerald-50": "#E9F8F1",
+            "emerald-100": "#CDEFE0",
+            "tertiary-fixed": "#ffdad7",
+            "saffron-50": "#FFF6E0",
+            "on-primary": "#ffffff",
+            "sand-0": "#FFFFFF",
+            "error": "#ba1a1a",
+            "surface": "#f7faf5",
+            "primary-fixed": "#9ef4c9",
+            "on-tertiary-fixed-variant": "#77302f",
+            "secondary": "#815500",
+            "plum-700": "#4F36B0",
+            "surface-container-low": "#f1f5ef",
+            "outline": "#6f7a72",
+            "sand-50": "#FBF9F4",
+            "coral-50": "#FDECEC",
+            "outline-variant": "#bec9c1",
+            "on-tertiary-fixed": "#3e0408",
+            "inverse-primary": "#82d7ae",
+            "secondary-fixed": "#ffddb2",
+            "surface-dim": "#d7dbd6",
+            "primary-container": "#0a6e4c",
+            "emerald-glow": "#3DEBA6",
+            "ink-400": "#8A9792",
+            "tertiary": "#793130",
+            "ink-600": "#44524D",
+            "on-tertiary-container": "#ffd0cd",
+            "error-container": "#ffdad6",
+            "on-surface-variant": "#3f4943",
+            "plum-500": "#6B4FD8",
+            "on-primary-container": "#97edc2",
+            "lake-50": "#E8F1FD",
+            "on-tertiary": "#ffffff",
+            "tertiary-fixed-dim": "#ffb3af",
+            "emerald-600": "#0C8A5F",
+            "surface-container-highest": "#e0e4de",
+            "surface-container-lowest": "#ffffff",
+            "lake-500": "#2F80ED",
+            "on-background": "#181d1a",
+            "plum-50": "#EFEBFC",
+            "lake-600": "#1F66C8",
+            "coral-500": "#E5484D",
+            "background": "#f7faf5"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1.25rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "mono": ["JetBrains Mono", "monospace"],
+            "otp": ["JetBrains Mono", "monospace"],
+            "body-md": ["DM Sans", "sans-serif"],
+            "title": ["Bricolage Grotesque", "sans-serif"],
+            "amount": ["Bricolage Grotesque", "sans-serif"],
+            "headline": ["Bricolage Grotesque", "sans-serif"],
+            "display-xl": ["Bricolage Grotesque", "sans-serif"],
+            "display-lg": ["Bricolage Grotesque", "sans-serif"],
+            "body-sm": ["DM Sans", "sans-serif"],
+            "body-lg": ["DM Sans", "sans-serif"],
+            "label": ["DM Sans", "sans-serif"]
+          },
+          "fontSize": {
+            "mono": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "otp": ["44px", { "lineHeight": "52px", "fontWeight": "700" }],
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "title": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "amount": ["40px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "headline": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "display-xl": ["44px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "display-lg": ["34px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "body-lg": ["17px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }]
+          },
+          "boxShadow": {
+            "vault-card": "0 1px 2px rgba(11,21,18,0.04), 0 8px 24px rgba(11,21,18,0.06)",
+            "inner-subtle": "inset 0 1px 1px 0 rgba(255, 255, 255, 0.15)"
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-sand-50 text-ink-950 font-body-md antialiased min-h-screen flex justify-center selection:bg-emerald-100 selection:text-emerald-900">
+<!-- Mobile Viewport Container (390px max-width) -->
+<div class="w-full max-w-[390px] min-h-screen bg-sand-50 flex flex-col pb-10 shadow-sm relative overflow-hidden">
+<!-- 1. Emerald Header Strip (~230px height) -->
+<header class="relative w-full pt-2 pb-14 px-4 overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-800">
+<!-- Ambient Glow & Radial Accents -->
+<div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-emerald-glow opacity-[0.18] blur-2xl pointer-events-none"></div>
+<div class="absolute inset-0 bg-radial from-transparent to-emerald-950/40 pointer-events-none"></div>
+<!-- TopAppBar Shared Component Execution -->
+<div class="flex justify-between items-center w-full px-0 py-2.5 max-w-md mx-auto relative z-10">
+<!-- Leading / Back navigation button -->
+<button aria-label="Go back" class="w-10 h-10 rounded-full flex items-center justify-center text-sand-200 hover:bg-emerald-900 transition-colors active:scale-95 duration-150" type="button">
+<span class="material-symbols-outlined text-xl leading-none">arrow_back</span>
+</button>
+<!-- Brand Anchor Wordmark -->
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-emerald-700 flex items-center justify-center shadow-inner-subtle text-sand-0 font-title font-extrabold text-[16px] leading-none select-none">V</div>
+<span class="text-title font-title font-bold text-sand-0 tracking-tight">Vekro</span>
+</div>
+<!-- Trailing Trust Chip -->
+</div>
+<!-- Header Content Banner -->
+<div class="relative z-10 mt-4 px-1 pb-2">
+<h1 class="font-display-lg text-[31px] font-extrabold text-sand-0 tracking-tight leading-[1.12]">
+          Sell on social media without getting scammed
+        </h1>
+<div class="flex items-center gap-2 mt-2.5 text-emerald-100"><span class="material-symbols-outlined text-base text-emerald-glow" style="font-variation-settings: 'FILL' 1;">lock</span><p class="font-body-sm text-[13px] text-emerald-100/90 font-normal">Buyers pay into a vault locked to the order. You're paid when they accept the item.</p></div>
+</div>
+</header>
+<!-- 2. Form Card Overlapping Emerald Header by 40px -->
+<main class="mx-4 relative z-20 -mt-10">
+<div class="bg-sand-0 rounded-2xl p-5 shadow-vault-card border border-sand-200/60">
+<!-- Form Header Intro -->
+<div class="mb-5">
+<h2 class="font-title text-[22px] font-bold text-ink-950 tracking-tight leading-tight">
+            Create your seller account
+          </h2>
+<p class="font-body-sm text-ink-500 mt-1">It takes under a minute.</p>
+</div>
+<form action="#" class="space-y-4" method="POST" onsubmit="event.preventDefault()">
+<!-- Full Name Field -->
+<div>
+<label class="block font-label text-label uppercase tracking-widest text-ink-600 mb-1.5">
+              FULL NAME
+            </label>
+<div class="relative flex items-center">
+<input class="w-full h-14 bg-sand-50/50 rounded-[14px] border border-sand-200 px-4 text-ink-950 font-body-md font-medium placeholder-ink-400 focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all pr-12" type="text" value="Amina Wanjiru"/>
+<div class="absolute right-4 flex items-center justify-center text-emerald-600 pointer-events-none">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Phone Number Field -->
+<div>
+<label class="block font-label text-label uppercase tracking-widest text-ink-600 mb-1.5">
+              PHONE NUMBER
+            </label>
+<div class="w-full h-14 bg-sand-50/50 rounded-[14px] border border-sand-200 px-3 flex items-center gap-2.5 focus-within:border-emerald-700 focus-within:ring-1 focus-within:ring-emerald-700 transition-all">
+<!-- Prefix chip with Kenyan flag badge representation -->
+<div class="h-9 px-2.5 rounded-[10px] bg-sand-100 flex items-center gap-1.5 border border-sand-200/80 shrink-0">
+<span class="w-2 h-2 rounded-full bg-emerald-700"></span>
+<span class="font-mono text-mono text-ink-800 text-[13px] tracking-tight">+254</span>
+</div>
+<input class="w-full h-full bg-transparent border-0 p-0 text-ink-950 font-mono text-[15px] font-semibold focus:ring-0 focus:outline-none" type="tel" value="722 118 904"/>
+</div>
+<div class="flex items-center gap-1.5 mt-1.5 text-ink-500">
+<span class="material-symbols-outlined text-[14px] text-ink-400">info</span>
+<p class="font-body-sm text-[12px] text-ink-500">You'll log in with this number.</p>
+</div>
+</div>
+<!-- Shop Name Field (Optional) -->
+<div>
+<div class="flex justify-between items-center mb-1.5">
+<label class="font-label text-label uppercase tracking-widest text-ink-600">
+                SHOP NAME (OPTIONAL)
+              </label>
+</div>
+<div class="relative flex items-center">
+<input class="w-full h-14 bg-sand-50/50 rounded-[14px] border border-sand-200 px-4 text-ink-950 font-body-md font-medium placeholder-ink-400 focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all pr-12" type="text" value="Amina Gadgets"/>
+<div class="absolute right-4 flex items-center justify-center text-ink-400 pointer-events-none">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+</div>
+</div>
+</div>
+<!-- Password Field with Strength Bar and Checklist -->
+<div>
+<label class="block font-label text-label uppercase tracking-widest text-ink-600 mb-1.5">
+              PASSWORD
+            </label>
+<div class="relative flex items-center">
+<input class="w-full h-14 bg-sand-50/50 rounded-[14px] border border-sand-200 px-4 text-ink-950 font-mono text-base tracking-widest focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all pr-12" type="password" value="secretpassword1"/>
+<button aria-label="Toggle password visibility" class="absolute right-3.5 p-1 text-ink-400 hover:text-ink-600 transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+<!-- Password Strength Bar & Label -->
+<div class="mt-2.5">
+<div class="flex items-center justify-between gap-2 mb-1.5">
+<div class="grid grid-cols-4 gap-1.5 w-full">
+<div class="h-1.5 rounded-full bg-saffron-500"></div>
+<div class="h-1.5 rounded-full bg-saffron-500"></div>
+<div class="h-1.5 rounded-full bg-sand-200"></div>
+<div class="h-1.5 rounded-full bg-sand-200"></div>
+</div>
+<div class="px-2 py-0.5 rounded-full bg-saffron-50 border border-saffron-100 shrink-0">
+<span class="font-label text-[11px] font-bold text-saffron-600 tracking-normal">Fair</span>
+</div>
+</div>
+<!-- Password Checklist Items -->
+<div class="space-y-1 mt-2.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-600 text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-sm text-[13px] text-ink-600">8 or more characters</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-600 text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-sm text-[13px] text-ink-600">A letter</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-ink-400 text-[16px]">radio_button_unchecked</span>
+<span class="font-body-sm text-[13px] text-ink-500">A number</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Confirm Password Field -->
+<div>
+<label class="block font-label text-label uppercase tracking-widest text-ink-600 mb-1.5">
+              CONFIRM PASSWORD
+            </label>
+<div class="relative flex items-center">
+<input class="w-full h-14 bg-sand-50/50 rounded-[14px] border border-sand-200 px-4 text-ink-950 font-mono text-base tracking-widest focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all pr-12" type="password" value="secretpassword1"/>
+<button aria-label="Toggle confirm password visibility" class="absolute right-3.5 p-1 text-ink-400 hover:text-ink-600 transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- Agreement Checkbox -->
+<div class="pt-1">
+<label class="flex items-start gap-3 cursor-pointer group select-none">
+<div class="relative flex items-center justify-center mt-0.5">
+<input checked="" class="peer sr-only" type="checkbox"/>
+<div class="w-5 h-5 rounded-[5px] bg-emerald-700 border border-emerald-800 flex items-center justify-center transition-all peer-focus:ring-2 peer-focus:ring-emerald-700/20">
+<span class="material-symbols-outlined text-sand-0 text-[16px] font-bold">check</span>
+</div>
+</div>
+<span class="font-body-sm text-[13px] text-ink-800 leading-snug">
+                I agree to the <a class="font-bold underline text-ink-950 hover:text-emerald-700" href="#">Terms</a> and <a class="font-bold underline text-ink-950 hover:text-emerald-700" href="#">Privacy Policy</a>
+</span>
+</label>
+</div>
+<!-- Primary Action Button (52px height) -->
+<div class="pt-2">
+<button class="w-full h-[52px] rounded-[14px] bg-emerald-700 text-sand-0 font-title font-bold text-base flex items-center justify-center gap-2 shadow-inner-subtle hover:bg-emerald-800 active:scale-[0.98] transition-all duration-150" type="submit">
+<span>Create account</span>
+<span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</div>
+<!-- Switch to Login -->
+<div class="text-center pt-1.5 pb-0.5">
+<p class="font-body-sm text-[14px] text-ink-600">
+              Already selling with Vekro? 
+              <a class="font-bold text-emerald-700 hover:text-emerald-800 transition-colors ml-1" href="#">Log in</a>
+</p>
+</div>
+</form>
+</div>
+</main>
+<!-- 3. Bottom Trust Badges (Kenyan Escrow Trust Layer) -->
+</div>
+</body></html>

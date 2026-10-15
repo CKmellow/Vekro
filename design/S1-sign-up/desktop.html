@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vekro — Seller Sign Up</title>
+<!-- Google Fonts: Bricolage Grotesque, DM Sans, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration verbatim from Design System -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "lake-500": "#2F80ED",
+            "surface-container-highest": "#e0e4de",
+            "outline": "#6f7a72",
+            "background": "#f7faf5",
+            "saffron-500": "#F2A516",
+            "on-primary-fixed": "#002114",
+            "surface-variant": "#e0e4de",
+            "coral-50": "#FDECEC",
+            "sand-300": "#D8D0BA",
+            "saffron-600": "#B87A00",
+            "secondary": "#815500",
+            "error": "#ba1a1a",
+            "inverse-primary": "#82d7ae",
+            "emerald-600": "#0C8A5F",
+            "emerald-400": "#2CC48A",
+            "emerald-100": "#CDEFE0",
+            "on-error": "#ffffff",
+            "emerald-500": "#12A672",
+            "on-primary-fixed-variant": "#005237",
+            "plum-50": "#EFEBFC",
+            "lake-600": "#1F66C8",
+            "primary": "#005438",
+            "on-background": "#181d1a",
+            "surface-dim": "#d7dbd6",
+            "plum-700": "#4F36B0",
+            "secondary-fixed-dim": "#ffb94d",
+            "tertiary": "#793130",
+            "surface-bright": "#f7faf5",
+            "on-secondary-container": "#6a4500",
+            "primary-container": "#0a6e4c",
+            "inverse-on-surface": "#eef2ed",
+            "plum-500": "#6B4FD8",
+            "surface-container-high": "#e5e9e4",
+            "on-tertiary-container": "#ffd0cd",
+            "ink-500": "#5E6D67",
+            "on-primary-container": "#97edc2",
+            "on-primary": "#ffffff",
+            "emerald-800": "#084D3B",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f1f5ef",
+            "ink-950": "#0B1512",
+            "ink-400": "#8A9792",
+            "on-tertiary-fixed-variant": "#77302f",
+            "sand-0": "#FFFFFF",
+            "on-error-container": "#93000a",
+            "ink-600": "#44524D",
+            "on-tertiary-fixed": "#3e0408",
+            "emerald-700": "#0A6E4C",
+            "error-container": "#ffdad6",
+            "on-secondary-fixed-variant": "#624000",
+            "primary-fixed-dim": "#82d7ae",
+            "emerald-glow": "#3DEBA6",
+            "primary-fixed": "#9ef4c9",
+            "on-surface-variant": "#3f4943",
+            "emerald-900": "#06362A",
+            "emerald-50": "#E9F8F1",
+            "outline-variant": "#bec9c1",
+            "surface-tint": "#056c4a",
+            "surface": "#f7faf5",
+            "saffron-50": "#FFF6E0",
+            "tertiary-container": "#974846",
+            "saffron-100": "#FFE8B3",
+            "inverse-surface": "#2d312e",
+            "sand-100": "#F5F1E7",
+            "coral-500": "#E5484D",
+            "on-secondary": "#ffffff",
+            "lake-50": "#E8F1FD",
+            "tertiary-fixed-dim": "#ffb3af",
+            "tertiary-fixed": "#ffdad7",
+            "on-surface": "#181d1a",
+            "sand-200": "#EAE4D4",
+            "on-secondary-fixed": "#291800",
+            "sand-50": "#FBF9F4",
+            "coral-600": "#C93238",
+            "secondary-container": "#fdaf23",
+            "on-tertiary": "#ffffff",
+            "emerald-950": "#04251C",
+            "surface-container": "#ebefea",
+            "secondary-fixed": "#ffddb2",
+            "ink-800": "#1B2824"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.25rem",
+            "4xl": "1.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin": "20px",
+            "space-xs": "4px",
+            "space-xl": "40px",
+            "space-lg": "24px",
+            "gutter": "16px",
+            "space-md": "16px",
+            "space-sm": "8px"
+          },
+          "fontFamily": {
+            "title": ["Bricolage Grotesque"],
+            "body-sm": ["DM Sans"],
+            "headline": ["Bricolage Grotesque"],
+            "label": ["DM Sans"],
+            "body-md": ["DM Sans"],
+            "amount": ["Bricolage Grotesque"],
+            "mono": ["JetBrains Mono"],
+            "display-lg": ["Bricolage Grotesque"],
+            "body-lg": ["DM Sans"],
+            "otp": ["JetBrains Mono"],
+            "display-xl": ["Bricolage Grotesque"]
+          },
+          "fontSize": {
+            "title": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "headline": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }],
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "amount": ["40px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "mono": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "display-lg": ["34px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800" }],
+            "body-lg": ["17px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "otp": ["44px", { "lineHeight": "52px", "fontWeight": "700" }],
+            "display-xl": ["44px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Subtle noise/texture for deep emerald left panel */
+    .vault-texture {
+      background-image: radial-gradient(circle at 88% 12%, rgba(61, 235, 166, 0.18) 0%, transparent 45%),
+                        radial-gradient(circle at 10% 90%, rgba(12, 138, 95, 0.12) 0%, transparent 40%);
+    }
+    .custom-soft-shadow {
+      box-shadow: 0 4px 20px -2px rgba(11, 21, 18, 0.05), 0 20px 48px -10px rgba(11, 21, 18, 0.08);
+    }
+    .vault-card-glow {
+      box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.12), 0 24px 48px -12px rgba(4, 37, 28, 0.5);
+    }
+  </style>
+</head>
+<body class="h-full bg-sand-50 font-body-md text-ink-950 antialiased selection:bg-emerald-100 selection:text-emerald-900">
+<!-- Desktop Full Screen Split (Linear Sign-up Flow - Global Top/Bottom Nav Suppressed per Rule) -->
+<div class="min-h-screen w-full flex flex-col lg:flex-row">
+<!-- LEFT PANEL: 55% Deep Emerald Vault Section -->
+<section class="relative w-full lg:w-[55%] bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-800 text-sand-0 p-8 lg:p-14 flex flex-col justify-between overflow-hidden vault-texture">
+<!-- Subtle architectural backdrop line -->
+<div class="pointer-events-none absolute -right-24 -bottom-24 w-96 h-96 rounded-full border border-emerald-500/10"></div>
+<div class="pointer-events-none absolute right-20 -bottom-10 w-64 h-64 rounded-full border border-emerald-400/10"></div>
+<!-- Left Top Bar: Brand & Seller Pill -->
+<header class="relative z-10 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<!-- Vekro Emblem -->
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-sand-0 shadow-sm font-title font-extrabold text-2xl tracking-tighter select-none">V</div>
+<span class="font-title text-title text-sand-0 font-bold tracking-tight text-2xl">Vekro</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-900/80 border border-emerald-500/30 text-emerald-glow font-label text-label tracking-widest uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          FOR KENYAN SELLERS
+        </div>
+</header>
+<!-- Center Content: Value Propositions & Floating Vault Card -->
+<div class="relative z-10 my-auto py-8 lg:py-10 max-w-xl">
+<!-- Headline & Subtitle -->
+<h1 class="font-display-xl text-display-xl text-sand-0 font-extrabold tracking-tight mb-4">
+          Sell on social media without getting scammed
+        </h1>
+<p class="font-body-lg text-body-lg text-sand-200 mb-8 leading-relaxed max-w-lg">Buyers pay into a vault locked to the order. You're paid when they accept the item.</p>
+<!-- Benefit Rows -->
+<div class="space-y-4 mb-10">
+<!-- Benefit 1 -->
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-400/25 flex items-center justify-center text-emerald-glow shrink-0">
+<span class="material-symbols-outlined text-xl" data-icon="lock">lock</span>
+</div>
+<p class="font-body-md text-body-md font-medium text-sand-100">
+              Buyers pay into escrow, you ship with confidence
+            </p>
+</div>
+<!-- Benefit 2 -->
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-400/25 flex items-center justify-center text-emerald-glow shrink-0">
+<span class="material-symbols-outlined text-xl" data-icon="local_shipping">local_shipping</span>
+</div>
+<p class="font-body-md text-body-md font-medium text-sand-100">
+              Get paid when the buyer accepts the item
+            </p>
+</div>
+<!-- Benefit 3 -->
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-400/25 flex items-center justify-center text-emerald-glow shrink-0">
+<span class="material-symbols-outlined text-xl" data-icon="verified_user">verified_user</span>
+</div>
+<p class="font-body-md text-body-md font-medium text-sand-100">
+              Fewer fake orders and no cash-on-delivery losses
+            </p>
+</div>
+</div>
+<!-- Floating Mini Vault Card -->
+<div class="rounded-4xl bg-emerald-900 border border-emerald-500/30 p-6 vault-card-glow backdrop-blur-md">
+<!-- Top Row: Reference & Badge -->
+<div class="flex items-center justify-between pb-4 border-b border-emerald-800/80 mb-5">
+<div class="flex items-center gap-2"><span class="font-mono text-mono text-sand-300 font-semibold tracking-wider">VK-7K3P9Q</span></div>
+<div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-400/40 text-emerald-glow font-label text-[11px] tracking-wider uppercase font-bold">
+<span class="material-symbols-outlined text-[14px]" data-icon="lock" style="font-variation-settings: 'FILL' 1;">lock</span>
+              PROTECTED ESCROW
+            </div>
+</div>
+<!-- Amount Section with Lock Ring -->
+<div class="flex items-center justify-between gap-4 mb-5">
+<div>
+<span class="block font-label text-label text-sand-300 uppercase tracking-widest mb-1">
+                AMOUNT HELD
+              </span>
+<div class="flex items-baseline gap-1.5">
+<span class="font-headline text-headline text-emerald-400 font-bold">KES</span>
+<span class="font-amount text-amount text-sand-0 font-extrabold tracking-tight">52,000</span>
+</div>
+</div>
+<!-- 56px Mint Lock Ring -->
+<div class="relative w-14 h-14 rounded-full bg-emerald-950/90 border-2 border-emerald-glow flex items-center justify-center text-emerald-glow shadow-lg shadow-emerald-950/50">
+<div class="absolute inset-1 rounded-full border border-dashed border-emerald-400/30 animate-[spin_12s_linear_infinite]"></div>
+<span class="material-symbols-outlined text-2xl" data-icon="lock" style="font-variation-settings: 'FILL' 1;">lock</span>
+</div>
+</div>
+<!-- Bottom Row: Status Pill & Transfer Details -->
+<div class="pt-4 border-t border-emerald-800/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sand-200">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-600/40 w-fit">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span class="font-body-sm text-body-sm text-sand-100 font-medium">Paid, funds held safely</span>
+</div>
+<p class="font-body-sm text-body-sm text-sand-300/80">Held until the buyer accepts</p>
+</div>
+</div>
+</div>
+<!-- Bottom Compliance Note -->
+</section>
+<!-- RIGHT PANEL: 45% Warm Sand Form Section -->
+<section class="w-full lg:w-[45%] bg-sand-50 p-6 md:p-10 lg:p-14 flex items-center justify-center">
+<!-- White Form Card (Max 440px) -->
+<div class="w-full max-w-[440px] bg-sand-0 rounded-[20px] p-8 md:p-9 custom-soft-shadow border border-sand-200/70">
+<!-- Header -->
+<div class="mb-6">
+<h2 class="font-headline text-headline text-ink-950 font-bold tracking-tight mb-1">
+            Create your seller account
+          </h2>
+<p class="font-body-md text-body-md text-ink-500">
+            It takes under a minute.
+          </p>
+</div>
+<!-- Form Elements -->
+<form class="space-y-4" onsubmit="event.preventDefault();">
+<!-- FULL NAME -->
+<div>
+<label class="block font-label text-label text-ink-600 tracking-wider uppercase mb-1.5">
+              FULL NAME
+            </label>
+<div class="relative">
+<input class="w-full h-14 px-4 rounded-[14px] bg-sand-0 border border-sand-200 text-ink-950 font-body-md text-body-md focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition-all shadow-sm" placeholder="Enter your full name" type="text" value="Amina Wanjiru"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-ink-400 text-xl" data-icon="person">person</span>
+</div>
+</div>
+<!-- PHONE NUMBER -->
+<div>
+<label class="block font-label text-label text-ink-600 tracking-wider uppercase mb-1.5">
+              PHONE NUMBER
+            </label>
+<div class="relative flex items-center">
+<!-- Kenyan Dial Code Pill -->
+<div class="absolute left-2 flex items-center gap-1 px-2.5 py-1.5 bg-sand-100 rounded-lg border border-sand-200/80 text-ink-800 font-mono text-body-sm font-semibold select-none z-10">
+<span class="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+<span>+254</span>
+</div>
+<input class="w-full h-14 pl-24 pr-4 rounded-[14px] bg-sand-0 border border-sand-200 text-ink-950 font-mono text-mono font-medium focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition-all shadow-sm tracking-wider" placeholder="7XX XXX XXX" type="tel" value="722 118 904"/>
+</div>
+<p class="font-body-sm text-[12px] text-ink-500 mt-1.5 leading-tight flex items-start gap-1">
+<span class="material-symbols-outlined text-[14px] text-ink-400 mt-0.5 shrink-0" data-icon="info">info</span>
+<span>You'll log in with this number. We also text payout updates here.</span>
+</p>
+</div>
+<!-- SHOP NAME (OPTIONAL) -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="font-label text-label text-ink-600 tracking-wider uppercase">
+                SHOP NAME
+              </label>
+<span class="font-label text-[11px] text-ink-400 tracking-wider uppercase">OPTIONAL</span>
+</div>
+<div class="relative">
+<input class="w-full h-14 px-4 rounded-[14px] bg-sand-0 border border-sand-200 text-ink-950 font-body-md text-body-md focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition-all shadow-sm" placeholder="e.g. Nairobi Chic Boutique" type="text" value="Amina Gadgets"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-ink-400 text-xl" data-icon="storefront">storefront</span>
+</div>
+</div>
+<!-- PASSWORD -->
+<div>
+<label class="block font-label text-label text-ink-600 tracking-wider uppercase mb-1.5">
+              PASSWORD
+            </label>
+<div class="relative">
+<input class="w-full h-14 px-4 pr-11 rounded-[14px] bg-sand-0 border border-sand-200 text-ink-950 font-mono tracking-widest text-lg focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition-all shadow-sm" type="password" value="Keny@Escrow2025!"/>
+<button aria-label="Toggle password visibility" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-ink-500 hover:text-ink-800 transition-colors p-1" type="button">
+<span class="material-symbols-outlined text-xl" data-icon="visibility">visibility</span>
+</button>
+</div>
+<!-- Password Strength Indicator (3 Emerald, 1 Sand-200) -->
+<div class="mt-2 space-y-1.5">
+<div class="flex items-center gap-1.5">
+<div class="h-1.5 flex-1 rounded-full bg-emerald-600"></div>
+<div class="h-1.5 flex-1 rounded-full bg-emerald-600"></div>
+<div class="h-1.5 flex-1 rounded-full bg-emerald-600"></div>
+<div class="h-1.5 flex-1 rounded-full bg-sand-200"></div>
+<span class="font-body-sm text-[12px] font-bold text-emerald-700 ml-1">Strong</span>
+</div>
+<!-- Check rules -->
+<div class="flex items-center gap-3 font-body-sm text-[12px] text-ink-600 font-medium">
+<span class="flex items-center gap-1 text-emerald-700 font-semibold">
+<span class="material-symbols-outlined text-[14px]" data-icon="check">check</span> 8+ chars
+                </span>
+<span class="flex items-center gap-1 text-emerald-700 font-semibold">
+<span class="material-symbols-outlined text-[14px]" data-icon="check">check</span> A number
+                </span>
+<span class="flex items-center gap-1 text-emerald-700 font-semibold">
+<span class="material-symbols-outlined text-[14px]" data-icon="check">check</span> A letter
+                </span>
+</div>
+</div>
+</div>
+<!-- CONFIRM PASSWORD -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="font-label text-label text-ink-600 tracking-wider uppercase">
+                CONFIRM PASSWORD
+              </label>
+<!-- Small match pill -->
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-label text-[11px] font-bold border border-emerald-100">
+<span class="material-symbols-outlined text-[13px]" data-icon="check">check</span>
+                Passwords match
+              </span>
+</div>
+<div class="relative">
+<input class="w-full h-14 px-4 pr-11 rounded-[14px] bg-sand-0 border border-emerald-600 text-ink-950 font-mono tracking-widest text-lg focus:outline-none focus:ring-2 focus:ring-emerald-100 transition-all shadow-sm" type="password" value="Keny@Escrow2025!"/>
+<button aria-label="Toggle confirm password visibility" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-ink-500 hover:text-ink-800 transition-colors p-1" type="button">
+<span class="material-symbols-outlined text-xl" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<!-- Checkbox: Terms & Privacy -->
+<div class="pt-1">
+<label class="flex items-start gap-3 cursor-pointer group">
+<input checked="" class="w-5 h-5 mt-0.5 rounded border-sand-300 text-emerald-700 focus:ring-emerald-600 focus:ring-offset-0 cursor-pointer" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-ink-600 leading-snug">
+                I agree to the 
+                <a class="text-emerald-700 font-semibold underline decoration-emerald-600/40 hover:decoration-emerald-700 hover:text-emerald-800 transition-colors" href="#">Terms</a> 
+                and 
+                <a class="text-emerald-700 font-semibold underline decoration-emerald-600/40 hover:decoration-emerald-700 hover:text-emerald-800 transition-colors" href="#">Privacy Policy</a>
+</span>
+</label>
+</div>
+<!-- Primary CTA Button -->
+<div class="pt-2">
+<button class="w-full h-[52px] rounded-[14px] bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-sand-0 font-body-md font-bold flex items-center justify-center gap-2 shadow-sm transition-all duration-150" type="submit">
+<span>Create account</span>
+<span class="material-symbols-outlined text-lg" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- Login Link -->
+<div class="text-center pt-2">
+<p class="font-body-sm text-body-sm text-ink-500">
+              Already selling with Vekro? 
+              <a class="font-semibold text-emerald-700 hover:text-emerald-900 transition-colors" href="#">
+                Log in
+              </a>
+</p>
+</div>
+</form>
+</div>
+</section>
+</div>
+</body></html>

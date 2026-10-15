@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vekro - Seller Onboarding (Step 2 of 2: Get Paid)</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration matching Vekro Tokens exactly -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-highest": "#e0e4de",
+            "sand-50": "#FBF9F4",
+            "on-surface-variant": "#3f4943",
+            "emerald-950": "#04251C",
+            "secondary-fixed": "#ffddb2",
+            "surface-dim": "#d7dbd6",
+            "saffron-600": "#B87A00",
+            "secondary-container": "#fdaf23",
+            "on-surface": "#181d1a",
+            "inverse-on-surface": "#eef2ed",
+            "emerald-glow": "#3DEBA6",
+            "emerald-500": "#12A672",
+            "on-error-container": "#93000a",
+            "lake-500": "#2F80ED",
+            "primary": "#005438",
+            "on-secondary-fixed": "#291800",
+            "ink-600": "#44524D",
+            "lake-600": "#1F66C8",
+            "ink-400": "#8A9792",
+            "emerald-100": "#CDEFE0",
+            "emerald-600": "#0C8A5F",
+            "on-background": "#181d1a",
+            "emerald-900": "#06362A",
+            "plum-500": "#6B4FD8",
+            "surface-container": "#ebefea",
+            "secondary-fixed-dim": "#ffb94d",
+            "on-error": "#ffffff",
+            "secondary": "#815500",
+            "primary-fixed-dim": "#82d7ae",
+            "on-tertiary-fixed-variant": "#77302f",
+            "tertiary-fixed": "#ffdad7",
+            "on-tertiary-fixed": "#3e0408",
+            "on-secondary": "#ffffff",
+            "background": "#f7faf5",
+            "on-primary": "#ffffff",
+            "plum-700": "#4F36B0",
+            "coral-50": "#FDECEC",
+            "inverse-primary": "#82d7ae",
+            "on-secondary-fixed-variant": "#624000",
+            "tertiary-container": "#974846",
+            "plum-50": "#EFEBFC",
+            "primary-container": "#0a6e4c",
+            "tertiary-fixed-dim": "#ffb3af",
+            "surface": "#f7faf5",
+            "saffron-100": "#FFE8B3",
+            "emerald-400": "#2CC48A",
+            "coral-500": "#E5484D",
+            "error-container": "#ffdad6",
+            "coral-600": "#C93238",
+            "ink-950": "#0B1512",
+            "surface-bright": "#f7faf5",
+            "tertiary": "#793130",
+            "surface-tint": "#056c4a",
+            "outline-variant": "#bec9c1",
+            "saffron-50": "#FFF6E0",
+            "outline": "#6f7a72",
+            "sand-200": "#EAE4D4",
+            "surface-container-lowest": "#ffffff",
+            "sand-300": "#D8D0BA",
+            "on-secondary-container": "#6a4500",
+            "on-primary-fixed-variant": "#005237",
+            "surface-variant": "#e0e4de",
+            "on-tertiary-container": "#ffd0cd",
+            "on-primary-container": "#97edc2",
+            "surface-container-low": "#f1f5ef",
+            "sand-100": "#F5F1E7",
+            "ink-500": "#5E6D67",
+            "saffron-500": "#F2A516",
+            "primary-fixed": "#9ef4c9",
+            "on-tertiary": "#ffffff",
+            "on-primary-fixed": "#002114",
+            "emerald-800": "#084D3B",
+            "emerald-50": "#E9F8F1",
+            "sand-0": "#FFFFFF",
+            "ink-800": "#1B2824",
+            "error": "#ba1a1a",
+            "lake-50": "#E8F1FD",
+            "surface-container-high": "#e5e9e4",
+            "emerald-700": "#0A6E4C",
+            "inverse-surface": "#2d312e"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter": "16px",
+            "space-xl": "40px",
+            "space-lg": "24px",
+            "space-md": "16px",
+            "space-xs": "4px",
+            "space-sm": "8px",
+            "margin": "20px"
+          },
+          "fontFamily": {
+            "label": ["DM Sans"],
+            "mono": ["JetBrains Mono"],
+            "otp": ["JetBrains Mono"],
+            "display-lg": ["Bricolage Grotesque"],
+            "body-sm": ["DM Sans"],
+            "headline": ["Bricolage Grotesque"],
+            "title": ["Bricolage Grotesque"],
+            "display-xl": ["Bricolage Grotesque"],
+            "body-lg": ["DM Sans"],
+            "amount": ["Bricolage Grotesque"],
+            "body-md": ["DM Sans"]
+          },
+          "fontSize": {
+            "label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }],
+            "mono": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "otp": ["44px", { "lineHeight": "52px", "fontWeight": "700" }],
+            "display-lg": ["34px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "headline": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "title": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "display-xl": ["44px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "body-lg": ["17px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "amount": ["40px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Custom double-layer shadow compliant with Vekro card guidelines */
+    .vekro-card-shadow {
+      box-shadow: 0 1px 2px rgba(11, 21, 18, 0.04), 0 8px 24px rgba(11, 21, 18, 0.06);
+    }
+    
+    /* Range Slider Styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: transparent;
+    }
+    input[type=range]:focus {
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 8px;
+      cursor: pointer;
+      background: #EAE4D4;
+      border-radius: 9999px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      background: #0A6E4C;
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: -8px;
+      border: 3px solid #FFFFFF;
+      box-shadow: 0 2px 6px rgba(10, 110, 76, 0.35);
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.12);
+      background: #005438;
+    }
+    input[type=range]::-moz-range-track {
+      width: 100%;
+      height: 8px;
+      cursor: pointer;
+      background: #EAE4D4;
+      border-radius: 9999px;
+    }
+    input[type=range]::-moz-range-thumb {
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      background: #0A6E4C;
+      cursor: pointer;
+      border: 3px solid #FFFFFF;
+      box-shadow: 0 2px 6px rgba(10, 110, 76, 0.35);
+    }
+  </style>
+</head>
+<body class="bg-sand-50 text-ink-950 font-body-md antialiased min-h-screen flex flex-col justify-between selection:bg-emerald-100 selection:text-emerald-900">
+<!-- TOP BAR (Shared Component: TopNavBar execution) -->
+<header class="w-full px-8 py-3.5 flex justify-between items-center bg-surface-container-lowest/90 backdrop-blur-sm sticky top-0 z-30 border-b border-sand-200">
+<div class="max-w-[1040px] w-full mx-auto flex items-center justify-between">
+<!-- Left: Brand Logo Mark & Name -->
+<a aria-label="Vekro Home" class="flex items-center gap-2.5 group transition-transform active:scale-[0.99]" href="#">
+<!-- Emerald rounded square with white geometric 'V' -->
+<div class="w-9 h-9 rounded-xl bg-emerald-700 flex items-center justify-center shadow-sm group-hover:bg-primary transition-colors">
+<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" viewbox="0 0 20 20">
+<polyline points="4 6 10 15 16 6"></polyline>
+</svg>
+</div>
+<span class="font-headline text-headline font-bold text-emerald-950 tracking-tight">Vekro</span>
+</a>
+<!-- Right: User Identity & Support Link -->
+<div class="flex items-center gap-5">
+<span class="text-body-sm font-label text-ink-500 font-medium hidden sm:inline-block">Signed in as <span class="text-ink-800 font-semibold">Amina Wanjiru</span></span>
+<button class="text-body-sm font-label font-bold text-emerald-700 hover:text-emerald-900 px-3.5 py-1.5 rounded-lg hover:bg-sand-100 transition-colors" type="button">
+          Save &amp; Exit
+        </button>
+</div>
+</div>
+</header>
+<!-- MAIN CANVAS CONTAINER: Exactly 1040px wide max, centered -->
+<main class="w-full max-w-[1040px] mx-auto px-4 sm:px-6 py-8 md:py-10 flex-1 flex flex-col justify-center">
+<!-- STEPPER / PROGRESS HEADER -->
+<section aria-label="Onboarding Progress" class="w-full max-w-[520px] mx-auto mb-9 text-center">
+<span class="inline-block text-[11px] font-bold tracking-[0.14em] uppercase text-emerald-700 font-label mb-3">
+        STEP 2 OF 2
+      </span>
+<!-- Stepper Indicator -->
+<div class="relative flex items-center justify-between px-6">
+<!-- Connecting Bar Background -->
+<div class="absolute left-14 right-14 top-4 -translate-y-1/2 h-[3px] bg-emerald-100 z-0"></div>
+<!-- Completed fill bar -->
+<div class="absolute left-14 right-14 top-4 -translate-y-1/2 h-[3px] bg-emerald-700 z-0"></div>
+<!-- Step 1: Completed -->
+<div class="relative z-10 flex flex-col items-center group cursor-default">
+<div class="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="text-[13px] font-semibold text-ink-800 font-label mt-2">Your shop</span>
+</div>
+<!-- Step 2: Current (Get Paid) with soft pulsing emerald glow ring -->
+<div class="relative z-10 flex flex-col items-center cursor-default">
+<div class="relative">
+<div class="absolute -inset-1.5 rounded-full bg-emerald-100 animate-pulse opacity-80"></div>
+<div class="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-sm relative z-10 shadow-sm ring-2 ring-emerald-500/20">
+              2
+            </div>
+</div>
+<span class="text-[13px] font-bold text-ink-950 font-label mt-2">Get paid</span>
+</div>
+</div>
+</section>
+<!-- TWO-COLUMN MAIN CONTENT (1040px wide total with 28px gap) -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-7 items-start">
+<!-- LEFT CARD: Payout Account Form -->
+<div class="bg-surface-container-lowest rounded-[20px] p-7 md:p-8 border border-sand-200 vekro-card-shadow flex flex-col justify-between">
+<div>
+<h1 class="font-headline text-headline font-bold text-ink-950 tracking-tight">
+            Where should we send your money?
+          </h1>
+<p class="font-body-sm text-body-sm text-ink-500 mt-2 mb-7 leading-relaxed">
+            Payouts go to M-Pesa. You're paid only after the buyer accepts the item.
+          </p>
+<form class="space-y-5" onsubmit="event.preventDefault();">
+<!-- Field 1: M-PESA PAYOUT NUMBER -->
+<div>
+<label class="block text-[11px] font-bold tracking-[0.08em] uppercase text-ink-500 font-label mb-2" for="mpesa-number">
+                M-PESA PAYOUT NUMBER
+              </label>
+<div class="relative flex items-center rounded-[14px] border border-sand-200 bg-sand-50/40 focus-within:border-emerald-700 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+<span class="pl-4 pr-3 py-4 text-xs font-bold font-mono text-ink-600 border-r border-sand-200 bg-sand-100/60 rounded-l-[14px] select-none">
+                  +254
+                </span>
+<input class="w-full h-14 px-4 bg-transparent border-0 text-ink-950 font-mono font-semibold text-[15px] focus:ring-0 focus:outline-none" id="mpesa-number" name="mpesa-number" placeholder="700 000 000" type="text" value="722 118 904"/>
+</div>
+</div>
+<!-- Field 2: CONFIRM M-PESA NUMBER -->
+<div>
+<label class="block text-[11px] font-bold tracking-[0.08em] uppercase text-ink-500 font-label mb-2" for="confirm-mpesa-number">
+                CONFIRM M-PESA NUMBER
+              </label>
+<div class="relative flex items-center rounded-[14px] border border-sand-200 bg-sand-50/40 focus-within:border-emerald-700 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+<span class="pl-4 pr-3 py-4 text-xs font-bold font-mono text-ink-600 border-r border-sand-200 bg-sand-100/60 rounded-l-[14px] select-none">
+                  +254
+                </span>
+<input class="w-full h-14 px-4 bg-transparent border-0 text-ink-950 font-mono font-semibold text-[15px] focus:ring-0 focus:outline-none" id="confirm-mpesa-number" name="confirm-mpesa-number" placeholder="700 000 000" type="text" value="722 118 904"/>
+</div>
+<!-- Numbers Match Indicator -->
+<div class="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600 font-label">
+<span class="material-symbols-outlined text-[16px] font-bold" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>Numbers match</span>
+</div>
+</div>
+<!-- Field 3: NAME ON M-PESA -->
+<div>
+<label class="block text-[11px] font-bold tracking-[0.08em] uppercase text-ink-500 font-label mb-2" for="name-on-mpesa">
+                NAME ON M-PESA
+              </label>
+<div class="relative rounded-[14px] border border-sand-200 bg-sand-50/40 focus-within:border-emerald-700 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+<input class="w-full h-14 px-4 bg-transparent border-0 text-ink-950 font-mono font-bold tracking-wide text-[15px] focus:ring-0 focus:outline-none uppercase" id="name-on-mpesa" name="name-on-mpesa" placeholder="FIRSTNAME LASTNAME" type="text" value="AMINA WANJIRU"/>
+</div>
+<p class="text-[12px] font-label text-ink-500 mt-2">As it appears on your M-Pesa account.</p>
+</div>
+</form>
+</div>
+<!-- Trust Note Banner -->
+<div class="mt-8 bg-emerald-50 rounded-xl p-4 border border-emerald-100 flex items-start gap-3.5">
+<div class="w-8 h-8 rounded-lg bg-emerald-100/70 flex items-center justify-center shrink-0 text-emerald-800">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">shield</span>
+</div>
+<p class="text-xs text-ink-800 font-body-sm leading-relaxed">See exactly what reaches your M-Pesa before every sale.</p>
+</div>
+</div>
+<!-- RIGHT CARD: Fee Explainer & Calculator -->
+<div class="bg-surface-container-lowest rounded-[20px] border border-sand-200 vekro-card-shadow overflow-hidden flex flex-col justify-between">
+<!-- Header Strip -->
+<div class="bg-emerald-50 p-6 border-b border-emerald-100/60">
+<div class="flex items-center justify-between mb-1">
+<h2 class="font-headline text-title font-bold text-ink-950">
+              How your payout works
+            </h2>
+</div>
+<p class="font-body-sm text-xs text-ink-600 leading-normal">See exactly what reaches your M-Pesa before every sale.</p>
+</div>
+<!-- Card Body -->
+<div class="p-6 md:p-7 space-y-6">
+<!-- Interactive Simulator Block -->
+<div>
+<div class="flex items-baseline justify-between mb-2">
+<span class="text-[11px] font-bold tracking-[0.08em] uppercase text-ink-500 font-label">
+                SALE AMOUNT
+              </span>
+</div>
+<div class="flex items-baseline gap-2 mb-3">
+<span class="font-headline text-[32px] md:text-amount font-extrabold text-ink-950 tracking-tight leading-none" id="display-sale-amount">
+                KES 52,000
+              </span>
+</div>
+<!-- Slider Control -->
+<div class="pt-1">
+<label class="sr-only" for="sale-slider">Adjust simulated sale amount</label>
+<input aria-label="Sale amount slider" class="w-full" id="sale-slider" max="200000" min="500" step="500" type="range" value="52000"/>
+<div class="flex justify-between items-center text-xs font-mono text-ink-400 mt-2">
+<span>KES 500</span>
+<span>KES 200,000</span>
+</div>
+</div>
+</div>
+<!-- Stacked Horizontal Bar -->
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="text-[11px] font-bold tracking-[0.08em] uppercase text-ink-500 font-label">
+                PAYOUT BREAKDOWN
+              </span>
+<span class="text-[11px] font-bold text-emerald-700 font-mono" id="rate-tag">
+                99.7% To Seller
+              </span>
+</div>
+<div class="h-12 rounded-[14px] overflow-hidden flex items-stretch border border-sand-200 shadow-sm bg-sand-100">
+<!-- Emerald Segment (approx 96-99%) -->
+<div class="bg-emerald-700 text-white font-medium text-xs md:text-sm flex items-center px-4 justify-between transition-all duration-200" id="bar-seller-payout" style="width: 100%;">
+<span class="font-label font-bold text-[13px] flex items-center gap-1.5 whitespace-nowrap">
+<span class="w-2 h-2 rounded-full bg-emerald-glow"></span>
+                  You receive
+                </span>
+<span class="font-mono font-bold text-xs md:text-sm whitespace-nowrap" id="bar-payout-text">
+                  KES 51,870
+                </span>
+</div>
+<!-- Sand Segment (Network Fee) -->
+</div>
+</div>
+<!-- Mini Ledger Table -->
+<div class="bg-sand-50 rounded-xl p-4 border border-sand-200/90 space-y-2.5">
+<div class="flex justify-between items-center text-body-sm text-ink-700">
+<span class="font-label font-medium">Buyer pays</span>
+<span class="font-mono font-semibold text-ink-950" id="ledger-buyer-pays">KES 52,000</span>
+</div>
+<div class="flex justify-between items-center text-body-sm text-ink-500">
+<span class="font-label font-medium flex items-center gap-1.5">
+<span>Network fee</span>
+</span>
+<span class="font-mono text-ink-600" id="ledger-network-fee">- KES 130</span>
+</div>
+<div class="pt-2 border-t border-sand-200 flex justify-between items-baseline">
+<span class="font-label font-bold text-ink-950 text-sm">You receive</span>
+<span class="font-headline font-bold text-lg md:text-xl text-emerald-700" id="ledger-you-receive">KES 51,870</span>
+</div>
+</div>
+<!-- Explanatory Caption -->
+<p class="font-body-sm text-xs text-ink-500 leading-normal">
+            The network fee is what M-Pesa charges to move the money. Vekro shows it before every sale.
+          </p>
+</div>
+</div>
+</div>
+<!-- DOCKED ACTION FOOTER (Centered across 1040px width) -->
+<div class="w-full mt-10 pt-6 border-t border-sand-200 flex items-center justify-between">
+<button class="inline-flex items-center gap-2 text-ink-600 hover:text-ink-950 font-label font-bold text-sm px-4 py-2.5 rounded-xl hover:bg-sand-100 transition-colors" type="button">
+<span class="material-symbols-outlined text-lg">arrow_back</span>
+        Back
+      </button>
+<button class="bg-emerald-700 hover:bg-emerald-800 text-white font-label font-bold text-base h-[52px] px-8 rounded-[14px] shadow-sm flex items-center gap-2 transition-all active:scale-[0.98] hover:shadow-md" type="button">
+<span>Save and finish</span>
+<span class="material-symbols-outlined text-xl">arrow_forward</span>
+</button>
+</div>
+</main>
+<!-- Action Dock Footer / Legal Copyright (Shared Component: Footer execution) -->
+<!-- Light Interactive Script for M-Pesa Fee Calculator Simulator -->
+<script>
+    (function initCalculator() {
+      const slider = document.getElementById('sale-slider');
+      const displaySale = document.getElementById('display-sale-amount');
+      const ledgerBuyer = document.getElementById('ledger-buyer-pays');
+      const ledgerFee = document.getElementById('ledger-network-fee');
+      const ledgerReceive = document.getElementById('ledger-you-receive');
+      const barSeller = document.getElementById('bar-seller-payout');
+      const barPayoutText = document.getElementById('bar-payout-text');
+      const barFee = document.getElementById('bar-network-fee');
+      const rateTag = document.getElementById('rate-tag');
+
+      // Realistic tier calculation for M-Pesa Kenyan B2C transfer band
+      function computeNetworkFee(amount) {
+        if (amount <= 100) return 0;
+        if (amount <= 500) return 11;
+        if (amount <= 1000) return 15;
+        if (amount <= 5000) return 34;
+        if (amount <= 10000) return 55;
+        if (amount <= 20000) return 85;
+        if (amount <= 50000) return 120;
+        if (amount <= 100000) return 130;
+        return 160;
+      }
+
+      function updateValues(amount) {
+        const fee = computeNetworkFee(amount);
+        const payout = Math.max(0, amount - fee);
+        const payoutPercent = Math.min(99.5, Math.max(88, ((payout / amount) * 100))).toFixed(1);
+        const feePercent = (100 - payoutPercent).toFixed(1);
+
+        const formattedAmount = 'KES ' + amount.toLocaleString('en-US');
+        const formattedFee = 'KES ' + fee.toLocaleString('en-US');
+        const formattedPayout = 'KES ' + payout.toLocaleString('en-US');
+
+        displaySale.textContent = formattedAmount;
+        ledgerBuyer.textContent = formattedAmount;
+        ledgerFee.textContent = '- ' + formattedFee;
+        ledgerReceive.textContent = formattedPayout;
+        barPayoutText.textContent = formattedPayout;
+        rateTag.textContent = payoutPercent + '% To Seller';
+
+        barSeller.style.width = payoutPercent + '%';
+        barFee.style.width = feePercent + '%';
+        barFee.setAttribute('title', 'Network fee ' + formattedFee);
+      }
+
+      if (slider) {
+        slider.addEventListener('input', function(e) {
+          const val = parseInt(e.target.value, 10);
+          updateValues(val);
+        });
+      }
+    })();
+  </script>
+</body></html>
