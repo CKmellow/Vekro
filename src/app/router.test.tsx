@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
@@ -60,6 +60,17 @@ describe('router', () => {
     expect(router.state.location.search).toBe(
       `?returnTo=${encodeURIComponent('/seller/orders?segment=held')}`,
     )
+  })
+
+  it('says the session expired when it ends under a signed-in seller', async () => {
+    signedInAs('seller')
+    const { router, client } = renderAt('/seller/orders')
+    await screen.findByRole('heading', { name: 'Orders' })
+    signedInAs(null)
+    await act(() => client.invalidateQueries({ queryKey: ['session', 'me'] }))
+    await screen.findByRole('heading', { name: 'Log in' })
+    expect(new URLSearchParams(router.state.location.search).get('reason')).toBe('expired')
+    expect(new URLSearchParams(router.state.location.search).get('returnTo')).toBe('/seller/orders')
   })
 
   it('sends anonymous users to the admin login for console routes', async () => {

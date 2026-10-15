@@ -12,8 +12,9 @@ export function RequireRole({ allow: role }: { allow: Extract<Role, 'seller' | '
   if (session.status === 'loading') return <LoadingPage />
   if (session.status === 'error') return <ErrorPage onRetry={session.retry} />
   if (session.status === 'anonymous') {
-    const returnTo = encodeURIComponent(`${location.pathname}${location.search}`)
-    return <Navigate to={`${LOGIN[role]}?returnTo=${returnTo}`} replace />
+    const params = new URLSearchParams({ returnTo: `${location.pathname}${location.search}` })
+    if (session.expired) params.set('reason', 'expired')
+    return <Navigate to={`${LOGIN[role]}?${params}`} replace />
   }
   if (session.role !== role) return <NoPermissionPage area={role} />
   return <Outlet />

@@ -16,13 +16,22 @@ export class ApiError extends Error {
   readonly kind: ApiErrorKind
   readonly status: number | null
   readonly fieldErrors: FieldErrors
+  /** From the Retry-After header on 429 (login lockout). */
+  readonly retryAfterSeconds?: number
 
-  constructor(kind: ApiErrorKind, message: string, status: number | null, fieldErrors: FieldErrors = {}) {
+  constructor(
+    kind: ApiErrorKind,
+    message: string,
+    status: number | null,
+    fieldErrors: FieldErrors = {},
+    retryAfterSeconds?: number,
+  ) {
     super(message)
     this.name = 'ApiError'
     this.kind = kind
     this.status = status
     this.fieldErrors = fieldErrors
+    this.retryAfterSeconds = retryAfterSeconds
   }
 }
 

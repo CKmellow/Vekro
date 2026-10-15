@@ -1,10 +1,11 @@
 import { QueryClient } from '@tanstack/react-query'
 import { ApiError } from '@/models/api/errors'
+import { watchSessionExpiry } from '@/models/queries/session'
 
 const NO_RETRY = new Set(['unauthorized', 'forbidden', 'not_found', 'conflict', 'validation'])
 
 export function createQueryClient() {
-  return new QueryClient({
+  const client = new QueryClient({
     defaultOptions: {
       queries: {
         // Client errors won't fix themselves; retry only network and server failures.
@@ -14,4 +15,6 @@ export function createQueryClient() {
       mutations: { retry: false },
     },
   })
+  watchSessionExpiry(client)
+  return client
 }
