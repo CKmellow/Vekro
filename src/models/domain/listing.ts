@@ -128,3 +128,19 @@ export function policySummary(policy: {
   const problems = policy.acceptedProblems.length ? ` for ${policy.acceptedProblems.join(', ')}` : ''
   return `Report a problem within 24 hours of delivery${problems}.${resolution ? ` The seller's fix: ${resolution}.` : ''}`
 }
+
+/** Listing status labels for S8 and S9 (listing states, not transaction states). */
+export const LISTING_STATUS_VIEW: Record<
+  ListingStatus,
+  {
+    label: string
+    tone: 'emerald' | 'saffron' | 'lake' | 'sand'
+    icon: 'check' | 'clock' | 'lock' | 'tag' | 'box'
+  }
+> = {
+  active: { label: 'Active', tone: 'emerald', icon: 'check' },
+  awaiting_payment: { label: 'Waiting for payment', tone: 'saffron', icon: 'clock' },
+  sold: { label: 'Sold', tone: 'lake', icon: 'lock' },
+  draft: { label: 'Draft', tone: 'sand', icon: 'tag' },
+  archived: { label: 'Archived', tone: 'sand', icon: 'box' },
+}

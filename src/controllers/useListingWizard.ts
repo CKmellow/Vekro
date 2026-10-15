@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useRef, useState } from 'react'
 import { useForm, type FieldPath } from 'react-hook-form'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 import { payoutBreakdown } from '@/lib/fees'
 import { toast } from '@/lib/toast'
 import {
@@ -15,7 +15,8 @@ import {
 } from '@/models/domain/listing'
 import { clearDraft, loadDraft, saveDraft } from '@/models/domain/listingDraftStore'
 import { ApiError } from '@/models/api/errors'
-import { useCreateListing } from '@/models/queries/listings'
+import { draftFromListing } from '@/models/api/adapters/listings'
+import { useCreateListing, useListing } from '@/models/queries/listings'
 import { listingDraft, policyStep, type ListingDraft } from '@/models/schemas/listing'
 import { usePhotoPicker } from './usePhotoPicker'
 import { useSession } from './useSession'
@@ -57,16 +58,27 @@ export function useListingWizard() {
     mode: 'onTouched',
   })
 
+  // Duplicate: ?from=<listing id> pre-fills the wizard (the serial number is left blank on purpose).
+  const [params] = useSearchParams()
+  const fromId = params.get('from')
+  const source = useListing(fromId ?? '', { enabled: Boolean(fromId) })
+  useEffect(() => {
+    if (!source.data) return
+    const copy = draftFromListing(source.data)
+    form.reset({ ...EMPTY, ...copy, item: { ...EMPTY.item, ...copy.item } })
+    toast.show('Copied from your listing. Add the new serial number if it has one.', 'info')
+  }, [source.data, form])
+
   // Restore an unfinished draft once, with a toast.
   useEffect(() => {
-    if (restored.current) return
+    if (restored.current || fromId) return
     restored.current = true
     const stored = loadDraft()
     if (stored) {
       form.reset(stored.draft)
       toast.show('Draft restored', 'info')
     }
-  }, [form])
+  }, [form, fromId])
 
   // Keep the policy's item type in step with step 2.
   const isSerialized = form.watch('type.isSerialized')
