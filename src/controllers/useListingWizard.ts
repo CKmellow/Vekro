@@ -74,6 +74,7 @@ export function useListingWizard() {
     next,
     back: () => setStep((s) => Math.max(0, s - 1)),
     goTo: (index: number) => setStep(index),
+    selectType: (serial: boolean) => form.setValue('type.isSerialized', serial, { shouldDirty: true }),
     photos,
     saveDraft: () => {
       if (saveDraft(form.getValues())) toast.show('Draft saved on this device')
