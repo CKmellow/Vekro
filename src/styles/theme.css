@@ -48,6 +48,7 @@
   --animate-ring-spin: spin 8s linear infinite;
   --animate-breathe: breathe 3s ease-in-out infinite;
   --animate-ring-pulse: ring-pulse 2s ease-in-out infinite;
+  --animate-pulse-once: ring-pulse 2s ease-in-out 1;
   @keyframes breathe {
     0%,
     100% {
