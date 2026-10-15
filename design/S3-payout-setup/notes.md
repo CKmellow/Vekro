@@ -1,6 +1,6 @@
 # S3 Payout setup: notes
 
-Status: In review. Route `/onboarding`. Devices: desktop 1440px, mobile 390px.
+Status: Approved by Cyprian (2026-10-15). Route `/onboarding`. Devices: desktop 1440px, mobile 390px.
 
 ## Stitch screens
 

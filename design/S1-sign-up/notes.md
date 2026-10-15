@@ -1,6 +1,6 @@
 # S1 Sign up: notes
 
-Status: In review. Route `/register`. Devices: desktop 1440px, mobile 390px.
+Status: Approved by Cyprian (2026-10-15). Route `/register`. Devices: desktop 1440px, mobile 390px.
 
 ## Stitch screens
 
