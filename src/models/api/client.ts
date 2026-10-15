@@ -93,7 +93,14 @@ async function request<P extends keyof paths, M extends Method>(
   const data: unknown = text ? safeJson(text) : undefined
   if (!response.ok) {
     const { message, fieldErrors } = parseErrorBody(data)
-    throw new ApiError(kindForStatus(response.status), message, response.status, fieldErrors)
+    const retryAfter = Number(response.headers.get('Retry-After'))
+    throw new ApiError(
+      kindForStatus(response.status),
+      message,
+      response.status,
+      fieldErrors,
+      Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : undefined,
+    )
   }
   return data as SuccessBody<Operation<P, M>>
 }
