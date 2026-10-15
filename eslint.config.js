@@ -80,6 +80,10 @@ export default tseslint.config(
     rules: { ...restrict(['models', 'controllers', 'views', 'app'], 'lib is dependency-free.'), ...noFetch },
   },
   {
+    files: ['src/test/**/*.{ts,tsx}', 'src/**/*.test.{ts,tsx}'],
+    rules: { 'react-refresh/only-export-components': 'off' },
+  },
+  {
     files: ['scripts/**/*.{js,mjs}', '*.config.{js,ts}'],
     languageOptions: { globals: globals.node },
   },
