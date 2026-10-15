@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vekro — Seller Console Listings</title>
+<!-- Google Fonts: Bricolage Grotesque, DM Sans, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-variant": "#e0e4de",
+            "primary-container": "#0a6e4c",
+            "background": "#f7faf5",
+            "coral-600": "#C93238",
+            "plum-500": "#6B4FD8",
+            "surface-container": "#ebefea",
+            "ink-950": "#0B1512",
+            "emerald-600": "#0C8A5F",
+            "primary-fixed-dim": "#82d7ae",
+            "secondary-container": "#fdaf23",
+            "emerald-glow": "#3DEBA6",
+            "on-primary": "#ffffff",
+            "secondary-fixed-dim": "#ffb94d",
+            "on-surface": "#181d1a",
+            "on-secondary-fixed": "#291800",
+            "sand-200": "#EAE4D4",
+            "ink-600": "#44524D",
+            "sand-100": "#F5F1E7",
+            "surface-container-highest": "#e0e4de",
+            "plum-50": "#EFEBFC",
+            "ink-500": "#5E6D67",
+            "outline-variant": "#bec9c1",
+            "emerald-500": "#12A672",
+            "surface-container-low": "#f1f5ef",
+            "on-secondary": "#ffffff",
+            "inverse-primary": "#82d7ae",
+            "error": "#ba1a1a",
+            "tertiary-fixed": "#ffdad7",
+            "lake-500": "#2F80ED",
+            "emerald-100": "#CDEFE0",
+            "emerald-900": "#06362A",
+            "ink-400": "#8A9792",
+            "emerald-50": "#E9F8F1",
+            "on-primary-container": "#97edc2",
+            "surface-container-lowest": "#ffffff",
+            "ink-800": "#1B2824",
+            "on-tertiary-fixed": "#3e0408",
+            "inverse-surface": "#2d312e",
+            "surface-tint": "#056c4a",
+            "on-error-container": "#93000a",
+            "primary": "#005438",
+            "on-tertiary": "#ffffff",
+            "tertiary": "#793130",
+            "sand-300": "#D8D0BA",
+            "surface-bright": "#f7faf5",
+            "plum-700": "#4F36B0",
+            "saffron-600": "#B87A00",
+            "on-secondary-fixed-variant": "#624000",
+            "error-container": "#ffdad6",
+            "saffron-50": "#FFF6E0",
+            "inverse-on-surface": "#eef2ed",
+            "saffron-500": "#F2A516",
+            "tertiary-container": "#974846",
+            "surface-container-high": "#e5e9e4",
+            "coral-500": "#E5484D",
+            "on-secondary-container": "#6a4500",
+            "on-error": "#ffffff",
+            "tertiary-fixed-dim": "#ffb3af",
+            "on-primary-fixed-variant": "#005237",
+            "sand-50": "#FBF9F4",
+            "lake-50": "#E8F1FD",
+            "surface": "#f7faf5",
+            "saffron-100": "#FFE8B3",
+            "on-surface-variant": "#3f4943",
+            "surface-dim": "#d7dbd6",
+            "on-tertiary-fixed-variant": "#77302f",
+            "emerald-400": "#2CC48A",
+            "coral-50": "#FDECEC",
+            "on-tertiary-container": "#ffd0cd",
+            "emerald-950": "#04251C",
+            "sand-0": "#FFFFFF",
+            "on-primary-fixed": "#002114",
+            "primary-fixed": "#9ef4c9",
+            "outline": "#6f7a72",
+            "secondary-fixed": "#ffddb2",
+            "on-background": "#181d1a",
+            "emerald-800": "#084D3B",
+            "secondary": "#815500",
+            "lake-600": "#1F66C8",
+            "emerald-700": "#0A6E4C"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px",
+            "card": "20px",
+            "btn": "14px",
+            "filter": "10px"
+          },
+          "boxShadow": {
+            "vekro-card": "0 1px 2px rgba(11,21,18,0.04), 0 8px 24px rgba(11,21,18,0.06)",
+            "vekro-dropdown": "0 4px 6px -1px rgba(11,21,18,0.08), 0 16px 32px -4px rgba(11,21,18,0.12)",
+            "vekro-toast": "0 10px 25px -5px rgba(11,21,18,0.25)"
+          },
+          "fontFamily": {
+            "display-lg": ["Bricolage Grotesque"],
+            "amount": ["Bricolage Grotesque"],
+            "title": ["Bricolage Grotesque"],
+            "mono": ["JetBrains Mono"],
+            "display-xl": ["Bricolage Grotesque"],
+            "headline": ["Bricolage Grotesque"],
+            "body-sm": ["DM Sans"],
+            "body-lg": ["DM Sans"],
+            "otp": ["JetBrains Mono"],
+            "label": ["DM Sans"],
+            "body-md": ["DM Sans"]
+          },
+          "fontSize": {
+            "display-lg": ["34px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800" }],
+            "amount": ["40px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "title": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "mono": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "display-xl": ["44px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "headline": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "body-lg": ["17px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "otp": ["44px", { "lineHeight": "52px", "fontWeight": "700" }],
+            "label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }],
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-sand-50 text-ink-950 font-body-md text-body-md antialiased min-h-screen flex flex-col selection:bg-emerald-100 selection:text-emerald-950">
+<!-- ========================================================================= -->
+<!-- FLOATING NOTIFICATION TOAST (Link Copied) -->
+<!-- ========================================================================= -->
+<div class="fixed top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 transform">
+<div class="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-ink-950 text-sand-0 shadow-vekro-toast border border-ink-800">
+<span class="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500 text-sand-0">
+<span class="material-symbols-outlined text-[15px] font-bold">check</span>
+</span>
+<span class="font-body-sm text-body-sm font-medium tracking-tight">Link copied</span>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- PREDICTED COMPONENT: SideNavBar (Strict compliance to JSON & Style Guide) -->
+<!-- ========================================================================= -->
+<aside class="fixed top-0 left-0 h-screen w-[264px] z-40 flex flex-col justify-between bg-emerald-950 dark:bg-emerald-950 border-r border-emerald-900/60 shadow-none">
+<div class="w-[264px] h-full p-4 flex flex-col gap-4">
+<!-- Brand & Seller Console Identity -->
+<div class="px-3 pt-2 pb-1 flex items-center gap-3">
+<div aria-label="Vekro Emerald Mark with White V" class="w-10 h-10 rounded-xl bg-emerald-700 flex items-center justify-center shadow-inner text-sand-0 flex-shrink-0">
+<svg class="w-6 h-6 stroke-current fill-none stroke-[2.5]" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24">
+<polyline points="4 6 12 19 20 6"></polyline>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="font-headline text-headline text-sand-0 font-bold tracking-tight leading-tight">Vekro</span>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex-1 flex flex-col gap-1.5 mt-2 overflow-y-auto">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-ink-400 dark:text-ink-400 font-body-md text-body-md hover:bg-emerald-900/60 hover:text-sand-50 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="flex-1">Dashboard</span>
+</a>
+<!-- Orders (with saffron badge 3) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-ink-400 dark:text-ink-400 font-body-md text-body-md hover:bg-emerald-900/60 hover:text-sand-50 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+<span class="flex-1">Orders</span>
+<span class="px-2 py-0.5 rounded-full bg-saffron-500 text-ink-950 font-label text-[11px] font-bold">3</span>
+</a>
+<!-- Listings (ACTIVE: Intent Match to Current Page) -->
+<a aria-current="page" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-emerald-700 text-sand-0 font-title text-title hover:bg-emerald-900/60 hover:text-sand-50 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+<span class="flex-1 font-semibold">Listings</span>
+</a>
+<!-- Returns (with saffron badge 1) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-ink-400 dark:text-ink-400 font-body-md text-body-md hover:bg-emerald-900/60 hover:text-sand-50 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">assignment_return</span>
+<span class="flex-1">Returns</span>
+<span class="px-2 py-0.5 rounded-full bg-saffron-500 text-ink-950 font-label text-[11px] font-bold">1</span>
+</a>
+<!-- Analytics -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-ink-400 dark:text-ink-400 font-body-md text-body-md hover:bg-emerald-900/60 hover:text-sand-50 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">monitoring</span>
+<span class="flex-1">Analytics</span>
+</a>
+<!-- Notifications -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-ink-400 dark:text-ink-400 font-body-md text-body-md hover:bg-emerald-900/60 hover:text-sand-50 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="flex-1">Notifications</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-ink-400 dark:text-ink-400 font-body-md text-body-md hover:bg-emerald-900/60 hover:text-sand-50 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="flex-1">Settings</span>
+</a>
+</nav>
+<!-- Sidebar Bottom Cluster -->
+<div class="pt-4 border-t border-emerald-900 flex flex-col gap-3">
+<!-- Mint CTA Button -->
+<button class="w-full h-12 rounded-[14px] bg-emerald-glow hover:bg-emerald-400 text-emerald-950 font-title text-[15px] font-bold flex items-center justify-center gap-2 transition-all shadow-sm">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>Create listing</span>
+</button>
+<!-- Merchant Profile Card -->
+<div class="p-2.5 rounded-xl bg-emerald-900/50 flex items-center gap-3 border border-emerald-800/40">
+<div class="w-9 h-9 rounded-lg bg-emerald-800 text-emerald-glow font-mono text-[13px] font-bold flex items-center justify-center flex-shrink-0">
+            AG
+          </div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center gap-1">
+<span class="font-title text-[14px] text-sand-0 font-bold truncate">Amina Gadgets</span>
+<span class="material-symbols-outlined text-[15px] text-emerald-glow" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<span class="font-body-sm text-[12px] text-ink-400 truncate">Kilimani, Nairobi</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- PREDICTED COMPONENT: TopNavBar (Strict compliance to JSON & Style Guide) -->
+<!-- ========================================================================= -->
+<header class="sticky top-0 right-0 h-[72px] z-30 bg-surface-container-lowest dark:bg-surface-container-lowest border-b border-sand-200">
+<div class="h-[72px] pl-[288px] pr-8 flex items-center justify-between w-full max-w-[1440px] mx-auto">
+<!-- Search on Left -->
+<div class="w-96 relative">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ink-400">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="w-full h-11 pl-10 pr-4 rounded-xl bg-sand-100 border border-sand-200 text-ink-950 placeholder-ink-400 font-body-md text-[14px] focus:outline-none focus:border-emerald-600 focus:bg-sand-0 transition-colors" placeholder="Order ID or item" type="text"/>
+</div>
+<!-- Trailing Icon Actions & Profile -->
+<div class="flex items-center gap-3">
+<!-- Notification Bell with Coral Dot -->
+<button aria-label="Notifications" class="relative w-11 h-11 rounded-xl flex items-center justify-center text-ink-600 hover:bg-sand-100 transition-colors">
+<span class="material-symbols-outlined text-[22px]">notifications</span>
+<span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-coral-500 ring-2 ring-sand-0"></span>
+</button>
+<!-- Help Icon -->
+<button aria-label="Help" class="w-11 h-11 rounded-xl flex items-center justify-center text-ink-600 hover:bg-sand-100 transition-colors">
+<span class="material-symbols-outlined text-[22px]">help_outline</span>
+</button>
+<div class="h-6 w-px bg-sand-200 mx-1"></div>
+<!-- User Chip -->
+<div class="flex items-center gap-2 pl-1 cursor-pointer">
+<div aria-label="Amina Gadgets Seller Avatar" class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 font-title text-[13px] font-bold flex items-center justify-center ring-2 ring-emerald-600/20">
+            AG
+          </div>
+<span class="material-symbols-outlined text-[18px] text-ink-400">expand_more</span>
+</div>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE CANVAS (1440px Fixed Grid Container) -->
+<!-- ========================================================================= -->
+<main class="flex-1 pl-[264px] bg-sand-50 pb-16">
+<div class="max-w-[1176px] mx-auto px-8 pt-8">
+<!-- Header Row: Headline with Pill + Single Primary Action -->
+<section class="flex items-center justify-between mb-7">
+<div class="flex items-center gap-3">
+<h1 class="font-display-lg text-display-lg text-ink-950 font-extrabold tracking-tight">Listings</h1>
+<span class="px-3 py-1 rounded-full bg-sand-100 border border-sand-200 font-mono text-[13px] font-semibold text-ink-600">
+            12
+          </span>
+</div>
+<!-- Single Primary Button on screen: 52px height, 14px radius, Emerald-700 -->
+<button class="h-[52px] px-6 rounded-[14px] bg-emerald-700 hover:bg-emerald-800 text-sand-0 font-title text-[15px] font-bold flex items-center gap-2 shadow-sm transition-all active:scale-[0.99]">
+<span class="material-symbols-outlined text-[20px] font-bold">add</span>
+<span>New listing</span>
+</button>
+</section>
+<!-- Toolbar: Segmented Filter, Search listings input, View Switch -->
+<section class="flex items-center justify-between gap-4 mb-8">
+<!-- Segmented Filter Track (Sand-100, 10px radius) -->
+<div class="inline-flex p-1 rounded-[10px] bg-sand-100 border border-sand-200 text-[14px]">
+<!-- Active Tab -->
+<button class="px-3.5 py-2 rounded-[8px] bg-sand-0 text-ink-950 font-title font-bold shadow-sm transition-all flex items-center gap-1.5">
+<span>Active</span>
+<span class="font-mono text-[12px] px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-700 font-bold">7</span>
+</button>
+<!-- Inactive Tabs -->
+<button class="px-3.5 py-2 rounded-[8px] text-ink-500 hover:text-ink-950 font-body-md font-medium transition-colors flex items-center gap-1.5">
+<span>Awaiting payment</span>
+<span class="font-mono text-[12px] px-1.5 py-0.2 rounded-full bg-sand-200 text-ink-600 font-medium">2</span>
+</button>
+<button class="px-3.5 py-2 rounded-[8px] text-ink-500 hover:text-ink-950 font-body-md font-medium transition-colors flex items-center gap-1.5">
+<span>Sold</span>
+<span class="font-mono text-[12px] px-1.5 py-0.2 rounded-full bg-sand-200 text-ink-600 font-medium">2</span>
+</button>
+<button class="px-3.5 py-2 rounded-[8px] text-ink-500 hover:text-ink-950 font-body-md font-medium transition-colors flex items-center gap-1.5">
+<span>Draft</span>
+<span class="font-mono text-[12px] px-1.5 py-0.2 rounded-full bg-sand-200 text-ink-600 font-medium">1</span>
+</button>
+<button class="px-3.5 py-2 rounded-[8px] text-ink-500 hover:text-ink-950 font-body-md font-medium transition-colors flex items-center gap-1.5">
+<span>Archived</span>
+<span class="font-mono text-[12px] px-1.5 py-0.2 rounded-full bg-sand-200 text-ink-600 font-medium">0</span>
+</button>
+</div>
+<!-- Right Side: Secondary Search & View Switcher -->
+<div class="flex items-center gap-3">
+<div class="relative w-64">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-400">
+<span class="material-symbols-outlined text-[19px]">search</span>
+</div>
+<input class="w-full h-[52px] pl-9 pr-3 rounded-[14px] bg-sand-0 border border-sand-200 text-ink-950 placeholder-ink-400 font-body-md text-[14px] focus:outline-none focus:border-emerald-600 transition-colors" placeholder="Search listings" type="text"/>
+</div>
+<!-- View Switch (Grid / List toggle) -->
+<div class="h-[52px] p-1 rounded-[14px] bg-sand-100 border border-sand-200 flex items-center">
+<!-- Grid Active -->
+<button aria-label="Grid View" class="w-10 h-10 rounded-[10px] bg-sand-0 text-emerald-700 flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+</button>
+<!-- List Inactive -->
+<button aria-label="List View" class="w-10 h-10 rounded-[10px] text-ink-500 hover:text-ink-950 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[20px]">format_list_bulleted</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 4-Column Card Grid (White #FFFFFF, 20px radius, 16px padding, Sand-200 border) -->
+<section class="grid grid-cols-4 gap-5">
+<!-- CARD 1: iPhone 13, 128GB, Midnight -->
+<article class="bg-sand-0 rounded-[20px] p-4 border border-sand-200 shadow-vekro-card flex flex-col justify-between hover:border-emerald-600/40 transition-all duration-200">
+<div>
+<!-- Image Frame -->
+<div class="relative w-full aspect-square rounded-[14px] overflow-hidden bg-sand-100 border border-sand-200/60 mb-3.5">
+<img class="w-full h-full object-cover" data-alt="A modern minimalist top-down angle photograph of a sleek midnight blue iPhone 13 resting on a warm, organic sand-colored surface under clean studio lighting. The aesthetic is tactile and high-contrast, perfectly aligning with the Vekro corporate modern design system. The glass and aluminum phone chassis reflects crisp highlight edges without harsh shadows." src="https://lh3.googleusercontent.com/aida/AEtjO1V0RnFsiKlA4AOC0Kr3bgkgl9x1EEhEiTRubB9gDF3NknzDMIolT7atN4VGsRBKvhi7kKvGMnvQ7voSSWpvZqXTBojObVgbXw2JLgUoqFH4ojRwtX6UgiRmhya7kCHotwM4HMoG-drVv-mOE9GGj6NySGKa1v58Ztt9dBwLJBUR5jX4FUABiBZ_XkSCggqQWX4FA3FOAhXWdQvwpMgRSpFsHAtEcV902mf69Dxl9P7BfTlFf_YclV5bTg"/>
+<!-- Serial-numbered Tag -->
+<span class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-lake-50 text-lake-600 border border-lake-600/20 font-label text-[10px] uppercase font-bold tracking-wider">
+                Serial-numbered
+              </span>
+</div>
+<!-- Title & Pricing -->
+<h2 class="font-title text-[15px] font-bold text-ink-950 leading-snug line-clamp-1 mb-1" title="iPhone 13, 128GB, Midnight">
+              iPhone 13, 128GB, Midnight
+            </h2>
+<div class="font-amount text-[22px] font-extrabold text-ink-950 tracking-tight mb-3">
+<span class="font-mono text-[14px] text-ink-500 font-semibold mr-1">KES</span>52,000
+            </div>
+<!-- Status Pill & Analytics Row -->
+<div class="flex items-center justify-between pb-3.5 border-b border-sand-100">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-saffron-50 text-saffron-600 font-body-sm text-[12px] font-bold border border-saffron-600/20">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                Awaiting dispatch
+              </span>
+<div class="flex items-center gap-1 text-ink-500 font-mono text-[12px]">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>214 views</span>
+</div>
+</div>
+</div>
+<!-- Action Row -->
+<div class="flex items-center gap-2 pt-3">
+<button class="flex-1 h-10 px-3 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-800 border border-sand-200 font-body-sm text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[16px]">link</span>
+              Copy link
+            </button>
+<button class="w-10 h-10 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-600 border border-sand-200 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</article>
+<!-- CARD 2: Nike Air Force 1, size 42 -->
+<article class="bg-sand-0 rounded-[20px] p-4 border border-sand-200 shadow-vekro-card flex flex-col justify-between hover:border-emerald-600/40 transition-all duration-200">
+<div>
+<div class="relative w-full aspect-square rounded-[14px] overflow-hidden bg-sand-100 border border-sand-200/60 mb-3.5">
+<img class="w-full h-full object-cover" data-alt="A studio product photograph of classic crisp white Nike Air Force 1 sneakers placed cleanly on a warm sand surface. Subtle neutral lighting accentuates the leather grain and stitching. Styled specifically for modern social-commerce escrow catalog, high contrast, clean presentation with no background clutter." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiwXy56IlEMGOtHOOKjepwA7QSsjjSa6bcWapTrqAR3ipu07dDW5FOMEsnyVNm8NUqSrp2vHOIoPf2BF6w3gJyV6yZNS8DcNgkULIn4GjZ1Dcn8TlJuAFQ176jAbZAQ3SYhCikq6tJjFo0GNluDHXqmW46bZMWutbJ9bfvoUYQ0pZC0ixnx1RQCEU7T2OEwOZxkP55PfxLlW12q4X4OJARs2kYs_fMMZ_5weCEU36sJ48JRftgNpAc-3htIUVWk08krVnI6RsTV_4"/>
+<span class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-sand-100 text-ink-600 border border-sand-200 font-label text-[10px] uppercase font-bold tracking-wider">
+                Standard
+              </span>
+</div>
+<h2 class="font-title text-[15px] font-bold text-ink-950 leading-snug line-clamp-1 mb-1" title="Nike Air Force 1, size 42">
+              Nike Air Force 1, size 42
+            </h2>
+<div class="font-amount text-[22px] font-extrabold text-ink-950 tracking-tight mb-3">
+<span class="font-mono text-[14px] text-ink-500 font-semibold mr-1">KES</span>6,500
+            </div>
+<div class="flex items-center justify-between pb-3.5 border-b border-sand-100">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 font-body-sm text-[12px] font-bold border border-emerald-600/20">
+<span class="material-symbols-outlined text-[14px]">check</span>
+                Active
+              </span>
+<div class="flex items-center gap-1 text-ink-500 font-mono text-[12px]">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>182 views</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-3">
+<button class="flex-1 h-10 px-3 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-800 border border-sand-200 font-body-sm text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[16px]">link</span>
+              Copy link
+            </button>
+<button class="w-10 h-10 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-600 border border-sand-200 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</article>
+<!-- CARD 3: Kitenge wrap dress -->
+<article class="bg-sand-0 rounded-[20px] p-4 border border-sand-200 shadow-vekro-card flex flex-col justify-between hover:border-emerald-600/40 transition-all duration-200">
+<div>
+<div class="relative w-full aspect-square rounded-[14px] overflow-hidden bg-sand-100 border border-sand-200/60 mb-3.5">
+<img class="w-full h-full object-cover" data-alt="An artisanal vibrant African Kitenge patterned wrap dress neatly laid out on a clean warm sand beige background. Soft daylight illuminates the intricate emerald green, warm ochre, and deep ink fabric motifs. Minimalist catalog flatlay photography with balanced highlights suited for a high-trust digital marketplace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAM3pyXjRa_WbJ5r8rS6EXv79-wxnpvYdxPZZmQ213fh3tM31ooc_c8JKNKGb4Y2--5wSC8M0fRHLZUAEzPVzfrzilTdtBojI9AcBC1sMxQBZZRnzlrxQuetq-vGPhBx03qiXwUh-l-DcPF9PFNK4ME6kAVsqywVKpMKMV26qx6_VL7tRKSiMjav7YWPGpcbMWgVjH1vCY_uG6NyE13u9DYFdq2_FUhkTjvcxoO-iTX5DiSXRr1sRVbpuF-g_O2iLLIWiQlUHXjtyk"/>
+<span class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-sand-100 text-ink-600 border border-sand-200 font-label text-[10px] uppercase font-bold tracking-wider">
+                Standard
+              </span>
+</div>
+<h2 class="font-title text-[15px] font-bold text-ink-950 leading-snug line-clamp-1 mb-1" title="Kitenge wrap dress">
+              Kitenge wrap dress
+            </h2>
+<div class="font-amount text-[22px] font-extrabold text-ink-950 tracking-tight mb-3">
+<span class="font-mono text-[14px] text-ink-500 font-semibold mr-1">KES</span>3,200
+            </div>
+<div class="flex items-center justify-between pb-3.5 border-b border-sand-100">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 font-body-sm text-[12px] font-bold border border-emerald-600/20">
+<span class="material-symbols-outlined text-[14px]">check</span>
+                Active
+              </span>
+<div class="flex items-center gap-1 text-ink-500 font-mono text-[12px]">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>94 views</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-3">
+<button class="flex-1 h-10 px-3 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-800 border border-sand-200 font-body-sm text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[16px]">link</span>
+              Copy link
+            </button>
+<button class="w-10 h-10 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-600 border border-sand-200 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</article>
+<!-- CARD 4: HP Pavilion 15 laptop (WITH ACTIVE OPEN 3-DOT MENU) -->
+<article class="relative bg-sand-0 rounded-[20px] p-4 border border-sand-200 shadow-vekro-card flex flex-col justify-between hover:border-emerald-600/40 transition-all duration-200 z-20">
+<div>
+<div class="relative w-full aspect-square rounded-[14px] overflow-hidden bg-sand-100 border border-sand-200/60 mb-3.5">
+<img class="w-full h-full object-cover" data-alt="A sleek silver HP Pavilion 15 laptop resting partially open on a neutral sand desktop workspace. Diffused commercial lighting illuminates the keyboard and metallic aluminum exterior, providing a crisp, sophisticated tech product shot within the warm corporate Vekro design framework." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAibJdOmCicQ2l2Q-r7IK9k8Zi_m4nfB4oOlhU0Es4pHZVLrJ7nAKR4D26Q75zRylNktZ5s6nE-tJ0U67BzEL7PM3CMnQEk1kV5Z_qT120QE3rbLtvZs4OCYEBVCMjEkqZViIc7bpBgaCFgNk5Pt8gEaLxiVhxyjvqIBG1rWPIrwSOJUk9y7HuJjUPNQ6s3zkbFEjV087u8gz-2xTo8fABsg1pMeGXZmRV658fA6TBBO6ARfj9Qgok-cQP5d6CgKist6y48_P0vL3g"/>
+<span class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-lake-50 text-lake-600 border border-lake-600/20 font-label text-[10px] uppercase font-bold tracking-wider">
+                Serial-numbered
+              </span>
+</div>
+<h2 class="font-title text-[15px] font-bold text-ink-950 leading-snug line-clamp-1 mb-1" title="HP Pavilion 15 laptop">
+              HP Pavilion 15 laptop
+            </h2>
+<div class="font-amount text-[22px] font-extrabold text-ink-950 tracking-tight mb-3">
+<span class="font-mono text-[14px] text-ink-500 font-semibold mr-1">KES</span>68,500
+            </div>
+<div class="flex items-center justify-between pb-3.5 border-b border-sand-100">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 font-body-sm text-[12px] font-bold border border-emerald-600/20">
+<span class="material-symbols-outlined text-[14px]">check</span>
+                Active
+              </span>
+<div class="flex items-center gap-1 text-ink-500 font-mono text-[12px]">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>310 views</span>
+</div>
+</div>
+</div>
+<!-- Action Row with Open Dropdown Menu -->
+<div class="relative flex items-center gap-2 pt-3">
+<button class="flex-1 h-10 px-3 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-800 border border-sand-200 font-body-sm text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[16px]">link</span>
+              Copy link
+            </button>
+<button class="w-10 h-10 rounded-[10px] bg-ink-950 text-sand-0 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+<!-- DROPDOWN OVERLAY CARD -->
+<div class="absolute bottom-12 right-0 w-44 rounded-xl bg-sand-0 border border-sand-200 shadow-vekro-dropdown py-1.5 z-30 flex flex-col">
+<button class="flex items-center gap-2.5 px-3 py-2 text-ink-800 hover:bg-sand-100 font-body-sm text-[13px] font-medium text-left transition-colors">
+<span class="material-symbols-outlined text-[17px] text-ink-500">share</span>
+                Share
+              </button>
+<button class="flex items-center gap-2.5 px-3 py-2 text-ink-800 hover:bg-sand-100 font-body-sm text-[13px] font-medium text-left transition-colors">
+<span class="material-symbols-outlined text-[17px] text-ink-500">edit</span>
+                Edit
+              </button>
+<button class="flex items-center gap-2.5 px-3 py-2 text-ink-800 hover:bg-sand-100 font-body-sm text-[13px] font-medium text-left transition-colors">
+<span class="material-symbols-outlined text-[17px] text-ink-500">content_copy</span>
+                Duplicate
+              </button>
+<div class="h-px bg-sand-200 my-1"></div>
+<button class="flex items-center gap-2.5 px-3 py-2 text-coral-500 hover:bg-coral-50 font-body-sm text-[13px] font-semibold text-left transition-colors">
+<span class="material-symbols-outlined text-[17px] text-coral-500">archive</span>
+                Archive
+              </button>
+</div>
+</div>
+</article>
+<!-- CARD 5: 3-seater sofa -->
+<article class="bg-sand-0 rounded-[20px] p-4 border border-sand-200 shadow-vekro-card flex flex-col justify-between hover:border-emerald-600/40 transition-all duration-200">
+<div>
+<div class="relative w-full aspect-square rounded-[14px] overflow-hidden bg-sand-100 border border-sand-200/60 mb-3.5">
+<img class="w-full h-full object-cover" data-alt="A modern Scandinavian inspired three-seater sofa with deep forest green woven fabric upholstery set in an architectural minimalist room with warm stone beige walls. Soft diffused ambient lighting highlighting comfort and authentic textures for a high-end furniture catalog listing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDm4JIBGNovY-1G-0G_MimJ6Jd0MWE1MhcnmuK3w-Sw3EqZNrmDk8AvdqUH2rJ4g5M9c_AeVGxEqO4gnL840UaL5pDkkJJ8C-GLk4eUPYI7lMEuNB5i1KEUm3CKz1iUc1QFDgXVg5Of0HYS0_ZL91TqFFGrs3gNQ-HWvNxF-PWbmeujIAsbWpvjN7chfvnKw0VYnr2kolRb2NDxp9yKzETC0O4VR3pk7v2WgQq3Zs5hqSy-kINljM1Su2TymQ8FNHWeK4xOnmmlB0"/>
+<span class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-sand-100 text-ink-600 border border-sand-200 font-label text-[10px] uppercase font-bold tracking-wider">
+                Standard
+              </span>
+</div>
+<h2 class="font-title text-[15px] font-bold text-ink-950 leading-snug line-clamp-1 mb-1" title="3-seater sofa">
+              3-seater sofa
+            </h2>
+<div class="font-amount text-[22px] font-extrabold text-ink-950 tracking-tight mb-3">
+<span class="font-mono text-[14px] text-ink-500 font-semibold mr-1">KES</span>38,000
+            </div>
+<div class="flex items-center justify-between pb-3.5 border-b border-sand-100">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-saffron-50 text-saffron-600 font-body-sm text-[12px] font-bold border border-saffron-600/20">
+<span class="material-symbols-outlined text-[14px]">hourglass_empty</span>
+                Waiting for payment
+              </span>
+<div class="flex items-center gap-1 text-ink-500 font-mono text-[12px]">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>145 views</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-3">
+<button class="flex-1 h-10 px-3 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-800 border border-sand-200 font-body-sm text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[16px]">link</span>
+              Copy link
+            </button>
+<button class="w-10 h-10 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-600 border border-sand-200 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</article>
+<!-- CARD 6: Samsung Galaxy A54 -->
+<article class="bg-sand-0 rounded-[20px] p-4 border border-sand-200 shadow-vekro-card flex flex-col justify-between hover:border-emerald-600/40 transition-all duration-200">
+<div>
+<div class="relative w-full aspect-square rounded-[14px] overflow-hidden bg-sand-100 border border-sand-200/60 mb-3.5">
+<img class="w-full h-full object-cover" data-alt="A clean top angled product render of a lime green Samsung Galaxy A54 smartphone resting gracefully on a textured sand pedestal. Bright, even studio illumination showcases the minimalist triple camera lenses and glass finish, adhering tightly to Vekro e-commerce trust photography standards." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEEel-xAY5NHqhamUP2qNlcxKVQlGrTy5nxIGg01donjEOEfgxBqWIsF7CA6eJOZ9GtJmf-N455HP5yG1On0gDFQs61N-ym7oRY7yUBT-iicTXNiqt8MQz8dvoDXhSduHKxV2XeLhxXI11A8Exf4RlbtHzQ_RXANBimDtycyfOXzn3taMnAxMGzL-k6Jpxw-sTkrDsDxwy_cy0YpcJwpTJ84v3SWVccsCllxUcRX5g90FzmYgba6M5m4K4vGYcUTTdqk5wb06o8x0"/>
+<span class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-lake-50 text-lake-600 border border-lake-600/20 font-label text-[10px] uppercase font-bold tracking-wider">
+                Serial-numbered
+              </span>
+</div>
+<h2 class="font-title text-[15px] font-bold text-ink-950 leading-snug line-clamp-1 mb-1" title="Samsung Galaxy A54">
+              Samsung Galaxy A54
+            </h2>
+<div class="font-amount text-[22px] font-extrabold text-ink-950 tracking-tight mb-3">
+<span class="font-mono text-[14px] text-ink-500 font-semibold mr-1">KES</span>41,000
+            </div>
+<div class="flex items-center justify-between pb-3.5 border-b border-sand-100">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 font-body-sm text-[12px] font-bold border border-emerald-600/20">
+<span class="material-symbols-outlined text-[14px]">check</span>
+                Active
+              </span>
+<div class="flex items-center gap-1 text-ink-500 font-mono text-[12px]">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>88 views</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-3">
+<button class="flex-1 h-10 px-3 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-800 border border-sand-200 font-body-sm text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[16px]">link</span>
+              Copy link
+            </button>
+<button class="w-10 h-10 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-600 border border-sand-200 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</article>
+<!-- CARD 7: JBL Flip 6 speaker -->
+<article class="bg-sand-0 rounded-[20px] p-4 border border-sand-200 shadow-vekro-card flex flex-col justify-between hover:border-emerald-600/40 transition-all duration-200">
+<div>
+<div class="relative w-full aspect-square rounded-[14px] overflow-hidden bg-sand-100 border border-sand-200/60 mb-3.5">
+<img class="w-full h-full object-cover" data-alt="A commercial product shot of a rugged matte black JBL Flip 6 portable bluetooth speaker oriented horizontally on an organic light sand foundation. Focused studio rim lighting defines the mesh texture and durable silicone bumpers with pristine clarity and realistic material depth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUQNba-BuWBF5DqSLcBSbQQdujpvlGpJSZxcJO65LO_5yVTQHwIq18MW5qH-4nliMbG_MzQZ6ASEvWTo_e3akYH7R9QCabRzXlxWAQZuRlmVxTU8IGcyQp_H23vEACXJgHDFv07dcvMTOVy7cUe3dAk10XI7Tw9ARaEldtBMpADUzzT7DWm_rJRySnfxkcDPfPpuEWe3b8y6uB56mH_NFTegBbPD3Scjf6wlDi8ZIHZSfNicu3qMFT7DQvyX04HOWmObo4kfpa2KU"/>
+<span class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-lake-50 text-lake-600 border border-lake-600/20 font-label text-[10px] uppercase font-bold tracking-wider">
+                Serial-numbered
+              </span>
+</div>
+<h2 class="font-title text-[15px] font-bold text-ink-950 leading-snug line-clamp-1 mb-1" title="JBL Flip 6 speaker">
+              JBL Flip 6 speaker
+            </h2>
+<div class="font-amount text-[22px] font-extrabold text-ink-950 tracking-tight mb-3">
+<span class="font-mono text-[14px] text-ink-500 font-semibold mr-1">KES</span>14,500
+            </div>
+<div class="flex items-center justify-between pb-3.5 border-b border-sand-100">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 font-body-sm text-[12px] font-bold border border-emerald-600/20">
+<span class="material-symbols-outlined text-[14px]">check</span>
+                Active
+              </span>
+<div class="flex items-center gap-1 text-ink-500 font-mono text-[12px]">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>420 views</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-3">
+<button class="flex-1 h-10 px-3 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-800 border border-sand-200 font-body-sm text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[16px]">link</span>
+              Copy link
+            </button>
+<button class="w-10 h-10 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-600 border border-sand-200 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</article>
+<!-- CARD 8: Leather sandals -->
+<article class="bg-sand-0 rounded-[20px] p-4 border border-sand-200 shadow-vekro-card flex flex-col justify-between hover:border-emerald-600/40 transition-all duration-200">
+<div>
+<div class="relative w-full aspect-square rounded-[14px] overflow-hidden bg-sand-100 border border-sand-200/60 mb-3.5">
+<img class="w-full h-full object-cover" data-alt="Handcrafted rich cognac brown leather strappy sandals placed symmetrically on a textured warm sand flat surface. Natural warm side lighting accentuates hand-stitched detailing and high-quality artisan craftsmanship in a clean, modern e-commerce product photograph." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDN4v1DxqdYyDxXre9A72syDudK3TdbFG2HOjOAdUjxsdsqDzZ1yP2NM4pHtLglJvQaw5MOZU-Js04YN4k_cmv6NKh7IDm-aPMejKC8Rv_agVn-vPdIW6VJRM36a1NdHXF64ROFa8Io8yPkoHN2DIqsVqjtMHvKAOTeHNs1FgODVooydejnV4kUa4NeGqlthhH-fpyzaOMwgJoPmI2ehLl19CU2U6q15_NB___khZkNFA5dIW91kbpoqGhFBUyYXg3IyuCe7fUu4OM"/>
+<span class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-sand-100 text-ink-600 border border-sand-200 font-label text-[10px] uppercase font-bold tracking-wider">
+                Standard
+              </span>
+</div>
+<h2 class="font-title text-[15px] font-bold text-ink-950 leading-snug line-clamp-1 mb-1" title="Leather sandals">
+              Leather sandals
+            </h2>
+<div class="font-amount text-[22px] font-extrabold text-ink-950 tracking-tight mb-3">
+<span class="font-mono text-[14px] text-ink-500 font-semibold mr-1">KES</span>2,800
+            </div>
+<div class="flex items-center justify-between pb-3.5 border-b border-sand-100">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-sand-100 text-ink-500 font-body-sm text-[12px] font-bold border border-sand-200">
+<span class="material-symbols-outlined text-[14px]">edit_note</span>
+                Draft
+              </span>
+<div class="flex items-center gap-1 text-ink-500 font-mono text-[12px]">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>0 views</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-3">
+<button class="flex-1 h-10 px-3 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-800 border border-sand-200 font-body-sm text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[16px]">link</span>
+              Copy link
+            </button>
+<button class="w-10 h-10 rounded-[10px] bg-sand-50 hover:bg-sand-100 text-ink-600 border border-sand-200 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</article>
+</section>
+</div>
+</main>
+</body></html>

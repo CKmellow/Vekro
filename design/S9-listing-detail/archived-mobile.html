@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vekro Seller - Listing Detail</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts: Bricolage Grotesque, DM Sans, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-lowest": "#ffffff",
+            "primary": "#005438",
+            "coral-500": "#E5484D",
+            "surface-container-high": "#e5e9e4",
+            "sand-0": "#FFFFFF",
+            "inverse-primary": "#82d7ae",
+            "plum-500": "#6B4FD8",
+            "on-tertiary-fixed": "#3e0408",
+            "on-error-container": "#93000a",
+            "tertiary-fixed": "#ffdad7",
+            "ink-500": "#5E6D67",
+            "on-primary-fixed": "#002114",
+            "lake-50": "#E8F1FD",
+            "tertiary-fixed-dim": "#ffb3af",
+            "surface-tint": "#056c4a",
+            "secondary-container": "#fdaf23",
+            "outline-variant": "#bec9c1",
+            "plum-700": "#4F36B0",
+            "error": "#ba1a1a",
+            "secondary-fixed": "#ffddb2",
+            "primary-fixed": "#9ef4c9",
+            "lake-600": "#1F66C8",
+            "coral-50": "#FDECEC",
+            "outline": "#6f7a72",
+            "background": "#f7faf5",
+            "on-secondary-fixed": "#291800",
+            "error-container": "#ffdad6",
+            "ink-800": "#1B2824",
+            "surface-container-highest": "#e0e4de",
+            "sand-100": "#F5F1E7",
+            "on-surface-variant": "#3f4943",
+            "primary-container": "#0a6e4c",
+            "saffron-100": "#FFE8B3",
+            "on-surface": "#181d1a",
+            "surface": "#f7faf5",
+            "surface-container-low": "#f1f5ef",
+            "surface-container": "#ebefea",
+            "saffron-50": "#FFF6E0",
+            "secondary": "#815500",
+            "inverse-surface": "#2d312e",
+            "ink-600": "#44524D",
+            "secondary-fixed-dim": "#ffb94d",
+            "emerald-800": "#084D3B",
+            "emerald-100": "#CDEFE0",
+            "saffron-600": "#B87A00",
+            "surface-variant": "#e0e4de",
+            "on-primary-container": "#97edc2",
+            "saffron-500": "#F2A516",
+            "on-secondary-fixed-variant": "#624000",
+            "on-secondary-container": "#6a4500",
+            "ink-400": "#8A9792",
+            "on-primary-fixed-variant": "#005237",
+            "on-background": "#181d1a",
+            "primary-fixed-dim": "#82d7ae",
+            "on-tertiary-container": "#ffd0cd",
+            "emerald-400": "#2CC48A",
+            "emerald-glow": "#3DEBA6",
+            "on-secondary": "#ffffff",
+            "tertiary-container": "#974846",
+            "tertiary": "#793130",
+            "sand-300": "#D8D0BA",
+            "inverse-on-surface": "#eef2ed",
+            "on-error": "#ffffff",
+            "surface-dim": "#d7dbd6",
+            "ink-950": "#0B1512",
+            "lake-500": "#2F80ED",
+            "surface-bright": "#f7faf5",
+            "on-tertiary-fixed-variant": "#77302f",
+            "on-tertiary": "#ffffff",
+            "sand-50": "#FBF9F4",
+            "emerald-700": "#0A6E4C",
+            "plum-50": "#EFEBFC",
+            "sand-200": "#EAE4D4",
+            "emerald-900": "#06362A",
+            "emerald-950": "#04251C",
+            "emerald-50": "#E9F8F1",
+            "coral-600": "#C93238",
+            "emerald-500": "#12A672",
+            "on-primary": "#ffffff",
+            "emerald-600": "#0C8A5F"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1.25rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin": "20px",
+            "gutter": "16px",
+            "space-xs": "4px",
+            "space-sm": "8px",
+            "space-md": "16px",
+            "space-lg": "24px",
+            "space-xl": "40px"
+          },
+          "fontFamily": {
+            "title": ["Bricolage Grotesque"],
+            "otp": ["JetBrains Mono"],
+            "body-md": ["DM Sans"],
+            "label": ["DM Sans"],
+            "display-xl": ["Bricolage Grotesque"],
+            "body-lg": ["DM Sans"],
+            "mono": ["JetBrains Mono"],
+            "headline": ["Bricolage Grotesque"],
+            "body-sm": ["DM Sans"],
+            "amount": ["Bricolage Grotesque"],
+            "display-lg": ["Bricolage Grotesque"]
+          },
+          "fontSize": {
+            "title": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+            "otp": ["44px", {"lineHeight": "52px", "fontWeight": "700"}],
+            "body-md": ["15px", {"lineHeight": "22px", "fontWeight": "400"}],
+            "label": ["12px", {"lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700"}],
+            "display-xl": ["44px", {"lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800"}],
+            "body-lg": ["17px", {"lineHeight": "26px", "fontWeight": "400"}],
+            "mono": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+            "headline": ["24px", {"lineHeight": "30px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+            "amount": ["40px", {"lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800"}],
+            "display-lg": ["34px", {"lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800"}]
+          },
+          "boxShadow": {
+            "card": "0 2px 4px -1px rgba(11, 21, 18, 0.04), 0 4px 12px -2px rgba(11, 21, 18, 0.03)",
+            "dock": "0 -4px 16px -2px rgba(11, 21, 18, 0.05)"
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    body {
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-sand-50 text-ink-950 font-body-md min-h-screen flex justify-center selection:bg-sand-200">
+<!-- 390px Mobile Frame Shell -->
+<div class="w-full max-w-[390px] min-h-screen flex flex-col bg-sand-50 relative pb-44">
+<!-- Top App Bar (Shared Components standard: bg-surface shadow-sm, 44px back button, brand anchor) -->
+<header class="sticky top-0 z-40 bg-sand-50/95 backdrop-blur-md px-margin h-14 flex items-center justify-between transition-all">
+<div class="flex items-center gap-2">
+<button aria-label="Go back" class="w-11 h-11 -ml-2 rounded-full flex items-center justify-center text-ink-800 hover:bg-sand-100 active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h1 class="font-headline text-title text-ink-950 font-bold tracking-tight">Listing</h1>
+</div>
+<!-- Sand Status Pill: Archived -->
+<div class="bg-sand-100 text-ink-600 border border-sand-200 rounded-full px-3 py-1 flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-ink-500">archive</span>
+<span class="font-label text-[11px] font-semibold tracking-wide">Archived</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-margin pt-3 space-y-4">
+<!-- 1. Sand Info Banner -->
+<section class="bg-sand-100 border border-sand-200 rounded-[20px] p-4 flex flex-col gap-3">
+<div class="flex items-start gap-3">
+<div class="w-9 h-9 rounded-xl bg-sand-200/60 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-ink-600 text-[20px]">archive</span>
+</div>
+<p class="font-body-sm text-[14px] leading-[20px] text-ink-800 font-normal pt-1">
+            This listing is archived. Its link no longer accepts payments.
+          </p>
+</div>
+<div class="flex justify-end pt-1">
+<button class="h-10 px-4 py-2 bg-sand-0 border border-sand-200 text-ink-950 rounded-xl font-label text-[13px] font-semibold tracking-normal flex items-center gap-2 hover:bg-sand-50 active:scale-95 transition-all duration-150 shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-ink-600">unarchive</span>
+<span>Restore listing</span>
+</button>
+</div>
+</section>
+<!-- 2. Share Card (Muted State) -->
+<section class="bg-sand-0 rounded-[20px] border border-sand-200 p-5 shadow-card">
+<div class="flex items-center justify-between mb-3">
+<span class="font-label text-label text-ink-500 uppercase tracking-[0.08em] font-bold">TRUST LINK</span>
+<span class="bg-sand-100 text-ink-500 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">link_off</span>
+<span>Link closed</span>
+</span>
+</div>
+<!-- Sunken link container -->
+<div class="bg-sand-100 border border-sand-200 rounded-xl p-3.5 flex items-center justify-between gap-2">
+<div class="flex items-center gap-2 overflow-hidden">
+<span class="material-symbols-outlined text-ink-400 text-[18px] shrink-0">lock</span>
+<span class="line-through text-ink-400 font-mono text-[13.5px] truncate select-none tracking-tight">
+              vekro.co.ke/pay/VK-4299
+            </span>
+</div>
+<button aria-label="Copy disabled" class="w-8 h-8 rounded-lg flex items-center justify-center bg-sand-200/50 text-ink-400 cursor-not-allowed shrink-0" disabled="" title="Payments disabled">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+</div>
+</section>
+<!-- 3. Item Summary Card -->
+<section class="bg-sand-0 rounded-[20px] border border-sand-200 p-5 shadow-card">
+<span class="font-label text-label text-ink-500 uppercase tracking-[0.08em] font-bold block mb-3.5">ITEM DETAILS</span>
+<div class="flex items-center gap-3.5">
+<!-- Desaturated / Grayscale Thumbnail -->
+<div class="w-20 h-20 rounded-xl bg-sand-100 border border-sand-200 overflow-hidden relative shrink-0 grayscale opacity-80 flex items-center justify-center">
+<img alt="Kitenge wrap dress laid flat" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTDZEdZkEEgE4WhXQIgT-wjxmZDQZJUsT9FqEbIT5BoVZQhYFp8uxgF5pmqav8cRslTNDBOZV0UnF5SsKQqNKZrYpz4mQZ5QrkbLUEqZ21RUCwvEZppKugBCmnNq25XKVCeeplTAU1x91fXd4_jqZDvy1xH2udNuLy9GidUEMYy-OutpKCks3Mp_c2tKX3DLlSyl-fmTBkibeHtD0gn33Hb96m5IKm6kvwdKFVI0KslVXikRcCYE8HC_qKv_2gk8kHtsYuOIeBELw"/>
+<div class="absolute inset-0 bg-sand-200/30 backdrop-contrast-75"></div>
+</div>
+<!-- Item Details -->
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<h2 class="font-title text-[18px] leading-[22px] text-ink-950 font-bold truncate">Kitenge wrap dress</h2>
+<span class="bg-sand-100 border border-sand-200 text-ink-600 px-2 py-0.5 rounded text-[11px] font-medium shrink-0">Standard</span>
+</div>
+<div class="font-headline text-[22px] leading-[26px] text-ink-950 font-extrabold tracking-tight">
+              KES 3,200
+            </div>
+<span class="font-body-sm text-[12px] text-ink-500 mt-0.5 block">Apparel</span>
+</div>
+</div>
+<!-- Divider -->
+<div class="border-t border-sand-200 my-4"></div>
+<!-- Dispute Policy Section -->
+<div>
+<span class="font-label text-[11px] uppercase tracking-[0.08em] text-ink-500 font-bold block mb-1.5">DISPUTE POLICY</span>
+<p class="font-body-sm text-[13px] leading-[19px] text-ink-600 font-normal">
+            Reject at the door for: Damaged · Wrong item · Not as described
+          </p>
+</div>
+</section>
+</main>
+<!-- 4. Fixed Action Dock (Above Bottom Bar) -->
+<div class="fixed bottom-16 left-0 right-0 z-30 max-w-[390px] mx-auto px-margin py-3 bg-sand-50/95 backdrop-blur-md shadow-dock">
+<button class="w-full h-[52px] bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition-all duration-150 text-sand-0 rounded-[14px] font-label text-[15px] font-bold tracking-normal flex items-center justify-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+<span>Duplicate as new listing</span>
+</button>
+<p class="text-center font-body-sm text-[11px] leading-[15px] text-ink-500 mt-2">
+        Creates an active draft with the same item details and policy.
+      </p>
+</div>
+<!-- 5. Bottom Navigation Bar (Docked full-width bottom-0, 5 destinations) -->
+<nav aria-label="Seller navigation" class="fixed bottom-0 left-0 right-0 z-40 max-w-[390px] mx-auto bg-sand-50 h-16 shadow-md flex justify-around items-center px-gutter py-space-sm">
+<!-- Home -->
+<button class="flex flex-col items-center justify-center text-ink-500 hover:text-primary active:scale-95 transition-transform duration-150 w-14">
+<span class="material-symbols-outlined text-[22px]">storefront</span>
+<span class="font-label text-[10px] tracking-tight mt-0.5">Home</span>
+</button>
+<!-- Orders -->
+<button class="flex flex-col items-center justify-center text-ink-500 hover:text-primary active:scale-95 transition-transform duration-150 w-14">
+<span class="material-symbols-outlined text-[22px]">receipt_long</span>
+<span class="font-label text-[10px] tracking-tight mt-0.5">Orders</span>
+</button>
+<!-- List (Active / Destination Context for Listing management) -->
+<button class="flex flex-col items-center justify-center text-primary font-bold active:scale-95 transition-transform duration-150 w-14">
+<div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+</div>
+<span class="font-label text-[10px] tracking-tight text-primary font-bold mt-0.5">New</span>
+</button>
+<!-- Returns -->
+<button class="flex flex-col items-center justify-center text-ink-500 hover:text-primary active:scale-95 transition-transform duration-150 w-14">
+<span class="material-symbols-outlined text-[22px]">assignment_return</span>
+<span class="font-label text-[10px] tracking-tight mt-0.5">Returns</span>
+</button>
+<!-- More -->
+<button class="flex flex-col items-center justify-center text-ink-500 hover:text-primary active:scale-95 transition-transform duration-150 w-14">
+<span class="material-symbols-outlined text-[22px]">more_horiz</span>
+<span class="font-label text-[10px] tracking-tight mt-0.5">More</span>
+</button>
+</nav>
+</div>
+</body></html>

@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vekro Seller Console - iPhone 13, 128GB, Midnight</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Bricolage Grotesque, DM Sans, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-container": "#0a6e4c",
+            "ink-400": "#8A9792",
+            "error-container": "#ffdad6",
+            "surface-tint": "#056c4a",
+            "plum-500": "#6B4FD8",
+            "background": "#f7faf5",
+            "surface-container-low": "#f1f5ef",
+            "lake-500": "#2F80ED",
+            "on-tertiary": "#ffffff",
+            "outline": "#6f7a72",
+            "emerald-700": "#0A6E4C",
+            "emerald-50": "#E9F8F1",
+            "tertiary-fixed-dim": "#ffb3af",
+            "secondary-container": "#fdaf23",
+            "coral-600": "#C93238",
+            "on-primary-fixed": "#002114",
+            "lake-50": "#E8F1FD",
+            "saffron-600": "#B87A00",
+            "primary": "#005438",
+            "plum-700": "#4F36B0",
+            "surface": "#f7faf5",
+            "on-secondary-fixed": "#291800",
+            "on-secondary-fixed-variant": "#624000",
+            "outline-variant": "#bec9c1",
+            "coral-50": "#FDECEC",
+            "tertiary": "#793130",
+            "sand-200": "#EAE4D4",
+            "emerald-950": "#04251C",
+            "on-error-container": "#93000a",
+            "ink-800": "#1B2824",
+            "emerald-500": "#12A672",
+            "surface-container-highest": "#e0e4de",
+            "on-tertiary-fixed-variant": "#77302f",
+            "inverse-primary": "#82d7ae",
+            "plum-50": "#EFEBFC",
+            "inverse-surface": "#2d312e",
+            "surface-dim": "#d7dbd6",
+            "on-secondary-container": "#6a4500",
+            "on-tertiary-fixed": "#3e0408",
+            "emerald-glow": "#3DEBA6",
+            "ink-600": "#44524D",
+            "emerald-400": "#2CC48A",
+            "saffron-50": "#FFF6E0",
+            "on-primary": "#ffffff",
+            "on-error": "#ffffff",
+            "surface-variant": "#e0e4de",
+            "emerald-600": "#0C8A5F",
+            "on-primary-container": "#97edc2",
+            "saffron-500": "#F2A516",
+            "emerald-900": "#06362A",
+            "on-surface": "#181d1a",
+            "tertiary-fixed": "#ffdad7",
+            "on-secondary": "#ffffff",
+            "on-surface-variant": "#3f4943",
+            "secondary": "#815500",
+            "surface-bright": "#f7faf5",
+            "surface-container-lowest": "#ffffff",
+            "primary-fixed-dim": "#82d7ae",
+            "lake-600": "#1F66C8",
+            "on-tertiary-container": "#ffd0cd",
+            "emerald-100": "#CDEFE0",
+            "saffron-100": "#FFE8B3",
+            "inverse-on-surface": "#eef2ed",
+            "surface-container": "#ebefea",
+            "ink-950": "#0B1512",
+            "emerald-800": "#084D3B",
+            "sand-50": "#FBF9F4",
+            "secondary-fixed-dim": "#ffb94d",
+            "ink-500": "#5E6D67",
+            "tertiary-container": "#974846",
+            "surface-container-high": "#e5e9e4",
+            "on-background": "#181d1a",
+            "on-primary-fixed-variant": "#005237",
+            "coral-500": "#E5484D",
+            "sand-300": "#D8D0BA",
+            "primary-fixed": "#9ef4c9",
+            "error": "#ba1a1a",
+            "sand-100": "#F5F1E7",
+            "secondary-fixed": "#ffddb2",
+            "sand-0": "#FFFFFF"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "title": ["Bricolage Grotesque", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"],
+            "body-sm": ["DM Sans", "sans-serif"],
+            "body-lg": ["DM Sans", "sans-serif"],
+            "display-xl": ["Bricolage Grotesque", "sans-serif"],
+            "otp": ["JetBrains Mono", "monospace"],
+            "body-md": ["DM Sans", "sans-serif"],
+            "display-lg": ["Bricolage Grotesque", "sans-serif"],
+            "headline": ["Bricolage Grotesque", "sans-serif"],
+            "amount": ["Bricolage Grotesque", "sans-serif"],
+            "label": ["DM Sans", "sans-serif"]
+          },
+          "fontSize": {
+            "title": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "mono": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "body-lg": ["17px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "display-xl": ["44px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "otp": ["44px", { "lineHeight": "52px", "fontWeight": "700" }],
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "display-lg": ["34px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800" }],
+            "headline": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "amount": ["40px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 20px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+    }
+    .vault-gradient {
+      background: linear-gradient(140deg, #04251C 0%, #084D3B 100%);
+    }
+    .custom-inner-shadow {
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+    .soft-card-shadow {
+      box-shadow: 0 4px 20px -2px rgba(11, 21, 18, 0.04), 0 2px 6px -1px rgba(11, 21, 18, 0.02);
+    }
+  </style>
+</head>
+<body class="bg-sand-50 text-ink-950 font-body-md antialiased min-h-screen selection:bg-emerald-100 selection:text-emerald-950">
+<!-- SHARED COMPONENT: SideNavBar (Fixed Left, 264px) -->
+<aside class="fixed top-0 left-0 h-screen w-[264px] z-40 flex flex-col justify-between bg-emerald-950 dark:bg-emerald-950">
+<div class="w-[264px] h-full p-4 flex flex-col gap-4">
+<!-- Brand Header -->
+<div class="flex items-center gap-3 px-2 py-3">
+<div aria-label="Vekro Emerald Mark with White V" class="w-10 h-10 rounded-xl bg-emerald-700 flex items-center justify-center text-sand-0 shadow-inner">
+<svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewbox="0 0 24 24" width="22">
+<path d="m4 5 8 14 8-14"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="font-headline text-headline text-sand-0 font-bold tracking-tight">Vekro</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-1.5 mt-2 flex-grow">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-ink-400 dark:text-ink-400 font-body-md text-body-md hover:bg-emerald-900/60 hover:text-sand-50 transition-colors transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Orders (with saffron badge) -->
+<a class="flex items-center justify-between px-3 py-2.5 rounded-lg text-ink-400 dark:text-ink-400 font-body-md text-body-md hover:bg-emerald-900/60 hover:text-sand-50 transition-colors transition-all duration-150 ease-in-out" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span>Orders</span>
+</div>
+<span class="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-bold bg-saffron-500 text-ink-950">3</span>
+</a>
+<!-- Listings (ACTIVE ITEM) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-emerald-700 text-sand-0 font-title text-title transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2" data-weight="fill" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span>Listings</span>
+</a>
+<!-- Returns (with saffron badge) -->
+<a class="flex items-center justify-between px-3 py-2.5 rounded-lg text-ink-400 dark:text-ink-400 font-body-md text-body-md hover:bg-emerald-900/60 hover:text-sand-50 transition-colors transition-all duration-150 ease-in-out" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined" data-icon="assignment_return">assignment_return</span>
+<span>Returns</span>
+</div>
+<span class="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-bold bg-saffron-500 text-ink-950">1</span>
+</a>
+<!-- Analytics -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-ink-400 dark:text-ink-400 font-body-md text-body-md hover:bg-emerald-900/60 hover:text-sand-50 transition-colors transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span>Analytics</span>
+</a>
+<!-- Notifications -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-ink-400 dark:text-ink-400 font-body-md text-body-md hover:bg-emerald-900/60 hover:text-sand-50 transition-colors transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span>Notifications</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-ink-400 dark:text-ink-400 font-body-md text-body-md hover:bg-emerald-900/60 hover:text-sand-50 transition-colors transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<!-- Bottom Action and Seller Profile -->
+<div class="flex flex-col gap-3 pt-3 border-t border-emerald-900/80">
+<button class="w-full h-11 bg-emerald-glow text-emerald-950 hover:bg-primary-fixed transition-colors font-title text-title flex items-center justify-center gap-2 rounded-xl">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span>Create listing</span>
+</button>
+<div class="flex items-center justify-between px-2 py-2 rounded-xl bg-emerald-900/40">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 rounded-full bg-emerald-800 border border-emerald-700 flex items-center justify-center text-emerald-glow font-bold text-xs shrink-0">
+              AG
+            </div>
+<div class="flex flex-col min-w-0">
+<span class="text-sand-50 font-body-sm text-body-sm truncate">AG · Amina Gadgets</span>
+<span class="text-emerald-400 font-label text-label flex items-center gap-1">
+                Verified seller
+                <span class="material-symbols-outlined text-xs" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- SHARED COMPONENT: TopNavBar (Sticky 72px) -->
+<header class="sticky top-0 right-0 h-[72px] z-30 bg-surface-container-lowest dark:bg-surface-container-lowest border-b border-surface-container-high dark:border-surface-container-high">
+<div class="h-[72px] pl-[288px] pr-8 flex items-center justify-between w-full">
+<!-- Search Input on left -->
+<div class="relative w-80">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400 text-lg">search</span>
+<input class="w-full h-11 pl-10 pr-4 rounded-xl bg-sand-100 border border-sand-200 text-ink-950 placeholder-ink-400 font-body-md text-body-md focus:bg-sand-0 focus:outline-none focus:border-primary-container transition-all" placeholder="Order ID or item" type="text"/>
+</div>
+<!-- Trailing Action Icons & Avatar -->
+<div class="flex items-center gap-4">
+<!-- Notification button with coral badge dot -->
+<button class="relative w-10 h-10 rounded-xl flex items-center justify-center text-ink-600 hover:bg-sand-100 transition-colors" title="Notifications">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-coral-500 ring-2 ring-white"></span>
+</button>
+<button class="w-10 h-10 rounded-xl flex items-center justify-center text-ink-600 hover:bg-sand-100 transition-colors" title="Help">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="h-6 w-[1px] bg-sand-200"></div>
+<div class="flex items-center gap-3 pl-1">
+<div aria-label="Amina Gadgets Seller Avatar" class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-sm border border-emerald-200 shadow-sm">
+            AG
+          </div>
+<span class="font-body-md text-body-md font-semibold text-ink-800">Amina Gadgets</span>
+</div>
+</div>
+</div>
+</header>
+<!-- MAIN CANVAS -->
+<main class="pl-[264px] min-h-[calc(100vh-72px)] pb-20">
+<div class="max-w-[1120px] mx-auto px-8 pt-6 flex flex-col gap-6">
+<!-- 1. Top Navigation & Action Header -->
+<div class="flex flex-col gap-3">
+<div>
+<a class="inline-flex items-center gap-1.5 text-ink-500 hover:text-emerald-700 font-body-sm text-body-sm transition-colors group" href="#">
+<span class="material-symbols-outlined text-base group-hover:-translate-x-0.5 transition-transform" data-icon="arrow_back">arrow_back</span>
+<span>Listings</span>
+</a>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<h1 class="font-headline text-headline text-ink-950 font-extrabold text-[28px] tracking-tight">iPhone 13, 128GB, Midnight</h1>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-label text-label font-bold">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span>Active</span>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-2.5">
+<button class="h-10 px-4 rounded-xl bg-sand-0 border border-sand-200 text-ink-800 hover:bg-sand-100 font-title text-body-md flex items-center gap-1.5 transition-all shadow-sm">
+<span class="material-symbols-outlined text-base" data-icon="edit">edit</span>
+<span>Edit</span>
+</button>
+<button class="h-10 px-4 rounded-xl bg-sand-0 border border-sand-200 text-ink-800 hover:bg-sand-100 font-title text-body-md flex items-center gap-1.5 transition-all shadow-sm">
+<span class="material-symbols-outlined text-base" data-icon="content_copy">content_copy</span>
+<span>Duplicate</span>
+</button>
+<button class="h-10 px-4 rounded-xl bg-sand-0 border border-coral-500 text-coral-600 hover:bg-coral-50 font-title text-body-md flex items-center gap-1.5 transition-all">
+<span class="material-symbols-outlined text-base" data-icon="archive">archive</span>
+<span>Archive</span>
+</button>
+</div>
+</div>
+</div>
+<!-- 2. Success Banner -->
+<div class="bg-emerald-50 border border-emerald-200/90 rounded-2xl px-5 py-4 flex items-center gap-3.5 soft-card-shadow">
+<div class="w-8 h-8 rounded-full bg-emerald-700 text-sand-0 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span>
+</div>
+<p class="font-body-md text-body-md font-semibold text-emerald-950">
+          Your listing is live. Share the link so buyers can pay safely.
+        </p>
+</div>
+<!-- 3. Share Hero Card ("The Vault" Moment of Success) -->
+<section class="vault-gradient custom-inner-shadow rounded-3xl p-8 text-sand-0 relative overflow-hidden soft-card-shadow">
+<!-- Ambient decorative emerald glow -->
+<div class="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-emerald-glow opacity-[0.18] blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col lg:flex-row items-stretch justify-between gap-8">
+<!-- Left Column: Primary Copy & Share Dock -->
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<h2 class="font-headline text-headline text-[28px] font-extrabold text-sand-0 tracking-tight leading-tight mb-2">
+                Your Trust Link is ready
+              </h2>
+<p class="text-sand-200 font-body-md text-body-md max-w-xl">Send this link to buyers on WhatsApp, Instagram or Facebook. They pay into the vault before you dispatch.</p>
+<!-- Trust Link Pill with Copier -->
+<div class="bg-black/35 border border-white/15 px-4 py-3 rounded-xl flex items-center justify-between gap-4 max-w-xl my-5">
+<div class="flex items-center gap-2.5 overflow-hidden">
+<span class="material-symbols-outlined text-emerald-glow shrink-0" data-icon="link">link</span>
+<span class="font-mono text-mono text-emerald-glow font-semibold truncate select-all">
+                    vekro.co.ke/pay/VK-4299
+                  </span>
+</div>
+<button class="px-4 py-2 rounded-lg bg-emerald-glow text-emerald-950 hover:bg-primary-fixed transition-colors font-title text-sm flex items-center gap-1.5 shrink-0 shadow-sm font-bold" id="copyLinkBtn" onclick="copyTrustLink()">
+<span class="material-symbols-outlined text-base" data-icon="content_copy">content_copy</span>
+<span id="copyLinkText">Copy</span>
+</button>
+</div>
+<!-- Share Action Buttons Row -->
+<div class="flex flex-wrap items-center gap-3">
+<a class="h-12 px-5 rounded-xl bg-sand-0 text-emerald-950 font-title text-title text-sm font-bold flex items-center gap-2 hover:bg-sand-100 transition-colors shadow-sm" href="https://wa.me/?text=iPhone%2013%20128GB%2C%20KES%2052%2C000.%20Pay%20safely%20with%20Vekro%20escrow%3A%20vekro.co.ke%2Fpay%2FVK-4299" target="_blank">
+<!-- WhatsApp Crisp Icon -->
+<svg fill="currentColor" height="18" viewbox="0 0 24 24" width="18">
+<path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.63C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.04 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.8 13.47 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67M9.53 7.34C9.36 7.34 9.09 7.4 8.87 7.65C8.65 7.89 8.02 8.48 8.02 9.68C8.02 10.89 8.9 12.06 9.02 12.23C9.15 12.39 10.74 14.86 13.18 15.91C15.21 16.79 15.62 16.61 16.07 16.57C16.52 16.53 17.51 15.98 17.72 15.4C17.92 14.82 17.92 14.33 17.86 14.22C17.8 14.12 17.65 14.06 17.42 13.95C17.2 13.84 16.09 13.29 15.89 13.21C15.68 13.13 15.53 13.09 15.38 13.33C15.23 13.56 14.8 14.07 14.67 14.22C14.54 14.36 14.41 14.38 14.19 14.27C13.97 14.16 13.25 13.93 12.4 13.17C11.74 12.58 11.29 11.85 11.16 11.64C11.04 11.42 11.15 11.3 11.26 11.19C11.36 11.09 11.48 10.93 11.6 10.79C11.72 10.65 11.76 10.55 11.84 10.39C11.92 10.23 11.88 10.09 11.82 9.97C11.76 9.85 11.31 8.74 11.13 8.28C10.94 7.84 10.76 7.9 10.62 7.89C10.49 7.89 10.34 7.89 10.19 7.89C10.03 7.89 9.77 7.95 9.55 8.19"></path>
+</svg>
+<span>Share on WhatsApp</span>
+</a>
+<button class="h-12 px-4 rounded-xl bg-emerald-900/70 hover:bg-emerald-900 border border-white/10 text-sand-0 font-body-sm text-body-sm flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="public">public</span>
+<span>Facebook</span>
+</button>
+<button class="h-12 px-4 rounded-xl bg-emerald-900/70 hover:bg-emerald-900 border border-white/10 text-sand-0 font-body-sm text-body-sm flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="send">send</span>
+<span>Telegram</span>
+</button>
+<button class="h-12 px-4 rounded-xl bg-emerald-900/70 hover:bg-emerald-900 border border-white/10 text-sand-0 font-body-sm text-body-sm flex items-center gap-2 transition-colors" onclick="copyCaption()">
+<span class="material-symbols-outlined text-base" data-icon="text_snippet">text_snippet</span>
+<span>Copy message</span>
+</button>
+</div>
+</div>
+<!-- Pre-written Caption Box -->
+<div class="mt-6 bg-black/25 border border-white/10 rounded-xl p-3.5 flex items-center justify-between text-sand-100 text-sm font-mono gap-3">
+<span class="truncate" id="captionText">iPhone 13 128GB, KES 52,000. Pay safely with Vekro escrow: vekro.co.ke/pay/VK-4299</span>
+<button class="p-1.5 rounded-lg hover:bg-white/10 text-emerald-glow transition-colors shrink-0" onclick="copyCaption()" title="Copy caption text">
+<span class="material-symbols-outlined text-base" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Right Column: White QR Code Card -->
+<div class="flex items-center justify-center lg:justify-end shrink-0">
+<div class="bg-white p-5 rounded-2xl shadow-xl flex flex-col items-center justify-center text-center w-52 border border-sand-200/60">
+<!-- High-Fidelity SVG QR Matrix with Centered Vekro V Mark -->
+<div class="w-40 h-40 bg-sand-50 p-2.5 rounded-xl border border-sand-200 flex items-center justify-center relative shadow-inner">
+<svg class="w-full h-full text-emerald-950" fill="currentColor" viewbox="0 0 100 100">
+<!-- QR Finder Pattern Top-Left -->
+<rect fill="currentColor" height="28" rx="2" width="28" x="5" y="5"></rect>
+<rect fill="#FFFFFF" height="20" rx="1" width="20" x="9" y="9"></rect>
+<rect fill="currentColor" height="12" rx="1" width="12" x="13" y="13"></rect>
+<!-- QR Finder Pattern Top-Right -->
+<rect fill="currentColor" height="28" rx="2" width="28" x="67" y="5"></rect>
+<rect fill="#FFFFFF" height="20" rx="1" width="20" x="71" y="9"></rect>
+<rect fill="currentColor" height="12" rx="1" width="12" x="75" y="13"></rect>
+<!-- QR Finder Pattern Bottom-Left -->
+<rect fill="currentColor" height="28" rx="2" width="28" x="5" y="67"></rect>
+<rect fill="#FFFFFF" height="20" rx="1" width="20" x="9" y="71"></rect>
+<rect fill="currentColor" height="12" rx="1" width="12" x="13" y="75"></rect>
+<!-- Matrix Data Blocks -->
+<rect height="5" width="5" x="38" y="6"></rect>
+<rect height="5" width="5" x="48" y="6"></rect>
+<rect height="5" width="5" x="58" y="10"></rect>
+<rect height="5" width="5" x="38" y="16"></rect>
+<rect height="5" width="5" x="52" y="18"></rect>
+<rect height="5" width="5" x="42" y="24"></rect>
+<rect height="5" width="5" x="56" y="26"></rect>
+<rect height="5" width="5" x="6" y="38"></rect>
+<rect height="5" width="5" x="16" y="42"></rect>
+<rect height="5" width="5" x="24" y="38"></rect>
+<rect height="5" width="5" x="28" y="46"></rect>
+<rect height="5" width="5" x="10" y="52"></rect>
+<rect height="5" width="5" x="20" y="56"></rect>
+<rect height="5" width="5" x="72" y="38"></rect>
+<rect height="5" width="5" x="84" y="42"></rect>
+<rect height="5" width="5" x="78" y="48"></rect>
+<rect height="5" width="5" x="88" y="54"></rect>
+<rect height="5" width="5" x="68" y="58"></rect>
+<rect height="5" width="5" x="38" y="70"></rect>
+<rect height="5" width="5" x="48" y="74"></rect>
+<rect height="5" width="5" x="54" y="68"></rect>
+<rect height="5" width="5" x="42" y="84"></rect>
+<rect height="5" width="5" x="58" y="82"></rect>
+<rect height="5" width="5" x="72" y="72"></rect>
+<rect height="5" width="5" x="82" y="78"></rect>
+<rect height="5" width="5" x="76" y="86"></rect>
+<rect height="5" width="5" x="88" y="88"></rect>
+<!-- Timing lines -->
+<rect height="4" width="4" x="38" y="38"></rect>
+<rect height="4" width="4" x="58" y="38"></rect>
+<rect height="4" width="4" x="38" y="58"></rect>
+<rect height="4" width="4" x="58" y="58"></rect>
+</svg>
+<!-- Center Vekro Logo Badge -->
+<div class="absolute inset-0 m-auto w-8 h-8 rounded-lg bg-emerald-950 border-2 border-white flex items-center justify-center shadow">
+<svg fill="none" height="14" stroke="#3DEBA6" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" viewbox="0 0 24 24" width="14">
+<path d="m4 5 8 14 8-14"></path>
+</svg>
+</div>
+</div>
+<div class="mt-3.5 flex flex-col items-center">
+<span class="font-mono text-xs text-ink-500 font-semibold mb-2">VK-4299</span>
+<button class="inline-flex items-center gap-1.5 text-emerald-700 hover:text-emerald-900 font-title text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="download">download</span>
+<span>Download QR card</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. Two Columns Grid Below Hero -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left Column: Item details Card (7 cols) -->
+<div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-sand-200 soft-card-shadow flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-4 border-b border-sand-200">
+<h3 class="font-title text-title text-ink-950">Item details</h3>
+</div>
+<!-- Photo strip showing 3 thumbnails -->
+<div class="grid grid-cols-3 gap-3 my-5">
+<!-- Thumbnail 1: Primary Cover (Midnight iPhone 13 photo) -->
+<div class="relative rounded-xl overflow-hidden border-2 border-emerald-600 aspect-square group bg-sand-100">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A sleek midnight black iPhone 13 smartphone resting at an elegant angle on a minimalist textured warm sand surface. Professional studio product photography with soft directional lighting creating subtle specular highlights along the matte aluminum edges and camera module. The aesthetic matches a high-end fintech marketplace with calm earth tones and premium tactile materials." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmR1Jk3EiA6seQXepRahSR23dq0NMNEDEC08MCMMBff5RnrEZBfM-YzqRP0Trvmgcroi4Tae7pbdKWNxZY_us3O5W_n9Ucwf65wI_w603gh_lMPp1ZsmcFlYH_gO81HVeTcFU8o91_MYmMsR7b83lEu-U_iSgY8zKiP3A5NBditXWBgWmd4V-OOhVZYVs80zPz4p9DRHjScjBFDHqbt3xqOJLC_zZFdQr4GiFtsLR34ZUO9fw0bV10JALhif58KG0lmov4jvyNPx0"/>
+<div class="absolute bottom-2 left-2 px-2 py-0.5 rounded-md bg-emerald-950/85 backdrop-blur-sm text-sand-0 font-label text-[10px] tracking-wide font-bold">
+                  Cover
+                </div>
+</div>
+<!-- Thumbnail 2: Side profile -->
+<div class="relative rounded-xl overflow-hidden border border-sand-200 aspect-square group bg-sand-100">
+<img alt="iPhone 13 back view on sand neutral background" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQPvpbWdzhrl-IFUahV0-MEw79w-EUk2au8uYK477Dg-kwDMxRBAMtDt8vzWrgOSisgOg-IqQrfwuY5D7Yep6sOaWm8O0z7OooGHGhSNNN3wnkMIM_qzJG1QinM7oN_qrxfzkLWwq2YObu_xwMll943Cr_PDU2AV7AdObAkl3YuYPFyFxO_8__dNWhfe0UG3uG4hXmsT2SfEAfFj2vRAJlaaiiqD-JXqGfqkFNjcfPcYfDTCsgZrVIecjIrrnz751L0MAe2MLwXXs"/>
+</div>
+<!-- Thumbnail 3: Device with original packaging box -->
+<div class="relative rounded-xl overflow-hidden border border-sand-200 aspect-square group bg-sand-100">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Midnight iPhone 13 smartphone displayed next to its original slim minimalist retail packaging box on a warm sand desktop surface. Soft natural daylight, pristine tech product presentation evoking security and authenticity in a verified electronics seller catalog." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAk5rhcBi5yExKwbcIxBs9acfLa-JXUDFHpxbaLuL-svkQUHP5o_t5utjwWr934en_HvZAoqQJfd3WPrywUdj_uKQkfFzc71AyQYlOjcLQSgqhe0IVl20XI0bKPLX1zgH0yFFj_MaAFHaG3QffSuRnwmOAeoNvyYUF_05BJ9F65sgug8SAaQMH9gcwyXSfaAW99eD4JN-ZZNf-I8qgr7VY12csqgAHyINvz32OP8u3CACpt_FSpo6rHMw91Q-huzWKjroPoCuN1I4U"/>
+</div>
+</div>
+<!-- Key Details Structured List -->
+<div class="divide-y divide-sand-200 font-body-md text-body-md">
+<!-- Price & Payout Breakdown -->
+<div class="py-3.5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+<span class="text-ink-500 font-medium">Selling price</span>
+<div class="text-right">
+<div class="font-amount text-amount text-ink-950 font-extrabold tracking-tight">KES 52,000</div>
+<div class="text-xs text-ink-500 mt-0.5">
+                    Network fee KES 130 · <span class="text-emerald-700 font-bold">Seller receives KES 51,870</span>
+</div>
+</div>
+</div>
+<!-- Category -->
+<div class="py-3.5 flex items-center justify-between">
+<span class="text-ink-500 font-medium">Category</span>
+<span class="font-semibold text-ink-950">Phones and tablets</span>
+</div>
+<!-- Type / Serial Number -->
+<div class="py-3.5 flex items-center justify-between">
+<span class="text-ink-500 font-medium">Item type</span>
+<div class="flex items-center gap-2">
+<span class="text-ink-800">Serial-numbered</span>
+<span class="px-2 py-0.5 rounded bg-sand-100 text-ink-800 font-mono text-xs border border-sand-200">
+                    IMEI ends 1234
+                  </span>
+</div>
+</div>
+<!-- Policy -->
+<div class="py-3.5 flex items-center justify-between">
+<span class="text-ink-500 font-medium">Dispute policy</span>
+<div class="inline-flex items-center gap-1.5 text-emerald-700 font-semibold text-sm">
+<span class="material-symbols-outlined text-base" data-icon="shield">shield</span>
+<span>24-hour check · Repair then release</span>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-sand-200 flex items-center justify-between text-xs text-ink-400">
+<span>Posted today at 11:28 AM</span>
+</div>
+</div>
+<!-- Right Column: Activity Card (5 cols) -->
+<div class="lg:col-span-5 bg-white rounded-2xl p-6 border border-sand-200 soft-card-shadow flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-4 border-b border-sand-200">
+<h3 class="font-title text-title text-ink-950">Activity</h3>
+</div>
+<!-- Header Stat Metric -->
+<div class="py-4">
+<div class="font-title text-title text-ink-950 text-xl font-bold">
+                Views 214 <span class="text-sand-300 font-normal">·</span> Link clicks 38
+              </div>
+</div>
+<!-- 7-day emerald mini bar chart -->
+<div class="bg-sand-50 rounded-xl p-4 border border-sand-200 my-2">
+<div class="text-xs font-semibold text-ink-600 mb-3 flex items-center justify-between">
+<span>Weekly impressions</span>
+</div>
+<div class="h-28 flex items-end justify-between gap-2 pt-2 pb-1">
+<!-- Mon -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+<div class="w-full bg-emerald-100 rounded-t-sm h-[20%] transition-all"></div>
+<span class="text-[11px] text-ink-400 font-medium">Mon</span>
+</div>
+<!-- Tue -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+<div class="w-full bg-emerald-100 rounded-t-sm h-[35%] transition-all"></div>
+<span class="text-[11px] text-ink-400 font-medium">Tue</span>
+</div>
+<!-- Wed -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+<div class="w-full bg-emerald-100 rounded-t-sm h-[28%] transition-all"></div>
+<span class="text-[11px] text-ink-400 font-medium">Wed</span>
+</div>
+<!-- Thu -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+<div class="w-full bg-emerald-100 rounded-t-sm h-[45%] transition-all"></div>
+<span class="text-[11px] text-ink-400 font-medium">Thu</span>
+</div>
+<!-- Fri -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+<div class="w-full bg-emerald-400 rounded-t-sm h-[65%] transition-all"></div>
+<span class="text-[11px] text-ink-400 font-medium">Fri</span>
+</div>
+<!-- Sat -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+<div class="w-full bg-emerald-500 rounded-t-sm h-[78%] transition-all"></div>
+<span class="text-[11px] text-ink-400 font-medium">Sat</span>
+</div>
+<!-- Today (Spike) -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+<div class="w-full bg-emerald-600 rounded-t-sm h-[94%] transition-all shadow-sm"></div>
+<span class="text-[11px] text-emerald-800 font-bold">Today</span>
+</div>
+</div>
+</div>
+<!-- Empty State Order Message -->
+<div class="mt-4 bg-saffron-50/70 border border-saffron-100 rounded-xl p-4 flex items-start gap-3">
+<span class="material-symbols-outlined text-saffron-600 text-xl shrink-0 mt-0.5" data-icon="info">info</span>
+<div>
+<h4 class="font-semibold text-ink-950 text-sm">No orders yet</h4>
+<p class="text-xs text-ink-600 mt-0.5 leading-relaxed">
+                  You'll see the buyer here once they pay. Their funds will be held in the vault while you package the device.
+                </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Inline Interaction Script -->
+<script>
+    function copyTrustLink() {
+      const linkText = "https://vekro.co.ke/pay/VK-4299";
+      navigator.clipboard.writeText(linkText).then(() => {
+        const textSpan = document.getElementById('copyLinkText');
+        textSpan.innerText = "Copied!";
+        setTimeout(() => {
+          textSpan.innerText = "Copy";
+        }, 2200);
+      }).catch(err => {
+        console.error('Clipboard copy failed:', err);
+      });
+    }
+
+    function copyCaption() {
+      const caption = document.getElementById('captionText').innerText;
+      navigator.clipboard.writeText(caption).then(() => {
+        alert("Pre-written message copied to clipboard!");
+      });
+    }
+  </script>
+</body></html>

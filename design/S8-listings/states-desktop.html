@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vekro Seller Console - Listings States Reference</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Bricolage Grotesque, DM Sans, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS Play CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration verbatim from Design System -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "lake-50": "#E8F1FD",
+            "on-primary": "#ffffff",
+            "ink-950": "#0B1512",
+            "coral-500": "#E5484D",
+            "outline": "#6f7a72",
+            "emerald-950": "#04251C",
+            "plum-50": "#EFEBFC",
+            "primary-container": "#0a6e4c",
+            "secondary-container": "#fdaf23",
+            "emerald-700": "#0A6E4C",
+            "tertiary": "#793130",
+            "ink-800": "#1B2824",
+            "emerald-50": "#E9F8F1",
+            "emerald-900": "#06362A",
+            "sand-300": "#D8D0BA",
+            "on-background": "#181d1a",
+            "error": "#ba1a1a",
+            "surface-container-highest": "#e0e4de",
+            "primary-fixed-dim": "#82d7ae",
+            "on-tertiary-fixed": "#3e0408",
+            "inverse-surface": "#2d312e",
+            "coral-50": "#FDECEC",
+            "on-secondary-fixed": "#291800",
+            "lake-500": "#2F80ED",
+            "on-secondary-fixed-variant": "#624000",
+            "emerald-600": "#0C8A5F",
+            "plum-700": "#4F36B0",
+            "on-secondary": "#ffffff",
+            "surface-container-low": "#f1f5ef",
+            "ink-400": "#8A9792",
+            "coral-600": "#C93238",
+            "on-secondary-container": "#6a4500",
+            "emerald-400": "#2CC48A",
+            "surface-tint": "#056c4a",
+            "surface": "#f7faf5",
+            "tertiary-container": "#974846",
+            "saffron-50": "#FFF6E0",
+            "sand-200": "#EAE4D4",
+            "outline-variant": "#bec9c1",
+            "on-tertiary": "#ffffff",
+            "tertiary-fixed-dim": "#ffb3af",
+            "on-primary-container": "#97edc2",
+            "surface-bright": "#f7faf5",
+            "sand-50": "#FBF9F4",
+            "background": "#f7faf5",
+            "on-tertiary-fixed-variant": "#77302f",
+            "ink-500": "#5E6D67",
+            "surface-dim": "#d7dbd6",
+            "surface-container-high": "#e5e9e4",
+            "inverse-on-surface": "#eef2ed",
+            "sand-100": "#F5F1E7",
+            "on-primary-fixed-variant": "#005237",
+            "error-container": "#ffdad6",
+            "secondary-fixed-dim": "#ffb94d",
+            "on-tertiary-container": "#ffd0cd",
+            "lake-600": "#1F66C8",
+            "emerald-100": "#CDEFE0",
+            "saffron-500": "#F2A516",
+            "emerald-500": "#12A672",
+            "plum-500": "#6B4FD8",
+            "emerald-800": "#084D3B",
+            "secondary": "#815500",
+            "on-primary-fixed": "#002114",
+            "ink-600": "#44524D",
+            "primary": "#005438",
+            "sand-0": "#FFFFFF",
+            "saffron-100": "#FFE8B3",
+            "on-surface": "#181d1a",
+            "tertiary-fixed": "#ffdad7",
+            "primary-fixed": "#9ef4c9",
+            "on-error-container": "#93000a",
+            "saffron-600": "#B87A00",
+            "inverse-primary": "#82d7ae",
+            "on-surface-variant": "#3f4943",
+            "surface-variant": "#e0e4de",
+            "emerald-glow": "#3DEBA6",
+            "surface-container": "#ebefea",
+            "secondary-fixed": "#ffddb2",
+            "on-error": "#ffffff",
+            "surface-container-lowest": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "card": "20px",
+            "button": "14px",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "8px",
+            "margin": "20px",
+            "space-lg": "24px",
+            "gutter": "16px",
+            "space-xl": "40px",
+            "space-md": "16px",
+            "space-xs": "4px"
+          },
+          "fontFamily": {
+            "title": ["Bricolage Grotesque", "sans-serif"],
+            "body-md": ["DM Sans", "sans-serif"],
+            "amount": ["Bricolage Grotesque", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"],
+            "otp": ["JetBrains Mono", "monospace"],
+            "label": ["DM Sans", "sans-serif"],
+            "display-lg": ["Bricolage Grotesque", "sans-serif"],
+            "body-lg": ["DM Sans", "sans-serif"],
+            "headline": ["Bricolage Grotesque", "sans-serif"],
+            "body-sm": ["DM Sans", "sans-serif"],
+            "display-xl": ["Bricolage Grotesque", "sans-serif"]
+          },
+          "fontSize": {
+            "title": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "amount": ["40px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "mono": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "otp": ["44px", { "lineHeight": "52px", "fontWeight": "700" }],
+            "label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }],
+            "display-lg": ["34px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800" }],
+            "body-lg": ["17px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "headline": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "display-xl": ["44px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800" }]
+          },
+          "boxShadow": {
+            "card-layered": "0 1px 2px rgba(11, 21, 18, 0.04), 0 8px 24px rgba(11, 21, 18, 0.06)"
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      display: inline-block;
+      line-height: 1;
+      text-transform: none;
+      letter-spacing: normal;
+      word-wrap: normal;
+      white-space: nowrap;
+      direction: ltr;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.55; }
+    }
+    .animate-pulse-subtle {
+      animation: pulse-subtle 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-sand-50 text-ink-950 font-body-md text-body-md antialiased min-h-screen flex flex-col">
+<!-- Desktop Fixed Side Navigation (264px) verbatim mapping from Shared Components JSON -->
+<aside class="fixed top-0 left-0 h-screen w-[264px] bg-emerald-950 text-on-primary flex flex-col justify-between p-space-md z-40 select-none">
+<!-- Top Brand & Menu Cluster -->
+<div class="flex flex-col gap-space-lg">
+<!-- Logo Unit -->
+<div class="flex items-center gap-3 px-2 pt-1">
+<div class="w-10 h-10 rounded-xl bg-emerald-700 flex items-center justify-center shrink-0 shadow-sm border border-emerald-600/30">
+<!-- Vekro clean dual-stroke V logo -->
+<svg class="text-on-primary" fill="none" height="22" viewbox="0 0 24 24" width="22">
+<path d="M4.5 5.5L12 18.5L19.5 5.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.75"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="font-headline text-headline font-bold tracking-tight text-on-primary leading-none">Vekro</span>
+</div>
+</div>
+<!-- Navigation Tabs (7 tabs verbatim from JSON: Dashboard, Orders, Listings, Returns, Analytics, Notifications, Settings) -->
+<nav aria-label="Sidebar Navigation" class="flex flex-col gap-1.5">
+<!-- 1. Dashboard -->
+<a class="flex items-center gap-space-sm text-sand-300 px-space-md py-space-sm font-body-md text-body-md hover:text-on-primary hover:bg-emerald-900 transition-colors duration-150 rounded-lg group" href="#dashboard">
+<span class="material-symbols-outlined text-[20px] text-sand-300 group-hover:text-on-primary" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- 2. Orders (with saffron badge "3") -->
+<a class="flex items-center justify-between text-sand-300 px-space-md py-space-sm font-body-md text-body-md hover:text-on-primary hover:bg-emerald-900 transition-colors duration-150 rounded-lg group" href="#orders">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-sand-300 group-hover:text-on-primary" data-icon="shopping_bag">shopping_bag</span>
+<span>Orders</span>
+</div>
+<span class="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-saffron-50 text-saffron-600 leading-none">3</span>
+</a>
+<!-- 3. Listings (ACTIVE TAB) -->
+<a aria-current="page" class="flex items-center gap-space-sm bg-emerald-700 text-on-primary rounded-lg px-space-md py-space-sm font-body-md text-body-md font-medium shadow-sm" href="#listings">
+<span class="material-symbols-outlined text-[20px] text-on-primary" data-icon="inventory_2">inventory_2</span>
+<span>Listings</span>
+</a>
+<!-- 4. Returns (with saffron badge "1") -->
+<a class="flex items-center justify-between text-sand-300 px-space-md py-space-sm font-body-md text-body-md hover:text-on-primary hover:bg-emerald-900 transition-colors duration-150 rounded-lg group" href="#returns">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-sand-300 group-hover:text-on-primary" data-icon="assignment_return">assignment_return</span>
+<span>Returns</span>
+</div>
+<span class="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-saffron-50 text-saffron-600 leading-none">1</span>
+</a>
+<!-- 5. Analytics -->
+<a class="flex items-center gap-space-sm text-sand-300 px-space-md py-space-sm font-body-md text-body-md hover:text-on-primary hover:bg-emerald-900 transition-colors duration-150 rounded-lg group" href="#analytics">
+<span class="material-symbols-outlined text-[20px] text-sand-300 group-hover:text-on-primary" data-icon="monitoring">monitoring</span>
+<span>Analytics</span>
+</a>
+<!-- 6. Notifications -->
+<a class="flex items-center gap-space-sm text-sand-300 px-space-md py-space-sm font-body-md text-body-md hover:text-on-primary hover:bg-emerald-900 transition-colors duration-150 rounded-lg group" href="#notifications">
+<span class="material-symbols-outlined text-[20px] text-sand-300 group-hover:text-on-primary" data-icon="notifications">notifications</span>
+<span>Notifications</span>
+</a>
+<!-- 7. Settings -->
+<a class="flex items-center gap-space-sm text-sand-300 px-space-md py-space-sm font-body-md text-body-md hover:text-on-primary hover:bg-emerald-900 transition-colors duration-150 rounded-lg group" href="#settings">
+<span class="material-symbols-outlined text-[20px] text-sand-300 group-hover:text-on-primary" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Action & Merchant Info -->
+<div class="flex flex-col gap-3 pt-4 border-t border-emerald-900/80">
+<!-- Mint "+ Create listing" Action CTA -->
+<button class="w-full h-[48px] bg-emerald-glow hover:bg-emerald-400 text-ink-950 font-label text-label tracking-wider rounded-xl flex items-center justify-center gap-2 transition-all duration-150 active:scale-[0.98] shadow-sm font-bold" type="button"><span class="material-symbols-outlined text-[18px]">add</span><span>Create listing</span></button>
+<!-- Verified Merchant Profile Row -->
+<div class="flex items-center gap-3 p-2 rounded-xl bg-emerald-900/60 hover:bg-emerald-900 transition-colors cursor-pointer border border-emerald-800/40">
+<div class="w-9 h-9 rounded-full bg-emerald-800 border border-emerald-600/40 text-emerald-100 flex items-center justify-center font-title font-bold text-[13px] shrink-0">
+          AG
+        </div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5 leading-tight">
+<span class="text-[13px] font-medium text-on-primary truncate">Amina Gadgets</span>
+<span class="material-symbols-outlined text-[15px] text-emerald-glow shrink-0 fill" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Top Navigation Bar (Fixed / Sticky Header: 72px) verbatim from JSON -->
+<header class="sticky top-0 right-0 w-[calc(100%-264px)] ml-[264px] h-[72px] bg-sand-0 flex justify-between items-center px-space-lg shadow-sm z-30 border-b border-sand-200/50">
+<!-- Search Bar on Left -->
+<div class="relative w-80">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400 text-[20px]" data-icon="search">search</span>
+<input class="w-full h-11 pl-10 pr-4 bg-sand-50 hover:bg-sand-100/70 focus:bg-sand-0 border border-sand-200 rounded-xl text-body-md text-ink-950 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-emerald-700/20 focus:border-emerald-700 transition-all text-[14px]" placeholder="Order ID or item" type="text"/>
+</div>
+<!-- Right Trailing Controls -->
+<div class="flex items-center gap-4">
+<!-- Notification Icon with Coral Dot -->
+<button aria-label="Notifications" class="relative w-10 h-10 rounded-full flex items-center justify-center text-ink-600 hover:text-ink-950 hover:bg-sand-100 transition-colors" type="button">
+<span class="material-symbols-outlined text-[22px]" data-icon="notifications">notifications</span>
+<span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-coral-500 ring-2 ring-sand-0"></span>
+</button>
+<!-- Profile Chip -->
+<div class="flex items-center gap-3 pl-2 py-1 pr-1.5 rounded-full border border-sand-200 bg-sand-50/50 hover:bg-sand-100/60 transition-colors cursor-pointer">
+<div class="w-8 h-8 rounded-full bg-emerald-800 text-emerald-100 flex items-center justify-center font-title text-[12px] font-bold">
+          AG
+        </div>
+<span class="text-[14px] font-medium text-ink-950 pr-2">Amina Gadgets</span>
+<span class="material-symbols-outlined text-[18px] text-ink-400 -ml-1 pr-1" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas (ml-[264px] for 1440px desktop structure) -->
+<main class="ml-[264px] flex-1 px-8 py-8 w-[calc(100%-264px)] max-w-[1176px]">
+<!-- Page Title Area -->
+<div class="mb-8">
+<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-ink-500 text-body-sm mb-2">
+<span class="hover:text-ink-950 cursor-pointer">Listings</span>
+<span class="text-sand-300">/</span>
+<span class="text-ink-950 font-medium">States reference</span>
+</nav>
+<div class="flex items-baseline justify-between">
+<div>
+<h1 class="font-headline text-display-lg text-ink-950 tracking-tight">Listings</h1>
+</div>
+</div>
+</div>
+<!-- Stack of 3 Distinct States Panels -->
+<div class="flex flex-col gap-10">
+<!-- ========================================== -->
+<!-- 1. EMPTY STATE PANEL                       -->
+<!-- ========================================== -->
+<section aria-labelledby="state-empty-label">
+<div class="flex items-center justify-between mb-3 px-1">
+<span class="font-label text-label tracking-[0.14em] uppercase text-ink-500 font-bold" id="state-empty-label">EMPTY STATE</span>
+</div>
+<div class="bg-sand-0 rounded-card border border-sand-200 p-12 text-center shadow-card-layered flex flex-col items-center justify-center relative overflow-hidden">
+<!-- Ambient subtle vault geometric decoration behind -->
+<div class="absolute -top-16 -right-16 w-52 h-52 rounded-full bg-emerald-50/60 pointer-events-none"></div>
+<div class="absolute -bottom-20 -left-20 w-60 h-60 rounded-full bg-sand-100/60 pointer-events-none"></div>
+<!-- Stylized Emerald & Sand Escrow Vault Door Vector SVG -->
+<div class="relative w-28 h-28 mb-6 flex items-center justify-center">
+<!-- Glow backdrop -->
+<div class="absolute inset-0 bg-emerald-100/60 rounded-3xl blur-xl transform scale-90"></div>
+<svg class="relative w-28 h-28 drop-shadow-sm" fill="none" viewbox="0 0 112 112" xmlns="http://www.w3.org/2000/svg">
+<!-- Outer Heavy Vault Chamber (Sand-100 & Emerald-950) -->
+<rect fill="#F5F1E7" height="92" rx="24" stroke="#EAE4D4" stroke-width="2" width="92" x="10" y="10"></rect>
+<!-- Inner Deep Vault Bezel -->
+<rect fill="#06362A" height="76" rx="18" width="76" x="18" y="18"></rect>
+<!-- Rotating Mechanism Dial (Emerald-800 ring) -->
+<circle cx="56" cy="56" r="28" stroke="#084D3B" stroke-dasharray="6 4" stroke-width="4"></circle>
+<!-- Escrow Trust Ring -->
+<circle cx="56" cy="56" fill="#0A6E4C" r="22"></circle>
+<!-- Keyway & Bolt Core -->
+<circle cx="56" cy="56" fill="#04251C" r="10"></circle>
+<!-- Dual Bolt Bars in Sand-300 -->
+<rect fill="#3DEBA6" height="10" rx="2" width="4" x="54" y="24"></rect>
+<rect fill="#3DEBA6" height="10" rx="2" width="4" x="54" y="78"></rect>
+<rect fill="#3DEBA6" height="4" rx="2" width="10" x="24" y="54"></rect>
+<rect fill="#3DEBA6" height="4" rx="2" width="10" x="78" y="54"></rect>
+<!-- Center Keyhole Lock Vector -->
+<circle cx="56" cy="53" fill="#FFFFFF" r="3.2"></circle>
+<path d="M54.5 53.5L53.5 61H58.5L57.5 53.5H54.5Z" fill="#FFFFFF"></path>
+<!-- Security Rivets -->
+<circle cx="26" cy="26" fill="#3DEBA6" fill-opacity="0.8" r="2.5"></circle>
+<circle cx="86" cy="26" fill="#3DEBA6" fill-opacity="0.8" r="2.5"></circle>
+<circle cx="26" cy="86" fill="#3DEBA6" fill-opacity="0.8" r="2.5"></circle>
+<circle cx="86" cy="86" fill="#3DEBA6" fill-opacity="0.8" r="2.5"></circle>
+</svg>
+</div>
+<!-- Headline -->
+<h2 class="font-headline text-headline font-bold text-ink-950 mb-2">Create your first listing</h2>
+<!-- Body Description -->
+<p class="font-body-md text-body-md text-ink-500 max-w-md mx-auto mb-8 leading-relaxed">
+            Make a Trust Link and share it on WhatsApp or Instagram. Buyers pay into escrow, so you ship with confidence.
+          </p>
+<!-- Primary Call to Action Button: Emerald-700, 52px tall, 14px radius -->
+<button class="h-[52px] px-7 rounded-[14px] bg-emerald-700 hover:bg-emerald-800 text-on-primary font-body-md font-semibold inline-flex items-center justify-center gap-2.5 transition-all duration-150 shadow-sm active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+<span>New listing</span>
+</button>
+</div>
+</section>
+<!-- ========================================== -->
+<!-- 2. NO RESULTS STATE PANEL                  -->
+<!-- ========================================== -->
+<section aria-labelledby="state-no-results-label">
+<div class="flex items-center justify-between mb-3 px-1">
+<span class="font-label text-label tracking-[0.14em] uppercase text-ink-500 font-bold" id="state-no-results-label">NO RESULTS</span>
+</div>
+<div class="bg-sand-0 rounded-card border border-sand-200 p-8 shadow-card-layered">
+<!-- Filter & Search Toolbar Container -->
+<div class="flex items-center justify-between gap-4 pb-6 border-b border-sand-200">
+<!-- Active Search Input with "sofa red" -->
+<div class="relative w-96 max-w-full">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400 text-[20px]" data-icon="search">search</span>
+<input class="w-full h-11 pl-10 pr-10 bg-sand-50 border border-sand-200 rounded-xl text-body-md font-medium text-ink-950 focus:outline-none cursor-default" readonly="" type="text" value="sofa red"/>
+<!-- Clear 'x' Icon Button -->
+<button class="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center text-ink-400 hover:text-ink-950 hover:bg-sand-200 transition-colors" title="Clear query" type="button">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+<!-- Filter Controls and Active Pill -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2">
+<span class="text-[13px] text-ink-500 font-medium">Status:</span>
+<!-- Active Filter Pill "Sold" -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sand-100 border border-sand-200 text-ink-950 text-body-sm font-medium">
+<span>Sold</span>
+<button class="text-ink-500 hover:text-ink-950" title="Remove filter" type="button">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+</div>
+<!-- Extra Filter Dropdown Pill -->
+<button class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-sand-0 border border-sand-200 hover:bg-sand-50 text-ink-600 text-body-sm font-medium transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span>More filters</span>
+</button>
+</div>
+</div>
+<!-- Empty Message Body -->
+<div class="py-14 text-center flex flex-col items-center justify-center">
+<!-- Lucide search-x icon in sand-300 / ink-400 -->
+<div class="w-16 h-16 rounded-2xl bg-sand-50 border border-sand-200/80 flex items-center justify-center mb-4 text-ink-400">
+<svg class="text-ink-400" fill="none" height="40" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="40">
+<circle cx="11" cy="11" r="8"></circle>
+<line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+<line x1="8" x2="14" y1="8" y2="14"></line>
+<line x1="14" x2="8" y1="8" y2="14"></line>
+</svg>
+</div>
+<!-- Headline -->
+<h3 class="font-title text-title font-bold text-ink-950 mb-2">
+              No listings match “sofa red”
+            </h3>
+<!-- Subtext -->
+<p class="font-body-md text-[14px] text-ink-500 max-w-sm mb-6 leading-relaxed">
+              Try checking for typos or clearing your active filters to see all listings.
+            </p>
+<!-- Secondary Button: Sand-200 border, ink-950 text, 48px height, 14px radius -->
+<button class="h-[48px] px-5 rounded-[14px] bg-sand-0 hover:bg-sand-100 border border-sand-200 text-ink-950 font-body-md font-medium inline-flex items-center justify-center gap-2 transition-all duration-150 active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]">filter_alt_off</span>
+<span>Clear search and filters</span>
+</button>
+</div>
+</div>
+</section>
+<!-- ========================================== -->
+<!-- 3. LOADING STATE PANEL                     -->
+<!-- ========================================== -->
+<section aria-labelledby="state-loading-label">
+<div class="flex items-center justify-between mb-3 px-1">
+<div class="flex items-center gap-2">
+<span class="font-label text-label tracking-[0.14em] uppercase text-ink-500 font-bold" id="state-loading-label">LOADING STATE</span>
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+</span>
+</div>
+</div>
+<div class="bg-sand-0 rounded-card border border-sand-200 p-8 shadow-card-layered">
+<!-- Toolbar Skeleton Header Shimmer -->
+<div class="flex items-center justify-between pb-6 mb-6 border-b border-sand-200">
+<!-- Search bar skeleton -->
+<div class="h-11 w-80 bg-sand-100 rounded-xl animate-pulse-subtle"></div>
+<!-- Filter chips skeleton -->
+<div class="flex items-center gap-3">
+<div class="h-9 w-24 bg-sand-100 rounded-full animate-pulse-subtle"></div>
+<div class="h-9 w-28 bg-sand-100 rounded-full animate-pulse-subtle"></div>
+<div class="h-9 w-10 bg-sand-100 rounded-xl animate-pulse-subtle"></div>
+</div>
+</div>
+<!-- Row of Four Skeleton Cards (grid-cols-4 gap-5) -->
+<div class="grid grid-cols-4 gap-5">
+<!-- Skeleton Card 1 -->
+<div class="bg-sand-0 border border-sand-200 rounded-[20px] p-4 flex flex-col justify-between">
+<div>
+<!-- Square photo shimmer -->
+<div class="w-full aspect-square bg-sand-100 rounded-[14px] mb-4 animate-pulse-subtle relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-sand-50/70 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
+</div>
+<!-- Title skeleton line -->
+<div class="h-4 w-3/4 bg-sand-100 rounded-md mb-2 animate-pulse-subtle"></div>
+<!-- Price skeleton line -->
+<div class="h-5 w-1/2 bg-sand-100 rounded-md mb-3 animate-pulse-subtle"></div>
+<!-- Status pill skeleton -->
+<div class="h-7 w-24 bg-sand-100 rounded-full mb-4 animate-pulse-subtle"></div>
+</div>
+<!-- Action Button skeleton -->
+<div class="h-10 w-full bg-sand-100 rounded-xl animate-pulse-subtle"></div>
+</div>
+<!-- Skeleton Card 2 -->
+<div class="bg-sand-0 border border-sand-200 rounded-[20px] p-4 flex flex-col justify-between">
+<div>
+<!-- Square photo shimmer -->
+<div class="w-full aspect-square bg-sand-100 rounded-[14px] mb-4 animate-pulse-subtle"></div>
+<!-- Title skeleton line -->
+<div class="h-4 w-4/5 bg-sand-100 rounded-md mb-2 animate-pulse-subtle"></div>
+<!-- Price skeleton line -->
+<div class="h-5 w-2/5 bg-sand-100 rounded-md mb-3 animate-pulse-subtle"></div>
+<!-- Status pill skeleton -->
+<div class="h-7 w-20 bg-sand-100 rounded-full mb-4 animate-pulse-subtle"></div>
+</div>
+<!-- Action Button skeleton -->
+<div class="h-10 w-full bg-sand-100 rounded-xl animate-pulse-subtle"></div>
+</div>
+<!-- Skeleton Card 3 -->
+<div class="bg-sand-0 border border-sand-200 rounded-[20px] p-4 flex flex-col justify-between">
+<div>
+<!-- Square photo shimmer -->
+<div class="w-full aspect-square bg-sand-100 rounded-[14px] mb-4 animate-pulse-subtle"></div>
+<!-- Title skeleton line -->
+<div class="h-4 w-2/3 bg-sand-100 rounded-md mb-2 animate-pulse-subtle"></div>
+<!-- Price skeleton line -->
+<div class="h-5 w-3/5 bg-sand-100 rounded-md mb-3 animate-pulse-subtle"></div>
+<!-- Status pill skeleton -->
+<div class="h-7 w-28 bg-sand-100 rounded-full mb-4 animate-pulse-subtle"></div>
+</div>
+<!-- Action Button skeleton -->
+<div class="h-10 w-full bg-sand-100 rounded-xl animate-pulse-subtle"></div>
+</div>
+<!-- Skeleton Card 4 -->
+<div class="bg-sand-0 border border-sand-200 rounded-[20px] p-4 flex flex-col justify-between">
+<div>
+<!-- Square photo shimmer -->
+<div class="w-full aspect-square bg-sand-100 rounded-[14px] mb-4 animate-pulse-subtle"></div>
+<!-- Title skeleton line -->
+<div class="h-4 w-5/6 bg-sand-100 rounded-md mb-2 animate-pulse-subtle"></div>
+<!-- Price skeleton line -->
+<div class="h-5 w-1/3 bg-sand-100 rounded-md mb-3 animate-pulse-subtle"></div>
+<!-- Status pill skeleton -->
+<div class="h-7 w-20 bg-sand-100 rounded-full mb-4 animate-pulse-subtle"></div>
+</div>
+<!-- Action Button skeleton -->
+<div class="h-10 w-full bg-sand-100 rounded-xl animate-pulse-subtle"></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Bottom Footer Meta Note -->
+</main>
+</body></html>
