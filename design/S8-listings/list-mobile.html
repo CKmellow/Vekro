@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-sand-50" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Vekro — Seller Listings</title>
+<!-- Google Fonts: Bricolage Grotesque, DM Sans, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "emerald-900": "#06362A",
+            "emerald-700": "#0A6E4C",
+            "lake-50": "#E8F1FD",
+            "on-tertiary-fixed": "#3e0408",
+            "on-tertiary-container": "#ffd0cd",
+            "inverse-on-surface": "#eef2ed",
+            "surface": "#f7faf5",
+            "on-error-container": "#93000a",
+            "tertiary": "#793130",
+            "saffron-500": "#F2A516",
+            "coral-500": "#E5484D",
+            "sand-0": "#FFFFFF",
+            "tertiary-fixed": "#ffdad7",
+            "on-primary-container": "#97edc2",
+            "ink-800": "#1B2824",
+            "coral-50": "#FDECEC",
+            "secondary-fixed": "#ffddb2",
+            "primary-fixed": "#9ef4c9",
+            "on-surface": "#181d1a",
+            "error": "#ba1a1a",
+            "outline-variant": "#bec9c1",
+            "surface-dim": "#d7dbd6",
+            "primary-container": "#0a6e4c",
+            "on-primary-fixed-variant": "#005237",
+            "tertiary-fixed-dim": "#ffb3af",
+            "lake-500": "#2F80ED",
+            "emerald-600": "#0C8A5F",
+            "emerald-500": "#12A672",
+            "sand-200": "#EAE4D4",
+            "on-secondary-container": "#6a4500",
+            "emerald-glow": "#3DEBA6",
+            "secondary": "#815500",
+            "on-secondary": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "emerald-800": "#084D3B",
+            "background": "#f7faf5",
+            "inverse-primary": "#82d7ae",
+            "surface-container-highest": "#e0e4de",
+            "surface-container-low": "#f1f5ef",
+            "outline": "#6f7a72",
+            "on-error": "#ffffff",
+            "on-background": "#181d1a",
+            "plum-500": "#6B4FD8",
+            "plum-700": "#4F36B0",
+            "inverse-surface": "#2d312e",
+            "emerald-400": "#2CC48A",
+            "tertiary-container": "#974846",
+            "sand-100": "#F5F1E7",
+            "sand-50": "#FBF9F4",
+            "primary-fixed-dim": "#82d7ae",
+            "ink-600": "#44524D",
+            "ink-950": "#0B1512",
+            "on-secondary-fixed": "#291800",
+            "emerald-950": "#04251C",
+            "surface-tint": "#056c4a",
+            "on-tertiary-fixed-variant": "#77302f",
+            "emerald-50": "#E9F8F1",
+            "surface-variant": "#e0e4de",
+            "plum-50": "#EFEBFC",
+            "saffron-600": "#B87A00",
+            "saffron-100": "#FFE8B3",
+            "emerald-100": "#CDEFE0",
+            "lake-600": "#1F66C8",
+            "surface-container": "#ebefea",
+            "saffron-50": "#FFF6E0",
+            "error-container": "#ffdad6",
+            "surface-bright": "#f7faf5",
+            "secondary-fixed-dim": "#ffb94d",
+            "sand-300": "#D8D0BA",
+            "ink-400": "#8A9792",
+            "on-primary-fixed": "#002114",
+            "surface-container-high": "#e5e9e4",
+            "on-surface-variant": "#3f4943",
+            "secondary-container": "#fdaf23",
+            "on-primary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "primary": "#005438",
+            "ink-500": "#5E6D67",
+            "coral-600": "#C93238",
+            "on-secondary-fixed-variant": "#624000"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "4px",
+            "space-xl": "40px",
+            "space-sm": "8px",
+            "margin": "20px",
+            "space-md": "16px",
+            "space-lg": "24px",
+            "gutter": "16px"
+          },
+          "fontFamily": {
+            "body-lg": ["DM Sans"],
+            "title": ["Bricolage Grotesque"],
+            "display-lg": ["Bricolage Grotesque"],
+            "display-xl": ["Bricolage Grotesque"],
+            "headline": ["Bricolage Grotesque"],
+            "mono": ["JetBrains Mono"],
+            "amount": ["Bricolage Grotesque"],
+            "body-sm": ["DM Sans"],
+            "body-md": ["DM Sans"],
+            "label": ["DM Sans"],
+            "otp": ["JetBrains Mono"]
+          },
+          "fontSize": {
+            "body-lg": ["17px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "title": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "display-lg": ["34px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800" }],
+            "display-xl": ["44px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "headline": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "mono": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "amount": ["40px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }],
+            "otp": ["44px", { "lineHeight": "52px", "fontWeight": "700" }]
+          },
+          "boxShadow": {
+            "vekro-card": "0 1px 2px rgba(11, 21, 18, 0.04), 0 8px 24px rgba(11, 21, 18, 0.06)",
+            "vekro-fab": "0 8px 20px rgba(10, 110, 76, 0.28), 0 2px 6px rgba(10, 110, 76, 0.16)",
+            "vekro-dock": "0 -4px 20px rgba(11, 21, 18, 0.05)"
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Custom utility to disable scrollbar visual while keeping smooth overflow scrolling */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="h-full bg-sand-50 font-body-md text-ink-950 antialiased selection:bg-emerald-100 selection:text-emerald-900">
+<!-- 390px Mobile Frame Shell Wrapper -->
+<div class="relative mx-auto flex min-h-full max-w-[390px] flex-col bg-sand-50 pb-28">
+<!-- 1. SHARED COMPONENT: TopAppBar -->
+<header class="sticky top-0 z-40 w-full max-w-md mx-auto flex justify-between items-center px-space-md py-space-sm bg-surface transition-colors duration-150">
+<div class="flex items-center gap-3">
+<!-- Seller Avatar (Leading) -->
+<div aria-label="Amina seller profile picture" class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand-100 border border-sand-200 shadow-sm">
+<span class="font-title text-title text-emerald-900">A</span>
+<!-- Verified Store Indicator Pip -->
+<div class="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-emerald-600 ring-2 ring-sand-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[9px] text-sand-0 leading-none" data-icon="check">check</span>
+</div>
+</div>
+<!-- Headline & Store ID -->
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<h1 class="text-headline font-headline text-emerald-900 leading-tight">Habari, Amina</h1>
+</div>
+<span class="text-body-sm font-body-sm text-ink-500">Amina Gadgets · Kilimani, Nairobi</span>
+</div>
+</div>
+<!-- Trailing Icon: Notifications with Coral Dot -->
+<button aria-label="Notifications" class="relative flex h-10 w-10 items-center justify-center rounded-full text-ink-600 hover:bg-sand-100 active:scale-95 transition-all duration-150" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="notifications">notifications</span>
+<!-- Notification Coral Pill Dot -->
+<span class="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-coral-500 ring-2 ring-sand-0"></span>
+</button>
+</header>
+<!-- MAIN CONTENT CANVAS -->
+<main class="flex-1 px-space-md pt-space-sm space-y-4">
+<!-- 2. Header & Action Row: "Listings", Count Badge & "New" CTA -->
+<section class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-2.5">
+<h2 class="font-title text-title text-ink-950 font-bold tracking-tight">Listings</h2>
+<span class="inline-flex items-center justify-center rounded-full bg-sand-200/70 px-2.5 py-0.5 font-mono text-[12px] font-semibold text-ink-800">
+            12
+          </span>
+</div>
+<!-- Quick New Listing Button -->
+<button class="group flex items-center gap-1.5 rounded-full bg-emerald-700 px-3.5 py-1.5 text-sand-0 shadow-sm hover:bg-emerald-800 active:scale-95 transition-all duration-150" type="button">
+<span class="material-symbols-outlined text-[18px] transition-transform group-hover:rotate-90 duration-200" data-icon="add">add</span>
+<span class="font-label text-label tracking-normal text-sand-0">New</span>
+</button>
+</section>
+<!-- 3. Horizontal Scrolling Filter Pills -->
+<nav aria-label="Listing Status Filters" class="no-scrollbar -mx-space-md flex items-center gap-2 overflow-x-auto px-space-md py-1">
+<!-- Active 7 (Selected Pill) -->
+<button class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-700 px-3.5 py-2 text-sand-0 shadow-sm active:scale-95 transition-all" type="button">
+<span class="font-label text-label tracking-normal text-sand-0 font-bold">Active</span>
+<span class="rounded-full bg-emerald-800 px-1.5 py-0.2 font-mono text-[11px] text-emerald-100">7</span>
+</button>
+<!-- Awaiting payment 2 -->
+<button class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-sand-200 bg-sand-0 px-3.5 py-2 text-ink-600 hover:bg-sand-100 active:scale-95 transition-all" type="button">
+<span class="font-label text-label tracking-normal text-ink-800">Awaiting payment</span>
+<span class="rounded-full bg-saffron-100 px-1.5 py-0.2 font-mono text-[11px] font-semibold text-saffron-600">2</span>
+</button>
+<!-- Sold 2 -->
+<button class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-sand-200 bg-sand-0 px-3.5 py-2 text-ink-600 hover:bg-sand-100 active:scale-95 transition-all" type="button">
+<span class="font-label text-label tracking-normal text-ink-800">Sold</span>
+<span class="rounded-full bg-sand-200 px-1.5 py-0.2 font-mono text-[11px] font-semibold text-ink-600">2</span>
+</button>
+<!-- Draft 1 -->
+<button class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-sand-200 bg-sand-0 px-3.5 py-2 text-ink-600 hover:bg-sand-100 active:scale-95 transition-all" type="button">
+<span class="font-label text-label tracking-normal text-ink-800">Draft</span>
+<span class="rounded-full bg-sand-200 px-1.5 py-0.2 font-mono text-[11px] font-semibold text-ink-600">1</span>
+</button>
+<!-- Archived -->
+<button class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-sand-200 bg-sand-0 px-3.5 py-2 text-ink-600 hover:bg-sand-100 active:scale-95 transition-all" type="button">
+<span class="font-label text-label tracking-normal text-ink-800">Archived</span>
+</button>
+</nav>
+<!-- 4. Search Bar & View Mode Toggle Row -->
+<section class="flex items-center gap-2.5">
+<!-- Search Input -->
+<div class="relative flex-1">
+<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-ink-400">
+<span class="material-symbols-outlined text-[20px]" data-icon="search">search</span>
+</div>
+<input class="h-12 w-full rounded-[14px] border border-sand-200 bg-sand-0 pl-10 pr-4 font-body-md text-ink-950 placeholder:text-ink-400 focus:border-emerald-700 focus:outline-none focus:ring-1 focus:ring-emerald-700 shadow-sm transition-all" placeholder="Search listings" type="text"/>
+</div>
+<!-- Grid / List View Toggle Switch -->
+<div class="flex h-12 items-center rounded-[14px] border border-sand-200 bg-sand-100 p-1 shrink-0">
+<!-- Grid button (Inactive) -->
+<button aria-label="Grid view" class="flex h-10 w-10 items-center justify-center rounded-[10px] text-ink-500 hover:text-ink-950 active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="grid_view">grid_view</span>
+</button>
+<!-- List button (Active) -->
+<button aria-label="List view active" class="flex h-10 w-10 items-center justify-center rounded-[10px] bg-sand-0 text-emerald-900 shadow-sm active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="view_list">view_list</span>
+</button>
+</div>
+</section>
+<!-- 5. LIST ROWS: 5 Specified Items -->
+<section aria-label="Listings items" class="space-y-3 pt-1">
+<!-- ROW 1: iPhone 13 -->
+<article class="flex items-center gap-3.5 rounded-[20px] bg-sand-0 p-3.5 shadow-vekro-card border border-sand-200/50 hover:border-sand-200 transition-all">
+<!-- 64px Thumbnail with Available image IMAGE_29 -->
+<div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-[14px] bg-sand-100 border border-sand-200/70">
+<img alt="iPhone 13, 128GB, Midnight" class="h-full w-full object-cover object-center" src="https://lh3.googleusercontent.com/aida/AEtjO1V0RnFsiKlA4AOC0Kr3bgkgl9x1EEhEiTRubB9gDF3NknzDMIolT7atN4VGsRBKvhi7kKvGMnvQ7voSSWpvZqXTBojObVgbXw2JLgUoqFH4ojRwtX6UgiRmhya7kCHotwM4HMoG-drVv-mOE9GGj6NySGKa1v58Ztt9dBwLJBUR5jX4FUABiBZ_XkSCggqQWX4FA3FOAhXWdQvwpMgRSpFsHAtEcV902mf69Dxl9P7BfTlFf_YclV5bTg"/>
+</div>
+<!-- Details Middle Column -->
+<div class="flex-1 min-w-0 pr-1">
+<h3 class="truncate font-headline text-[15px] leading-tight text-ink-950 font-bold">
+              iPhone 13, 128GB, Midnight
+            </h3>
+<p class="font-headline text-[17px] font-extrabold text-ink-950 tracking-tight mt-0.5">
+              KES 52,000
+            </p>
+<!-- Metadata Row: Type Tag + Status Pill -->
+<div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+<span class="inline-flex items-center rounded-full bg-sand-100 px-2 py-0.5 font-label text-[10px] font-semibold text-ink-600">
+                Serial-numbered
+              </span>
+<!-- Status Pill: Saffron "Awaiting dispatch" -->
+<span class="inline-flex items-center gap-1 rounded-full bg-saffron-50 px-2 py-0.5 font-label text-[10px] font-bold text-[#8A5B00]">
+<span class="material-symbols-outlined text-[12px] text-[#8A5B00]" data-icon="schedule">schedule</span>
+                Awaiting dispatch
+              </span>
+</div>
+</div>
+<!-- Actions Right Column -->
+<div class="flex flex-col items-center justify-between gap-1 shrink-0">
+<button aria-label="Copy escrow link for iPhone 13" class="flex h-8 w-8 items-center justify-center rounded-full text-ink-500 hover:bg-sand-100 hover:text-emerald-700 active:scale-90 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="link">link</span>
+</button>
+<button aria-label="More options" class="flex h-8 w-8 items-center justify-center rounded-full text-ink-500 hover:bg-sand-100 hover:text-ink-950 active:scale-90 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</article>
+<!-- ROW 2: Nike Air Force 1 -->
+<article class="flex items-center gap-3.5 rounded-[20px] bg-sand-0 p-3.5 shadow-vekro-card border border-sand-200/50 hover:border-sand-200 transition-all">
+<!-- 64px Thumbnail -->
+<div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-[14px] bg-sand-100 border border-sand-200/70">
+<img class="h-full w-full object-cover object-center" data-alt="A clean studio product photograph of classic white Nike Air Force 1 sneakers placed elegantly on a warm sand background. The lighting is balanced and crisp, revealing delicate leather textures and clean stitching with high dynamic range. Warm ambient accents create an approachable, high-trust social-commerce feel with zero digital clutter." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAE2DBAaMWpUSm0zFHOqqBZhuP2OXPQEyyKkuX22oLwt4dZKx0q88hZXsP_RQNCxgL2ppO9MWh8cQQyqaLnUXtiqbZrtR6WTKdNgfZ8Z0CHonCNTR_iCICW4KNbMecrS3nwAIihbcJnwfrXypu0QEGzLTzLMqG-BK4icbNRE3NKFVglK8uNu4oMV9PIc9styMlgltyXtO4aWWbebFegyYmdEOr7v45C12ufv2Z4vDEjHfRnzZg8HPfuPV56bRdJM7zW7VmQpO0iIGU"/>
+</div>
+<!-- Details Middle Column -->
+<div class="flex-1 min-w-0 pr-1">
+<h3 class="truncate font-headline text-[15px] leading-tight text-ink-950 font-bold">
+              Nike Air Force 1, size 42
+            </h3>
+<p class="font-headline text-[17px] font-extrabold text-ink-950 tracking-tight mt-0.5">
+              KES 6,500
+            </p>
+<!-- Metadata Row -->
+<div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+<span class="inline-flex items-center rounded-full bg-sand-100 px-2 py-0.5 font-label text-[10px] font-semibold text-ink-600">
+                Standard
+              </span>
+<!-- Status Pill: Emerald "Active" -->
+<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-label text-[10px] font-bold text-emerald-700">
+<span class="material-symbols-outlined text-[12px] text-emerald-700" data-icon="check_circle">check_circle</span>
+                Active
+              </span>
+</div>
+</div>
+<!-- Actions Right Column -->
+<div class="flex flex-col items-center justify-between gap-1 shrink-0">
+<button aria-label="Copy escrow link for Nike Air Force 1" class="flex h-8 w-8 items-center justify-center rounded-full text-ink-500 hover:bg-sand-100 hover:text-emerald-700 active:scale-90 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="link">link</span>
+</button>
+<button aria-label="More options" class="flex h-8 w-8 items-center justify-center rounded-full text-ink-500 hover:bg-sand-100 hover:text-ink-950 active:scale-90 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</article>
+<!-- ROW 3: Kitenge wrap dress -->
+<article class="flex items-center gap-3.5 rounded-[20px] bg-sand-0 p-3.5 shadow-vekro-card border border-sand-200/50 hover:border-sand-200 transition-all">
+<!-- 64px Thumbnail -->
+<div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-[14px] bg-sand-100 border border-sand-200/70">
+<img alt="Kitenge wrap dress" class="h-full w-full object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUD723bQ4z_XorUvb4a-CPcGCT0tNWThE52gFJoorYzP5E0QoY8JAuCOwns9pT9GpvXdQ6ZsADqcd7aj1RjuBjSIWbSZR1F1iPJx5S1FN3Xc02wflYFopQhtSv6KKdUhWgiyWYRpZ2zOkivUuGoOZ6-rq8Wr689KHU47dP_hr6kXNV62jWXbAOEDKV2tkrxSfFvzMjx05xyO8-ge1T9AWfEKzes5YF5BwFK0krUJn-f7MExm0ZQ9P_U6VX3wZgidyCLz-_EokHr3Y"/>
+</div>
+<!-- Details Middle Column -->
+<div class="flex-1 min-w-0 pr-1">
+<h3 class="truncate font-headline text-[15px] leading-tight text-ink-950 font-bold">
+              Kitenge wrap dress
+            </h3>
+<p class="font-headline text-[17px] font-extrabold text-ink-950 tracking-tight mt-0.5">
+              KES 3,200
+            </p>
+<!-- Metadata Row -->
+<div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+<span class="inline-flex items-center rounded-full bg-sand-100 px-2 py-0.5 font-label text-[10px] font-semibold text-ink-600">
+                Standard
+              </span>
+<!-- Status Pill: Emerald "Active" -->
+<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-label text-[10px] font-bold text-emerald-700">
+<span class="material-symbols-outlined text-[12px] text-emerald-700" data-icon="check_circle">check_circle</span>
+                Active
+              </span>
+</div>
+</div>
+<!-- Actions Right Column -->
+<div class="flex flex-col items-center justify-between gap-1 shrink-0">
+<button aria-label="Copy escrow link for Kitenge wrap dress" class="flex h-8 w-8 items-center justify-center rounded-full text-ink-500 hover:bg-sand-100 hover:text-emerald-700 active:scale-90 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="link">link</span>
+</button>
+<button aria-label="More options" class="flex h-8 w-8 items-center justify-center rounded-full text-ink-500 hover:bg-sand-100 hover:text-ink-950 active:scale-90 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</article>
+<!-- ROW 4: HP Pavilion 15 laptop -->
+<article class="flex items-center gap-3.5 rounded-[20px] bg-sand-0 p-3.5 shadow-vekro-card border border-sand-200/50 hover:border-sand-200 transition-all">
+<!-- 64px Thumbnail -->
+<div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-[14px] bg-sand-100 border border-sand-200/70">
+<img alt="HP Pavilion 15 laptop" class="h-full w-full object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXc6Wr74X-aUGggxZjjSaceggmWqn3jfznFJ50VF8K_VWpoFAgrp72Vj-vmNonhTCvsvZ9fVKEcYZ5Y-nbDJJTKnACr1f6OW8CCRQ4WXc900ZtCl4IyTtGY44M62jj535Dl4xoDQY7wv_4c9Rr02F4JNYKmJfGMlG6oQlT5wVYkBJfcpXqUMiOikRCWh5Q8O_7Nv8HPRZXoyBOuWVNhdijepfKsa0m3OE1UxRZuimFXo8yHQULB6C-KQeEHGbOGO57LeKZwhgjVD0"/>
+</div>
+<!-- Details Middle Column -->
+<div class="flex-1 min-w-0 pr-1">
+<h3 class="truncate font-headline text-[15px] leading-tight text-ink-950 font-bold">
+              HP Pavilion 15 laptop
+            </h3>
+<p class="font-headline text-[17px] font-extrabold text-ink-950 tracking-tight mt-0.5">
+              KES 68,500
+            </p>
+<!-- Metadata Row -->
+<div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+<span class="inline-flex items-center rounded-full bg-sand-100 px-2 py-0.5 font-label text-[10px] font-semibold text-ink-600">
+                Serial-numbered
+              </span>
+<!-- Status Pill: Emerald "Active" -->
+<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-label text-[10px] font-bold text-emerald-700">
+<span class="material-symbols-outlined text-[12px] text-emerald-700" data-icon="check_circle">check_circle</span>
+                Active
+              </span>
+</div>
+</div>
+<!-- Actions Right Column -->
+<div class="flex flex-col items-center justify-between gap-1 shrink-0">
+<button aria-label="Copy escrow link for HP Pavilion 15" class="flex h-8 w-8 items-center justify-center rounded-full text-ink-500 hover:bg-sand-100 hover:text-emerald-700 active:scale-90 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="link">link</span>
+</button>
+<button aria-label="More options" class="flex h-8 w-8 items-center justify-center rounded-full text-ink-500 hover:bg-sand-100 hover:text-ink-950 active:scale-90 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</article>
+<!-- ROW 5: 3-seater sofa -->
+<article class="flex items-center gap-3.5 rounded-[20px] bg-sand-0 p-3.5 shadow-vekro-card border border-sand-200/50 hover:border-sand-200 transition-all">
+<!-- 64px Thumbnail -->
+<div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-[14px] bg-sand-100 border border-sand-200/70">
+<img class="h-full w-full object-cover object-center" data-alt="A modern Scandinavian inspired 3-seater living room sofa upholstered in deep forest emerald green textured linen on light wooden legs. Photographed in an airy, warm minimalist studio with sunlit sand colored floor tiles and gentle shadows. Premium furniture styling highlighting fabric depth and pristine interior finish." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrn5OdqTAMH6J2uDjSH_ERDBnzpPcqmYbHzq2Tax4dcAOqPuO0kuloeSQd7aIvoXGZCeDyL89PGxdCwWEdR0swkhQJvAlo1r_hbe4KRoS5wvGJa0Ievy-OGD8xvC3YYQ5IP2e56oePKrdAqkVBsOYAc7PofdWLJO8Oy_tZ_TDEQXJ9jAXrHtpPdpn77MA26R5zrZs7nVzpmCfV3y0toA67zYBLpY7H_jsL-YY2s8dZufAtsF1znkS5hmZN8R9VZBQn0OWOt03fWHs"/>
+</div>
+<!-- Details Middle Column -->
+<div class="flex-1 min-w-0 pr-1">
+<h3 class="truncate font-headline text-[15px] leading-tight text-ink-950 font-bold">
+              3-seater sofa
+            </h3>
+<p class="font-headline text-[17px] font-extrabold text-ink-950 tracking-tight mt-0.5">
+              KES 38,000
+            </p>
+<!-- Metadata Row -->
+<div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+<span class="inline-flex items-center rounded-full bg-sand-100 px-2 py-0.5 font-label text-[10px] font-semibold text-ink-600">
+                Standard
+              </span>
+<!-- Status Pill: Saffron "Waiting for payment" -->
+<span class="inline-flex items-center gap-1 rounded-full bg-saffron-50 px-2 py-0.5 font-label text-[10px] font-bold text-[#8A5B00]">
+<span class="material-symbols-outlined text-[12px] text-[#8A5B00]" data-icon="pending">pending</span>
+                Waiting for payment
+              </span>
+</div>
+</div>
+<!-- Actions Right Column -->
+<div class="flex flex-col items-center justify-between gap-1 shrink-0">
+<button aria-label="Copy escrow link for 3-seater sofa" class="flex h-8 w-8 items-center justify-center rounded-full text-ink-500 hover:bg-sand-100 hover:text-emerald-700 active:scale-90 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="link">link</span>
+</button>
+<button aria-label="More options" class="flex h-8 w-8 items-center justify-center rounded-full text-ink-500 hover:bg-sand-100 hover:text-ink-950 active:scale-90 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</article>
+</section>
+<!-- Seller Quick Tip Trust Card -->
+</main>
+<!-- 6. SHARED COMPONENT: BottomNavBar (Seller Mobile Dock) -->
+<!-- Destination count: 5 ["Home", "Orders", "New", "Returns", "More"] -->
+<nav aria-label="Seller Bottom Navigation" class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-space-sm pt-space-xs pb-space-md max-w-md mx-auto bg-sand-0 shadow-vekro-dock">
+<!-- Home (Inactive) -->
+<button class="flex flex-col items-center justify-center text-ink-500 hover:text-emerald-700 active:scale-95 transition-all w-16" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="home">home</span>
+<span class="font-body-sm text-body-sm mt-0.5">Home</span>
+</button>
+<!-- Orders (Active destination logic for listing/commerce management context) -->
+<button class="flex flex-col items-center justify-center text-ink-500 hover:text-emerald-700 active:scale-95 transition-all w-16" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="receipt_long">receipt_long</span>
+<span class="font-body-sm text-body-sm mt-0.5">Orders</span>
+</button>
+<!-- Center Raised Emerald Button: "New" -->
+<div class="relative -top-5 flex flex-col items-center justify-center">
+<button aria-label="Create new listing" class="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-700 text-sand-0 shadow-vekro-fab ring-4 ring-sand-50 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[28px]" data-icon="add">add</span>
+</button>
+<span class="font-label text-[11px] font-bold text-emerald-900 mt-1">New</span>
+</div>
+<!-- Returns (Inactive) -->
+<button class="flex flex-col items-center justify-center text-ink-500 hover:text-emerald-700 active:scale-95 transition-all w-16" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="assignment_return">assignment_return</span>
+<span class="font-body-sm text-body-sm mt-0.5">Returns</span>
+</button>
+<!-- More (Inactive) -->
+<button class="flex flex-col items-center justify-center text-primary font-bold active:scale-95 transition-all w-16" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="menu">menu</span>
+<span class="font-body-sm text-body-sm mt-0.5">More</span>
+</button>
+</nav>
+<!-- Subtle Toast Notification (Micro-interaction preview) -->
+<div class="pointer-events-none fixed bottom-24 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-full bg-ink-950 px-4 py-2 text-sand-0 shadow-lg opacity-0 transition-opacity duration-200 z-50" id="copy-toast">
+<span class="material-symbols-outlined text-[16px] text-emerald-glow" data-icon="check">check</span>
+<span class="font-body-sm text-xs text-sand-0">Escrow link copied to clipboard</span>
+</div>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+    document.querySelectorAll('[data-icon="link"]').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const toast = document.getElementById('copy-toast');
+        if (toast) {
+          toast.classList.remove('opacity-0');
+          toast.classList.add('opacity-100');
+          setTimeout(() => {
+            toast.classList.remove('opacity-100');
+            toast.classList.add('opacity-0');
+          }, 1800);
+        }
+      });
+    });
+  </script>
+</body></html>
