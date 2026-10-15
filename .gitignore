@@ -1,13 +1,33 @@
+# Local-only source docs and plans (never commit)
 /.stitch/DESIGN.md
 /docs/PAGES.md
 /docs/COPILOT_PROMPT.md
+/LOCAL_EXECUTION_PLAN.md
+
+# Secrets and local env
 .env
 .env.*
 !.env.example
-/LOCAL_EXECUTION_PLAN.md
-__pycache__/
+
+# Dependencies and build output
 node_modules/
 dist/
-*.tsbuildinfo
-coverage/
 dev-dist/
+*.tsbuildinfo
+.vite/
+
+# Tests and reports
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# Tooling noise
+__pycache__/
+*.log
+npm-debug.log*
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/mcp.json
+!.vscode/extensions.json
