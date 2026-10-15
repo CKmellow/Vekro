@@ -1,6 +1,6 @@
 # D0 Design System Sheet: notes
 
-Status: In review (2026-10-15)
+Status: Approved by Cyprian (2026-10-15). Do not regenerate these screens; edit in place or create a named variant.
 
 ## Stitch screens
 
