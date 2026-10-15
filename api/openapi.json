@@ -1210,6 +1210,137 @@
         }
       }
     },
+    "/admin/audit/money-events": {
+      "get": {
+        "tags": [
+          "Admin Audit"
+        ],
+        "summary": "Review money-movement audit events (admin only)",
+        "description": "Lists audit records for payouts, funding confirmations, and admin money decisions, newest first. Filter by transaction, provider reference, rail, or action.",
+        "operationId": "admin_list_money_audit_events_admin_audit_money_events_get",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "provider_reference",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Provider Reference"
+            }
+          },
+          {
+            "name": "rail_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rail Name"
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 60
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Action"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoneyAuditEventListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Authenticated user is not an admin."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/simulated-custody/collections/force-complete": {
       "post": {
         "tags": [
@@ -1357,7 +1488,7 @@
           "Webhooks"
         ],
         "summary": "Handle LOOP collection callback",
-        "description": "Accept LOOP collection callbacks, verify signature, dedupe by provider reference, and confirm funding through inquiry before trusting callback data.",
+        "description": "Accept LOOP collection callbacks, verify signature and timestamp freshness, dedupe by provider reference, and confirm funding through inquiry before trusting callback data.",
         "operationId": "loop_collection_callback_webhooks_loop_collection_post",
         "responses": {
           "200": {
@@ -1369,6 +1500,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Callback signature is missing, invalid, or outside the replay window."
           },
           "503": {
             "description": "LOOP collection rail is unavailable."
@@ -1986,16 +2120,18 @@
               {
                 "type": "string",
                 "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,10}|(?=[\\d.]{1,13}0*$)\\d{0,10}\\.\\d{0,2}0*$)"
+              },
+              {
+                "type": "null"
               }
             ],
             "title": "Amount",
-            "description": "Escrow amount to lock for the transaction."
+            "description": "Optional. The escrow amount is always the listing price; if sent, it must match the listing price exactly or the request is rejected."
           }
         },
         "type": "object",
         "required": [
-          "listing_id",
-          "amount"
+          "listing_id"
         ],
         "title": "CreateTransactionRequest",
         "description": "Buyer payload for creating a new escrow transaction."
@@ -2512,6 +2648,191 @@
         "title": "LoopCollectionWebhookResponse",
         "description": "Acknowledgement payload for LOOP collection callbacks."
       },
+      "MoneyAuditEventListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MoneyAuditEventResponse"
+            },
+            "type": "array",
+            "title": "Items",
+            "description": "Audit events ordered newest first."
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "limit",
+          "offset"
+        ],
+        "title": "MoneyAuditEventListResponse"
+      },
+      "MoneyAuditEventResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurred At",
+            "description": "When the money-affecting action happened."
+          },
+          "actor_type": {
+            "type": "string",
+            "title": "Actor Type",
+            "description": "Who acted: user, admin, system, or provider."
+          },
+          "actor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Id",
+            "description": "Acting user id when the actor is a user or admin."
+          },
+          "action": {
+            "type": "string",
+            "title": "Action",
+            "description": "Action name, for example payout_release_succeeded."
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "Why the action happened."
+          },
+          "transaction_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transaction Id",
+            "description": "Affected transaction."
+          },
+          "escrow_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Escrow Id",
+            "description": "Affected escrow."
+          },
+          "attempt_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attempt Id",
+            "description": "Affected collection or payout attempt."
+          },
+          "provider_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Reference",
+            "description": "Provider reference for the rail operation."
+          },
+          "rail_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rail Name",
+            "description": "Rail that handled the operation."
+          },
+          "correlation_id": {
+            "type": "string",
+            "title": "Correlation Id",
+            "description": "Correlation key combining transaction_id, provider_reference, and rail."
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount",
+            "description": "Amount moved or requested."
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency",
+            "description": "ISO currency code."
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Details",
+            "description": "Extra context."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "occurred_at",
+          "actor_type",
+          "action",
+          "correlation_id"
+        ],
+        "title": "MoneyAuditEventResponse"
+      },
       "NotificationChannel": {
         "type": "string",
         "enum": [
@@ -2519,6 +2840,15 @@
           "sms"
         ],
         "title": "NotificationChannel"
+      },
+      "NotificationDeliveryStatus": {
+        "type": "string",
+        "enum": [
+          "not_attempted",
+          "sent",
+          "failed"
+        ],
+        "title": "NotificationDeliveryStatus"
       },
       "NotificationEventType": {
         "type": "string",
@@ -2599,6 +2929,10 @@
               }
             ],
             "title": "Delivered At"
+          },
+          "delivery_status": {
+            "$ref": "#/components/schemas/NotificationDeliveryStatus",
+            "default": "not_attempted"
           },
           "created_at": {
             "type": "string",
@@ -3020,6 +3354,11 @@
             "format": "uuid",
             "title": "Id"
           },
+          "reference": {
+            "type": "string",
+            "title": "Reference",
+            "description": "Random, non-sequential human-readable reference, for example VK-7K3P9Q."
+          },
           "listing_id": {
             "type": "string",
             "format": "uuid",
@@ -3057,6 +3396,7 @@
         "type": "object",
         "required": [
           "id",
+          "reference",
           "listing_id",
           "buyer_id",
           "seller_id",

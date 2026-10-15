@@ -28,12 +28,12 @@ Authoritative. Where `docs/PAGES.md` conflicts, this wins. Gap index: [BACKEND_G
 - REDIRECT copy: "Continue to secure checkout". Return page `/pay/return` reads `OrderTrackingId`, shows "Confirming your payment…" and polls. The redirect itself confirms nothing.
 - Success is shown only when the transaction status is `locked`, learned by polling, never from a redirect or callback query param.
 - Polling needs a single-order read (gap P0-1); use a mock until it ships.
-- The client always sends `listing.price` as the amount; never a user-editable amount (gap P0-4).
+- The client omits `amount`: the server takes the escrow amount from the listing price and rejects a different amount with 422 (gap P0-4, closed 2026-10-15). Never show a user-editable amount.
 
 ### C. B4: arrival, inspection, accept or reject
 
 - Flow: "Your item has arrived" notice, then an inspection checklist, then a decision. No "reveal your code" screen.
-- Contract check (done): `/arrival` returns `TransactionResponse` (no code); `otp-give` requires `otp_code`. So the buyer receives the code by SMS or in-app notification and types it in. The code is never displayed on the screen that submits it. Delivery of the code to the buyer only is gap P1-4.
+- Contract check (done): `/arrival` returns `TransactionResponse` (no code); `otp-give` requires `otp_code`. So the buyer receives the code by SMS or in-app notification and types it in. The code is never displayed on the screen that submits it. The backend sends the code to the buyer only, by notification and SMS (gap P1-4, closed 2026-10-15). The code is 6 digits, so code entry has six cells.
 - Accept copy states consequences by item type. Non-serialized: "Accepting is final and releases payment to the seller." Serialized: "Payment is held for 24 hours; you can report a functional issue in that window."
 - Reject calls `otp-withhold` and routes to the return/refund state screen.
 - A visible countdown runs from arrival. About 1 hour of no action triggers the withheld-code path automatically.
@@ -49,3 +49,7 @@ Authoritative. Where `docs/PAGES.md` conflicts, this wins. Gap index: [BACKEND_G
 
 - Escalation queue, case timeline and force-resolve are buildable now.
 - The SPLIT option handles a backend capability error gracefully.
+
+### F. Order reference
+
+- Show `TransactionResponse.reference` (random, non-sequential, for example `VK-7K3P9Q`) everywhere a human sees an order ID. Never show the UUID (gap P2-2, closed 2026-10-15).
