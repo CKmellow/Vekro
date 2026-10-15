@@ -1,8 +1,15 @@
+import { useState } from 'react'
+import { RouterProvider } from 'react-router'
+import { AppProviders } from './app/providers'
+import { createQueryClient } from './app/queryClient'
+import { createAppRouter } from './app/router'
+
 export function App() {
+  const [client] = useState(createQueryClient)
+  const [router] = useState(createAppRouter)
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-2 p-6">
-      <h1 className="type-display-lg text-text">Vekro</h1>
-      <p className="type-body-md text-text-muted">Your money stays safe until you confirm.</p>
-    </main>
+    <AppProviders client={client}>
+      <RouterProvider router={router} />
+    </AppProviders>
   )
 }
