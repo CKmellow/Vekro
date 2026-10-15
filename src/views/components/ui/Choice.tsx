@@ -1,7 +1,7 @@
-import type { InputHTMLAttributes, ReactNode } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 
-export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+export interface CheckboxProps extends Omit<ComponentProps<'input'>, 'type'> {
   /** May contain links, such as the terms. */
   children: ReactNode
 }

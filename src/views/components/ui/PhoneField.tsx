@@ -1,9 +1,9 @@
-import { useState, type InputHTMLAttributes } from 'react'
+import { useState, type ComponentProps } from 'react'
 import { cn } from '@/lib/cn'
 import { formatNational, isValidNational, PHONE_ERROR, toNationalDigits } from '@/lib/phone'
 import { Field, type FieldProps } from './Field'
 
-type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'>
+type InputProps = Omit<ComponentProps<'input'>, 'value' | 'onChange' | 'type'>
 
 export interface PhoneFieldProps extends Omit<FieldProps, 'valid' | 'aside'>, InputProps {
   /** The 9 national digits, without +254. */

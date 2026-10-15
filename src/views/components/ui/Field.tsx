@@ -1,5 +1,5 @@
 import { CircleAlert, CircleCheck } from 'lucide-react'
-import { useId, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react'
+import { useId, type ComponentProps, type ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 
 export interface FieldProps {
@@ -74,7 +74,7 @@ export function TextField({
   valid,
   className,
   ...rest
-}: FieldProps & InputHTMLAttributes<HTMLInputElement>) {
+}: FieldProps & ComponentProps<'input'>) {
   return (
     <Field label={label} hint={hint} error={error} valid={valid}>
       {({ id, describedBy }) => (
@@ -98,7 +98,7 @@ export function TextArea({
   value = '',
   className,
   ...rest
-}: Omit<FieldProps, 'valid' | 'aside'> & TextareaHTMLAttributes<HTMLTextAreaElement> & { value?: string }) {
+}: Omit<FieldProps, 'valid' | 'aside'> & ComponentProps<'textarea'> & { value?: string }) {
   const counter = maxLength ? (
     <span className="type-mono text-text-muted" aria-hidden="true">
       {value.length}/{maxLength}
