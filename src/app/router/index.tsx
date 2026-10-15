@@ -1,6 +1,7 @@
 import { createBrowserRouter, type RouteObject } from 'react-router'
 import { NotFoundPage } from '@/views/pages/shared/system'
 import { RequireRole } from './guards'
+import { HomeRedirect } from './HomeRedirect'
 import { RouteError } from './RouteError'
 import { AdminShell, BuyerShell, SellerShell } from './shells'
 
@@ -24,7 +25,8 @@ export const routes: RouteObject[] = [
   {
     errorElement: <RouteError />,
     children: [
-      { path: '/', lazy: page(shared, 'X1') },
+      // X1 (landing, #68) replaces this redirect when it ships.
+      { path: '/', element: <HomeRedirect /> },
       { path: '/help', lazy: page(shared, 'X3') },
 
       // Buyer
