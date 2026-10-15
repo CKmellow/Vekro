@@ -44,7 +44,7 @@ export function PayoutSetupPage() {
         )}
 
         {s.step === 'shop' && (
-          <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
             <Card className="flex flex-col gap-5 p-6 sm:p-8">
               <div>
                 <h1 className="type-display-lg text-text">Tell buyers who you are</h1>
@@ -139,7 +139,7 @@ export function PayoutSetupPage() {
         {s.step === 'payout' && (
           <form noValidate onSubmit={s.onSubmit} className="flex flex-col gap-6">
             {s.error && <Banner tone="danger" title={s.error} />}
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-2">
               <Card className="flex flex-col gap-5 p-6 sm:p-8">
                 <div>
                   <h1 className="type-headline text-text">Where should we send your money?</h1>
