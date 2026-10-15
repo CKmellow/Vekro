@@ -44,12 +44,22 @@ describe('router', () => {
 
   it('lazy-loads public buyer routes without a session', async () => {
     renderAt('/pay/3fa85f64')
-    expect(await screen.findByRole('heading', { name: 'Order summary and pay' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: "This page isn't ready yet" })).toBeInTheDocument()
+    expect(screen.getByText('Order summary and pay')).toBeInTheDocument()
+  })
+
+  it('sends unbuilt public pages to built pages only', async () => {
+    renderAt('/')
+    await screen.findByRole('heading', { name: "This page isn't ready yet" })
+    expect(screen.getByRole('link', { name: 'Seller log in' })).toHaveAttribute('href', '/login')
+    expect(screen.getByRole('link', { name: 'Start selling' })).toHaveAttribute('href', '/register')
   })
 
   it('shows the not-found page for unknown routes', async () => {
     renderAt('/nope')
     expect(await screen.findByRole('heading', { name: "We can't find that page" })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Seller log in' })).toHaveAttribute('href', '/login')
+    expect(document.title).toBe('Page not found · Vekro')
   })
 
   it('sends anonymous users to the seller login with a return URL', async () => {
@@ -65,7 +75,7 @@ describe('router', () => {
   it('says the session expired when it ends under a signed-in seller', async () => {
     signedInAs('seller')
     const { router, client } = renderAt('/seller/orders')
-    await screen.findByRole('heading', { name: 'Orders' })
+    await screen.findByText('Orders', { selector: 'p' })
     signedInAs(null)
     await act(() => client.invalidateQueries({ queryKey: ['session', 'me'] }))
     await screen.findByRole('heading', { name: 'Log in to Vekro' })
@@ -76,14 +86,30 @@ describe('router', () => {
   it('sends anonymous users to the admin login for console routes', async () => {
     signedInAs(null)
     const { router } = renderAt('/admin')
-    await screen.findByRole('heading', { name: 'Vekro Support Console' })
+    await screen.findByText('Support console', { selector: 'p' })
     expect(router.state.location.pathname).toBe('/admin/login')
   })
 
   it('lets a seller into seller routes', async () => {
     signedInAs('seller')
     renderAt('/seller')
-    expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: "This page isn't ready yet" })).toBeInTheDocument()
+    expect(screen.getByText('Dashboard', { selector: 'p' })).toBeInTheDocument()
+  })
+
+  it('keeps the seller nav on unbuilt seller pages and points back to listings', async () => {
+    signedInAs('seller')
+    renderAt('/seller/analytics')
+    await screen.findByRole('heading', { name: "This page isn't ready yet" })
+    expect(screen.getByRole('link', { name: 'Go to your listings' })).toHaveAttribute(
+      'href',
+      '/seller/listings',
+    )
+    expect(screen.getByRole('link', { name: 'Create a listing' })).toHaveAttribute(
+      'href',
+      '/seller/listings/new',
+    )
+    expect(screen.getAllByRole('main')).toHaveLength(1)
   })
 
   it('shows a friendly no-permission page for the wrong role', async () => {

@@ -1,13 +1,13 @@
-import { placeholder } from '@/views/pages/Placeholder'
+import { notReady } from '@/views/pages/shared/system'
 
-// Buyer screens (PAGES.md B1 to B9). Each is replaced by its real page when built.
-export const B1 = placeholder('B1', 'Order summary and pay')
-export const B2 = placeholder('B2', 'Complete payment')
-export const PayReturn = placeholder('B2', 'Confirming your payment…')
-export const B3 = placeholder('B3', 'Order tracker')
-export const B4 = placeholder('B4', 'Inspect before you confirm')
-export const B5 = placeholder('B5', 'Report an issue')
-export const B6 = placeholder('B6', 'Return flow')
-export const B7 = placeholder('B7', 'Order timeline')
-export const B8 = placeholder('B8', 'See all your orders')
-export const B9 = placeholder('B9', 'My orders')
+// Buyer screens (PAGES.md B1 to B9), inside BuyerLayout. Each is replaced by its real page when built.
+export const B1 = notReady('buyer', 'Order summary and pay')
+export const B2 = notReady('buyer', 'Complete payment')
+export const PayReturn = notReady('buyer', 'Confirming your payment…')
+export const B3 = notReady('buyer', 'Order tracker')
+export const B4 = notReady('buyer', 'Inspect before you confirm')
+export const B5 = notReady('buyer', 'Report an issue')
+export const B6 = notReady('buyer', 'Return flow')
+export const B7 = notReady('buyer', 'Order timeline')
+export const B8 = notReady('buyer', 'See all your orders')
+export const B9 = notReady('buyer', 'My orders')
