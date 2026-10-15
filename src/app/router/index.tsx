@@ -5,10 +5,10 @@ import { RouteError } from './RouteError'
 import { AdminShell, BuyerShell, SellerShell } from './shells'
 
 // Lazy page modules: one chunk per area keeps the buyer bundle small.
-const buyer = () => import('@/views/pages/buyer/routes')
-const seller = () => import('@/views/pages/seller/routes')
-const admin = () => import('@/views/pages/admin/routes')
-const shared = () => import('@/views/pages/shared/routes')
+const buyer = () => import('./screens/buyer')
+const seller = () => import('./screens/seller')
+const admin = () => import('./screens/admin')
+const shared = () => import('./screens/shared')
 const dev = () => import('@/views/pages/dev/UiGallery')
 
 type Module = Record<string, React.ComponentType>
