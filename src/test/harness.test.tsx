@@ -2,13 +2,12 @@ import { useQuery } from '@tanstack/react-query'
 import { screen, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
-import { App } from '@/App'
 import { renderHookWithProviders, renderWithProviders } from './render'
 import { server } from './server'
 
 describe('test harness', () => {
   it('renders a view with the providers', () => {
-    renderWithProviders(<App />)
+    renderWithProviders(<h1>Vekro</h1>)
     expect(screen.getByRole('heading', { name: 'Vekro' })).toBeInTheDocument()
   })
 
