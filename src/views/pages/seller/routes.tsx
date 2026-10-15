@@ -1,7 +1,7 @@
 import { placeholder } from '../Placeholder'
+export { SignUpPage as S1 } from './SignUpPage'
 
 // Seller screens (PAGES.md S1 to S14).
-export const S1 = placeholder('S1', 'Sign up')
 export const S2 = placeholder('S2', 'Log in')
 export const S3 = placeholder('S3', 'Payout setup')
 export const S4 = placeholder('S4', 'Dashboard')
