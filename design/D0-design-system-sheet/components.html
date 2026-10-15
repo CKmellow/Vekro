@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design System · Components</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            emerald: {
+              50: '#E9F8F1',
+              100: '#CDEFE0',
+              400: '#2CC48A',
+              500: '#12A672',
+              600: '#0C8A5F',
+              700: '#0A6E4C',
+              800: '#084D3B',
+              900: '#06362A',
+              950: '#04251C',
+              glow: '#3DEBA6',
+            },
+            sand: {
+              0: '#FFFFFF',
+              50: '#FBF9F4',
+              100: '#F5F1E7',
+              200: '#EAE4D4',
+              300: '#D8D0BA',
+            },
+            ink: {
+              400: '#8A9792',
+              500: '#5E6D67',
+              600: '#44524D',
+              800: '#1B2824',
+              950: '#0B1512',
+            },
+            saffron: {
+              50: '#FFF6E0',
+              100: '#FFE8B3',
+              500: '#F2A516',
+              600: '#B87A00',
+              700: '#8A5B00',
+            },
+            coral: {
+              50: '#FDECEC',
+              500: '#E5484D',
+              600: '#C93238',
+            },
+            lake: {
+              50: '#E8F1FD',
+              500: '#2F80ED',
+              600: '#1F66C8',
+            },
+            plum: {
+              50: '#EFEBFC',
+              500: '#6B4FD8',
+              700: '#4F36B0',
+            }
+          },
+          fontFamily: {
+            headline: ['"Bricolage Grotesque"', 'sans-serif'],
+            body: ['"DM Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          borderRadius: {
+            'card': '20px',
+            'vault': '28px',
+          },
+          boxShadow: {
+            'card': '0 1px 2px rgba(11,21,18,0.04), 0 8px 24px rgba(11,21,18,0.06)',
+            'vault': '0 20px 50px rgba(6,54,42,0.35)',
+            'modal': '0 -8px 40px rgba(11,21,18,0.18)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #FBF9F4;
+      color: #0B1512;
+      font-family: 'DM Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .vault-bg {
+      background: linear-gradient(140deg, #04251C 0%, #084D3B 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .vault-bg::before {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, rgba(61, 235, 166, 0.22) 0%, rgba(61, 235, 166, 0) 70%);
+      pointer-events: none;
+    }
+    .shimmer-bar {
+      background: linear-gradient(90deg, #F5F1E7 25%, #EAE4D4 50%, #F5F1E7 75%);
+      background-size: 200% 100%;
+      animation: shimmer 2s infinite ease-in-out;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    @keyframes pulse-ring {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; }
+    }
+    .amber-pulse {
+      animation: pulse-ring 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    }
+  </style>
+</head>
+<body class="min-h-screen text-ink-950">
+
+  <!-- Subtle mesh emerald aura at top -->
+  <div class="absolute top-0 left-0 right-0 h-80 bg-gradient-to-b from-emerald-100/35 via-emerald-50/20 to-transparent pointer-events-none"></div>
+
+  <div class="relative max-w-[1440px] mx-auto px-10 py-8 space-y-10">
+
+    <!-- Top Bar -->
+    <header class="flex items-center justify-between pb-6 border-b border-sand-200">
+      <div class="flex items-center gap-4">
+        <!-- Vekro mark -->
+        <div class="w-10 h-10 rounded-xl bg-emerald-700 flex items-center justify-center shadow-sm">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l8 16L20 4"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-3">
+            <span class="font-headline font-bold text-xl text-ink-950 tracking-tight">Vekro</span>
+            <span class="text-sand-300">/</span>
+            <span class="text-sm font-medium text-ink-600">Design System · Components</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-semibold bg-sand-100 text-ink-600 border border-sand-200">
+          v1 · 2026-10
+        </span>
+      </div>
+    </header>
+
+    <!-- Hero Header -->
+    <section class="space-y-4">
+      <div class="space-y-1">
+        <h1 class="text-3xl font-headline font-extrabold text-ink-950 tracking-tight">The vault, in every state.</h1>
+        <p class="text-base text-ink-600">Emerald carries the money. Everything else is calm sand and ink.</p>
+      </div>
+
+      <!-- 4 Small Info Cards -->
+      <div class="grid grid-cols-4 gap-4 pt-2">
+        <div class="bg-sand-0 rounded-xl p-4 border border-sand-200 shadow-card flex items-center justify-between">
+          <div>
+            <div class="text-xs uppercase font-bold text-ink-500 tracking-wider">Vault radius</div>
+            <div class="font-headline font-bold text-lg text-emerald-800">28px</div>
+          </div>
+          <div class="w-8 h-8 rounded-lg bg-sand-50 border border-sand-200 flex items-center justify-center text-ink-600">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="6"/></svg>
+          </div>
+        </div>
+        <div class="bg-sand-0 rounded-xl p-4 border border-sand-200 shadow-card flex items-center justify-between">
+          <div>
+            <div class="text-xs uppercase font-bold text-ink-500 tracking-wider">Release</div>
+            <div class="font-headline font-bold text-lg text-ink-950">Buyer's delivery code</div>
+          </div>
+          <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+        </div>
+        <div class="bg-sand-0 rounded-xl p-4 border border-sand-200 shadow-card flex items-center justify-between">
+          <div>
+            <div class="text-xs uppercase font-bold text-ink-500 tracking-wider">Currency</div>
+            <div class="font-headline font-bold text-lg text-ink-950">KES, no decimals</div>
+          </div>
+          <div class="w-8 h-8 rounded-lg bg-sand-50 border border-sand-200 flex items-center justify-center font-mono font-bold text-xs text-ink-600">
+            KES
+          </div>
+        </div>
+        <div class="bg-sand-0 rounded-xl p-4 border border-sand-200 shadow-card flex items-center justify-between">
+          <div>
+            <div class="text-xs uppercase font-bold text-ink-500 tracking-wider">Payment</div>
+            <div class="font-headline font-bold text-lg text-emerald-700">M-Pesa prompt</div>
+          </div>
+          <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 06: The vault -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-baseline gap-3">
+          <span class="text-xs font-mono font-bold text-emerald-700">SECTION 06</span>
+          <h2 class="font-headline font-bold text-2xl text-ink-950">The vault</h2>
+        </div>
+        <span class="text-xs text-ink-500">6 Vault States · 28px Radius · Soft Emerald Aura</span>
+      </div>
+
+      <!-- 3x2 Grid of Vault Cards -->
+      <div class="grid grid-cols-3 gap-6">
+
+        <!-- 1. Waiting for payment -->
+        <div class="vault-bg rounded-vault p-6 text-sand-0 shadow-vault border border-emerald-800/60 flex flex-col justify-between h-[210px]">
+          <div class="flex justify-between items-start">
+            <div class="space-y-1">
+              <span class="font-mono text-xs text-emerald-400 font-semibold tracking-wider">VK-7K3P9Q</span>
+              <div class="text-xs font-medium text-emerald-100/70">AMOUNT HELD</div>
+              <div class="font-headline font-extrabold text-3xl text-sand-0 tracking-tight">KES 52,000</div>
+            </div>
+            <!-- 72px Lock Ring: Dashed open ring -->
+            <div class="w-[72px] h-[72px] rounded-full border-2 border-dashed border-emerald-400/80 flex items-center justify-center">
+              <svg class="w-7 h-7 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-emerald-800/70 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-saffron-500"></span>
+              <span class="font-medium text-sand-100">Waiting for payment</span>
+            </div>
+            <span class="text-emerald-100/70">Check your phone</span>
+          </div>
+        </div>
+
+        <!-- 2. Paid, funds held safely -->
+        <div class="vault-bg rounded-vault p-6 text-sand-0 shadow-vault border border-emerald-800/60 flex flex-col justify-between h-[210px]">
+          <div class="flex justify-between items-start">
+            <div class="space-y-1">
+              <span class="font-mono text-xs text-emerald-400 font-semibold tracking-wider">VK-7K3P9Q</span>
+              <div class="text-xs font-medium text-emerald-100/70">AMOUNT HELD</div>
+              <div class="font-headline font-extrabold text-3xl text-sand-0 tracking-tight">KES 52,000</div>
+            </div>
+            <!-- 72px Lock Ring: Closed ring with emerald glow -->
+            <div class="w-[72px] h-[72px] rounded-full border-2 border-emerald-glow bg-emerald-900/60 shadow-[0_0_15px_rgba(61,235,166,0.5)] flex items-center justify-center">
+              <svg class="w-7 h-7 text-emerald-glow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-emerald-800/70 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span class="font-medium text-sand-100">Paid, funds held safely</span>
+            </div>
+            <span class="text-emerald-100/70">Held until you confirm</span>
+          </div>
+        </div>
+
+        <!-- 3. At your door -->
+        <div class="vault-bg rounded-vault p-6 text-sand-0 shadow-vault border border-emerald-800/60 flex flex-col justify-between h-[210px]">
+          <div class="flex justify-between items-start">
+            <div class="space-y-1">
+              <span class="font-mono text-xs text-emerald-400 font-semibold tracking-wider">VK-7K3P9Q</span>
+              <div class="text-xs font-medium text-emerald-100/70">AMOUNT HELD</div>
+              <div class="font-headline font-extrabold text-3xl text-sand-0 tracking-tight">KES 52,000</div>
+            </div>
+            <!-- 72px Lock Ring: Amber pulsing ring -->
+            <div class="w-[72px] h-[72px] rounded-full border-2 border-saffron-500 bg-saffron-500/10 shadow-[0_0_16px_rgba(242,165,22,0.4)] flex items-center justify-center amber-pulse">
+              <svg class="w-7 h-7 text-saffron-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="3" width="15" height="13"></rect>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+              </svg>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-emerald-800/70 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-saffron-500"></span>
+              <span class="font-medium text-sand-100">At your door</span>
+            </div>
+            <span class="text-emerald-100/70">Inspect before you confirm</span>
+          </div>
+        </div>
+
+        <!-- 4. Releasing -->
+        <div class="vault-bg rounded-vault p-6 text-sand-0 shadow-vault border border-emerald-800/60 flex flex-col justify-between h-[210px]">
+          <div class="flex justify-between items-start">
+            <div class="space-y-1">
+              <span class="font-mono text-xs text-emerald-400 font-semibold tracking-wider">VK-7K3P9Q</span>
+              <div class="text-xs font-medium text-emerald-100/70">AMOUNT HELD</div>
+              <div class="font-headline font-extrabold text-3xl text-sand-0 tracking-tight">KES 52,000</div>
+            </div>
+            <!-- 72px Lock Ring: Ring filling with lock opening -->
+            <div class="w-[72px] h-[72px] rounded-full border-2 border-emerald-glow border-t-transparent animate-spin-slow flex items-center justify-center bg-emerald-950/80">
+              <svg class="w-7 h-7 text-emerald-glow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 9-2.5"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-emerald-800/70 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-glow"></span>
+              <span class="font-medium text-sand-100">Releasing</span>
+            </div>
+            <span class="text-emerald-100/70">Buyer accepted the item</span>
+          </div>
+        </div>
+
+        <!-- 5. Complete, seller paid -->
+        <div class="vault-bg rounded-vault p-6 text-sand-0 shadow-vault border border-emerald-800/60 flex flex-col justify-between h-[210px]">
+          <div class="flex justify-between items-start">
+            <div class="space-y-1">
+              <span class="font-mono text-xs text-emerald-400 font-semibold tracking-wider">VK-7K3P9Q</span>
+              <div class="text-xs font-medium text-emerald-100/70">AMOUNT RELEASED</div>
+              <div class="font-headline font-extrabold text-3xl text-sand-0 tracking-tight">KES 52,000</div>
+            </div>
+            <!-- 72px Lock Ring: Green check -->
+            <div class="w-[72px] h-[72px] rounded-full border-2 border-emerald-500 bg-emerald-700/50 flex items-center justify-center">
+              <svg class="w-8 h-8 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-emerald-800/70 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span class="font-medium text-sand-100">Complete, seller paid</span>
+            </div>
+            <span class="font-mono text-emerald-100/80">M-Pesa ref QK92XY7A1</span>
+          </div>
+        </div>
+
+        <!-- 6. Refunded -->
+        <div class="vault-bg rounded-vault p-6 text-sand-0 shadow-vault border border-emerald-800/60 flex flex-col justify-between h-[210px]">
+          <div class="flex justify-between items-start">
+            <div class="space-y-1">
+              <span class="font-mono text-xs text-emerald-400 font-semibold tracking-wider">VK-7K3P9Q</span>
+              <div class="text-xs font-medium text-emerald-100/70">AMOUNT RETURNED</div>
+              <div class="font-headline font-extrabold text-3xl text-sand-0 tracking-tight">KES 52,000</div>
+            </div>
+            <!-- 72px Lock Ring: Coral return arrow -->
+            <div class="w-[72px] h-[72px] rounded-full border-2 border-coral-500 bg-coral-500/10 flex items-center justify-center">
+              <svg class="w-7 h-7 text-coral-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-emerald-800/70 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-coral-500"></span>
+              <span class="font-medium text-sand-100">Refunded</span>
+            </div>
+            <span class="text-emerald-100/70">Back to the buyer</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Wide Money Path card -->
+      <div class="bg-sand-0 rounded-card p-6 border border-sand-200 shadow-card space-y-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-ink-500 font-mono">FLOW MECHANICS</span>
+            <span class="text-sm font-semibold text-ink-950">The Vekro Money Path</span>
+          </div>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+            Held safely
+          </span>
+        </div>
+
+        <!-- 3-node connected track -->
+        <div class="relative py-4">
+          <!-- Connecting Line -->
+          <div class="absolute top-1/2 left-16 right-16 h-1 bg-sand-200 -translate-y-1/2">
+            <div class="h-full bg-emerald-600 w-1/2 rounded-full"></div>
+          </div>
+
+          <div class="relative flex justify-between items-center px-8">
+            <!-- Node 1: Buyer -->
+            <div class="flex flex-col items-center text-center space-y-2">
+              <div class="w-12 h-12 rounded-full bg-emerald-50 border-2 border-emerald-600 text-emerald-700 flex items-center justify-center font-bold">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div>
+                <div class="font-bold text-sm text-ink-950">Buyer</div>
+                <div class="font-mono text-xs text-ink-500">+254 712 *** 678</div>
+                <span class="inline-block mt-1 px-2 py-0.5 rounded text-[11px] font-medium bg-sand-100 text-ink-600">Paid with M-Pesa</span>
+              </div>
+            </div>
+
+            <!-- Node 2: Vekro vault (Current node) -->
+            <div class="flex flex-col items-center text-center space-y-2">
+              <div class="relative">
+                <div class="w-14 h-14 rounded-full bg-emerald-800 border-2 border-emerald-glow text-sand-0 flex items-center justify-center shadow-[0_0_18px_rgba(61,235,166,0.5)]">
+                  <svg class="w-6 h-6 text-emerald-glow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <!-- Glowing indicator dot -->
+                <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-glow ring-4 ring-sand-0 animate-pulse"></span>
+              </div>
+              <div>
+                <div class="font-bold text-sm text-emerald-800">Vekro vault</div>
+                <div class="font-headline font-bold text-xs text-emerald-700">KES 52,000 held</div>
+                <span class="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">Current node</span>
+              </div>
+            </div>
+
+            <!-- Node 3: Seller -->
+            <div class="flex flex-col items-center text-center space-y-2">
+              <div class="w-12 h-12 rounded-full bg-sand-100 border-2 border-sand-300 text-ink-500 flex items-center justify-center">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </div>
+              <div>
+                <div class="font-bold text-sm text-ink-950">Seller</div>
+                <div class="text-xs text-ink-500 font-medium">Amina Gadgets</div>
+                <span class="inline-block mt-1 px-2 py-0.5 rounded text-[11px] font-medium bg-sand-100 text-ink-500">Paid after you confirm</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-sand-200 text-center">
+          <p class="text-xs text-ink-500">Money moves only when you confirm or a timer ends.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 07: Time and progress -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-baseline gap-3">
+          <span class="text-xs font-mono font-bold text-emerald-700">SECTION 07</span>
+          <h2 class="font-headline font-bold text-2xl text-ink-950">Time and progress</h2>
+        </div>
+        <span class="text-xs text-ink-500">Countdown Telemetry · Audit Timeline · Linear Stepper</span>
+      </div>
+
+      <div class="grid grid-cols-12 gap-6">
+
+        <!-- Countdown Rings (4 cols) -->
+        <div class="col-span-4 bg-sand-0 rounded-card p-6 border border-sand-200 shadow-card space-y-4 flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-mono font-bold text-ink-500 uppercase tracking-wider mb-4">COUNTDOWN TELEMETRY</div>
+            
+            <div class="space-y-4">
+              <!-- Ring 1: Saffron 41:12 -->
+              <div class="flex items-center gap-4 p-3 rounded-xl bg-sand-50 border border-sand-200">
+                <div class="relative w-14 h-14 rounded-full border-4 border-saffron-500 bg-saffron-50 flex items-center justify-center shrink-0">
+                  <span class="font-mono font-bold text-xs text-saffron-700">41:12</span>
+                </div>
+                <div>
+                  <div class="font-bold text-sm text-ink-950">Time left to dispatch</div>
+                  <div class="text-xs text-ink-500">Auto-refund if not dispatched</div>
+                </div>
+              </div>
+
+              <!-- Ring 2: Saffron 21h 04m -->
+              <div class="flex items-center gap-4 p-3 rounded-xl bg-sand-50 border border-sand-200">
+                <div class="relative w-14 h-14 rounded-full border-4 border-saffron-500 bg-saffron-50 flex items-center justify-center shrink-0">
+                  <span class="font-mono font-bold text-[11px] text-saffron-700">21h 04m</span>
+                </div>
+                <div>
+                  <div class="font-bold text-sm text-ink-950">Report within</div>
+                  <div class="text-xs text-ink-500">24-hour hold for serial-numbered items</div>
+                </div>
+              </div>
+
+              <!-- Ring 3: Coral 05:40 -->
+              <div class="flex items-center gap-4 p-3 rounded-xl bg-coral-50 border border-coral-200">
+                <div class="relative w-14 h-14 rounded-full border-4 border-coral-500 bg-sand-0 flex items-center justify-center shrink-0">
+                  <span class="font-mono font-bold text-xs text-coral-600">05:40</span>
+                </div>
+                <div>
+                  <div class="font-bold text-sm text-coral-600">Under 10%</div>
+                  <div class="text-xs text-ink-500">Time is almost up</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-[11px] text-ink-500 pt-2 border-t border-sand-200">
+            Text on saffron tints adheres strictly to <span class="font-mono text-saffron-700 font-bold">#8A5B00</span> for 4.5:1 contrast.
+          </div>
+        </div>
+
+        <!-- Vertical Timeline Card (8 cols) -->
+        <div class="col-span-8 bg-sand-0 rounded-card p-6 border border-sand-200 shadow-card space-y-6">
+          <div class="flex items-center justify-between pb-3 border-b border-sand-200">
+            <div class="text-xs font-mono font-bold text-ink-500 uppercase tracking-wider">ORDER PROGRESSION TIMELINE</div>
+            <span class="text-xs text-ink-500 font-mono">East Africa Time (EAT)</span>
+          </div>
+
+          <!-- Vertical Timeline list -->
+          <div class="relative pl-6 space-y-5 border-l-2 border-sand-200">
+
+            <!-- Step 1: Vekro (Today 14:36) -->
+            <div class="relative">
+              <span class="absolute -left-[31px] top-0.5 w-4 h-4 rounded-full bg-sand-300 border-2 border-sand-0"></span>
+              <div class="flex items-baseline gap-2">
+                <span class="font-mono font-bold text-xs text-ink-950">Today 14:36</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-sand-100 text-ink-600 font-medium">Vekro</span>
+              </div>
+              <p class="text-sm font-semibold text-ink-950 mt-1">You pressed Courier is here. Inspection started, 1 hour</p>
+            </div>
+
+            <!-- Step 2: Seller (11:20) -->
+            <div class="relative">
+              <span class="absolute -left-[31px] top-0.5 w-4 h-4 rounded-full bg-lake-500 border-2 border-sand-0"></span>
+              <div class="flex items-baseline gap-2">
+                <span class="font-mono font-bold text-xs text-ink-950">11:20</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-lake-50 text-lake-600 font-medium">Seller</span>
+              </div>
+              <p class="text-sm font-semibold text-ink-950 mt-1">Amina Gadgets dispatched your order</p>
+              <div class="mt-2 p-2.5 bg-sand-50 rounded-lg border-l-2 border-lake-500 text-xs italic text-ink-600">
+                “Packed with charger and original box.”
+              </div>
+            </div>
+
+            <!-- Step 3: Vekro (09:05) -->
+            <div class="relative">
+              <span class="absolute -left-[31px] top-0.5 w-4 h-4 rounded-full bg-sand-300 border-2 border-sand-0"></span>
+              <div class="flex items-baseline gap-2">
+                <span class="font-mono font-bold text-xs text-ink-950">09:05</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-sand-100 text-ink-600 font-medium">Vekro</span>
+              </div>
+              <p class="text-sm font-medium text-ink-950 mt-1">Payment received. KES 52,000 held safely</p>
+            </div>
+
+            <!-- Step 4: You (09:03) -->
+            <div class="relative">
+              <span class="absolute -left-[31px] top-0.5 w-4 h-4 rounded-full bg-emerald-600 border-2 border-sand-0"></span>
+              <div class="flex items-baseline gap-2">
+                <span class="font-mono font-bold text-xs text-ink-950">09:03</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-medium">You</span>
+              </div>
+              <p class="text-sm font-medium text-ink-950 mt-1">Started payment with M-Pesa</p>
+            </div>
+
+            <!-- Future Step 1 -->
+            <div class="relative opacity-55">
+              <span class="absolute -left-[31px] top-0.5 w-4 h-4 rounded-full border-2 border-dashed border-sand-300 bg-sand-0"></span>
+              <div class="text-xs font-mono text-ink-400">UPCOMING</div>
+              <p class="text-sm font-medium text-ink-500 mt-0.5">Funds release to the seller after you give your code</p>
+            </div>
+
+            <!-- Future Step 2 -->
+            <div class="relative opacity-55">
+              <span class="absolute -left-[31px] top-0.5 w-4 h-4 rounded-full border-2 border-dashed border-sand-300 bg-sand-0"></span>
+              <div class="text-xs font-mono text-ink-400">FINAL CHECK</div>
+              <p class="text-sm font-medium text-ink-500 mt-0.5">24-hour hold ends if no problem is reported</p>
+            </div>
+
+          </div>
+
+          <!-- Horizontal Stepper -->
+          <div class="pt-4 border-t border-sand-200">
+            <div class="text-xs font-mono font-bold text-ink-500 uppercase tracking-wider mb-3">CHECKOUT STEPPER</div>
+            <div class="flex items-center justify-between">
+              
+              <!-- Step 1: Paid -->
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-full bg-emerald-600 text-sand-0 flex items-center justify-center text-xs font-bold">✓</div>
+                <span class="text-xs font-bold text-ink-950">Paid</span>
+              </div>
+              <div class="flex-1 h-0.5 bg-emerald-600 mx-3"></div>
+
+              <!-- Step 2: Dispatched -->
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-full bg-emerald-600 text-sand-0 flex items-center justify-center text-xs font-bold">✓</div>
+                <span class="text-xs font-bold text-ink-950">Dispatched</span>
+              </div>
+              <div class="flex-1 h-0.5 bg-saffron-500 mx-3"></div>
+
+              <!-- Step 3: At your door (pulsing) -->
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-full bg-saffron-500 text-sand-0 flex items-center justify-center text-xs font-bold ring-4 ring-saffron-100 animate-pulse">3</div>
+                <span class="text-xs font-bold text-saffron-700">At your door</span>
+              </div>
+              <div class="flex-1 h-0.5 bg-sand-200 mx-3"></div>
+
+              <!-- Step 4: Inspected -->
+              <div class="flex items-center gap-2 opacity-50">
+                <div class="w-6 h-6 rounded-full bg-sand-200 text-ink-500 flex items-center justify-center text-xs font-bold">4</div>
+                <span class="text-xs font-medium text-ink-600">Inspected</span>
+              </div>
+              <div class="flex-1 h-0.5 bg-sand-200 mx-3"></div>
+
+              <!-- Step 5: Complete -->
+              <div class="flex items-center gap-2 opacity-50">
+                <div class="w-6 h-6 rounded-full bg-sand-200 text-ink-500 flex items-center justify-center text-xs font-bold">5</div>
+                <span class="text-xs font-medium text-ink-600">Complete</span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 08: Feedback -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-baseline gap-3">
+          <span class="text-xs font-mono font-bold text-emerald-700">SECTION 08</span>
+          <h2 class="font-headline font-bold text-2xl text-ink-950">Feedback</h2>
+        </div>
+        <span class="text-xs text-ink-500">Toasts · Semantic Banners · Sheets · Dialogs · Empty States</span>
+      </div>
+
+      <!-- Toast Pill -->
+      <div class="flex justify-center">
+        <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-ink-950 text-sand-0 shadow-lg text-sm font-medium">
+          <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Link copied</span>
+        </div>
+      </div>
+
+      <!-- Four Semantic Banners -->
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Lake -->
+        <div class="p-4 rounded-xl bg-lake-50 border border-lake-500/20 flex items-start gap-3">
+          <div class="w-6 h-6 rounded-full bg-lake-500 text-sand-0 flex items-center justify-center shrink-0 text-xs">i</div>
+          <div>
+            <div class="font-bold text-sm text-ink-950">Your payment is being confirmed</div>
+            <div class="text-xs text-ink-600 mt-0.5">This usually takes a few seconds.</div>
+          </div>
+        </div>
+        <!-- Saffron (Text uses #8A5B00) -->
+        <div class="p-4 rounded-xl bg-saffron-50 border border-saffron-500/20 flex items-start gap-3">
+          <div class="w-6 h-6 rounded-full bg-saffron-500 text-sand-0 flex items-center justify-center shrink-0 text-xs font-bold">!</div>
+          <div>
+            <div class="font-bold text-sm text-saffron-700">M-Pesa is slow right now. You can still try</div>
+            <div class="text-xs text-saffron-700/90 mt-0.5">If the prompt doesn't arrive, try again in a minute.</div>
+          </div>
+        </div>
+        <!-- Coral -->
+        <div class="p-4 rounded-xl bg-coral-50 border border-coral-500/20 flex items-start gap-3">
+          <div class="w-6 h-6 rounded-full bg-coral-500 text-sand-0 flex items-center justify-center shrink-0 text-xs font-bold">×</div>
+          <div>
+            <div class="font-bold text-sm text-coral-600">M-Pesa didn't go through. Check your balance and try again</div>
+            <div class="text-xs text-ink-600 mt-0.5">No money left your M-Pesa.</div>
+          </div>
+        </div>
+        <!-- Plum -->
+        <div class="p-4 rounded-xl bg-plum-50 border border-plum-500/20 flex items-start gap-3">
+          <div class="w-6 h-6 rounded-full bg-plum-500 text-sand-0 flex items-center justify-center shrink-0 text-xs font-bold">⚡</div>
+          <div>
+            <div class="font-bold text-sm text-plum-700">Vekro support is reviewing this. We'll message you by SMS.</div>
+            <div class="text-xs text-ink-600 mt-0.5">Your money stays held until a decision is made.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scrim Section with Bottom Sheet & Confirm Dialog -->
+      <div class="grid grid-cols-12 gap-6">
+
+        <!-- Bottom Sheet (7 cols) -->
+        <div class="col-span-7 bg-ink-950/40 rounded-card p-6 flex flex-col justify-end min-h-[380px]">
+          <div class="bg-sand-0 rounded-t-vault rounded-b-xl p-6 space-y-5 shadow-modal">
+            <!-- Grab handle -->
+            <div class="w-12 h-1.5 bg-sand-300 rounded-full mx-auto"></div>
+            
+            <div>
+              <h3 class="font-headline font-bold text-xl text-ink-950">What's wrong?</h3>
+              <p class="text-xs text-ink-600 mt-1">Your code stays hidden. The item goes back to the seller and you're refunded.</p>
+            </div>
+
+            <!-- Radio rows -->
+            <div class="space-y-2">
+              <label class="flex items-center justify-between p-3 rounded-xl border border-sand-200 hover:bg-sand-50 cursor-pointer">
+                <span class="text-sm font-medium text-ink-950">Damaged</span>
+                <input type="radio" name="issue" class="text-emerald-700">
+              </label>
+              <label class="flex items-center justify-between p-3 rounded-xl border-2 border-emerald-700 bg-emerald-50/50 cursor-pointer">
+                <span class="text-sm font-bold text-ink-950">Wrong item</span>
+                <span class="w-4 h-4 rounded-full bg-emerald-700 flex items-center justify-center text-sand-0 text-[10px]">✓</span>
+              </label>
+              <label class="flex items-center justify-between p-3 rounded-xl border border-sand-200 hover:bg-sand-50 cursor-pointer">
+                <span class="text-sm font-medium text-ink-950">Not as described</span>
+                <input type="radio" name="issue" class="text-emerald-700">
+              </label>
+              <label class="flex items-center justify-between p-3 rounded-xl border border-sand-200 hover:bg-sand-50 cursor-pointer">
+                <span class="text-sm font-medium text-ink-950">Something else</span>
+                <input type="radio" name="issue" class="text-emerald-700">
+              </label>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="flex items-center gap-3 pt-2">
+              <button class="flex-1 py-3 px-4 rounded-xl bg-coral-500 text-sand-0 font-bold text-sm hover:bg-coral-600 transition">
+                Confirm rejection
+              </button>
+              <button class="py-3 px-4 rounded-xl text-ink-600 font-medium text-sm hover:bg-sand-100 transition">
+                Go back
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confirm Dialog & Shimmer Skeleton (5 cols) -->
+        <div class="col-span-5 space-y-6">
+          
+          <!-- Confirm Dialog -->
+          <div class="bg-sand-0 rounded-card p-6 border border-sand-200 shadow-card space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-coral-50 text-coral-500 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <h4 class="font-headline font-bold text-lg text-ink-950">Refund KES 52,000 to the buyer?</h4>
+            </div>
+            <p class="text-xs text-ink-600">This releases KES 52,000 to Brian Otieno now. You can't undo this.</p>
+            <div class="flex items-center justify-end gap-3 pt-2">
+              <button class="py-2.5 px-4 rounded-xl text-ink-600 text-xs font-semibold hover:bg-sand-100">
+                Cancel
+              </button>
+              <button class="py-2.5 px-4 rounded-xl bg-coral-500 hover:bg-coral-600 text-sand-0 text-xs font-bold transition">
+                Refund KES 52,000
+              </button>
+            </div>
+          </div>
+
+          <!-- Sand shimmer skeleton card -->
+          <div class="bg-sand-0 rounded-card p-6 border border-sand-200 shadow-card space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="w-32 h-4 rounded-md shimmer-bar"></div>
+              <div class="w-16 h-4 rounded-md shimmer-bar"></div>
+            </div>
+            <div class="w-48 h-8 rounded-lg shimmer-bar"></div>
+            <div class="w-full h-12 rounded-xl shimmer-bar"></div>
+            <div class="flex gap-2">
+              <div class="w-20 h-6 rounded-full shimmer-bar"></div>
+              <div class="w-24 h-6 rounded-full shimmer-bar"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Three Empty States -->
+      <div class="grid grid-cols-3 gap-6 pt-2">
+        
+        <!-- 1. Caught up -->
+        <div class="bg-sand-0 rounded-card p-6 border border-sand-200 shadow-card text-center flex flex-col items-center justify-between h-[230px]">
+          <!-- Geometric illustration -->
+          <div class="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-700">
+            <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div>
+            <div class="font-headline font-bold text-base text-ink-950">You're all caught up</div>
+            <div class="text-xs text-ink-500 mt-1">Nothing needs your action right now.</div>
+          </div>
+          <button class="text-xs font-bold text-emerald-700 hover:underline">View orders</button>
+        </div>
+
+        <!-- 2. Create first listing -->
+        <div class="bg-sand-0 rounded-card p-6 border border-sand-200 shadow-card text-center flex flex-col items-center justify-between h-[230px]">
+          <div class="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-700">
+            <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          </div>
+          <div>
+            <div class="font-headline font-bold text-base text-ink-950">Create your first listing</div>
+            <div class="text-xs text-ink-500 mt-1">Make a Trust Link and share it on WhatsApp or Instagram.</div>
+          </div>
+          <button class="px-4 py-2 rounded-xl bg-emerald-700 text-sand-0 font-bold text-xs hover:bg-emerald-800">New listing</button>
+        </div>
+
+        <!-- 3. No orders yet -->
+        <div class="bg-sand-0 rounded-card p-6 border border-sand-200 shadow-card text-center flex flex-col items-center justify-between h-[230px]">
+          <div class="w-14 h-14 rounded-2xl bg-sand-100 border border-sand-200 flex items-center justify-center text-ink-500">
+            <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+          <div>
+            <div class="font-headline font-bold text-base text-ink-950">No orders yet</div>
+            <div class="text-xs text-ink-500 mt-1">When you buy with a Vekro link, it shows up here.</div>
+          </div>
+          <button class="text-xs font-bold text-ink-600 hover:underline">Track by order ID</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 09: Data -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-baseline gap-3">
+          <span class="text-xs font-mono font-bold text-emerald-700">SECTION 09</span>
+          <h2 class="font-headline font-bold text-2xl text-ink-950">Data</h2>
+        </div>
+        <span class="text-xs text-ink-500">Live KPIs · Sparklines · Order Escrow Ledger</span>
+      </div>
+
+      <!-- 2 KPI tiles -->
+      <div class="grid grid-cols-2 gap-6">
+        <!-- Tile 1 -->
+        <div class="bg-sand-0 rounded-card p-6 border border-sand-200 shadow-card flex items-center justify-between">
+          <div class="space-y-1">
+            <div class="text-xs font-bold text-ink-500 uppercase tracking-wider font-mono">IN ESCROW</div>
+            <div class="font-headline font-extrabold text-3xl text-ink-950">KES 143,500</div>
+            <div class="pt-1">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                +12%
+              </span>
+            </div>
+          </div>
+          <!-- 7-point sparkline -->
+          <div class="w-32 h-12 flex items-end gap-1.5 px-2">
+            <div class="w-3 bg-emerald-200 rounded-t h-4"></div>
+            <div class="w-3 bg-emerald-300 rounded-t h-6"></div>
+            <div class="w-3 bg-emerald-400 rounded-t h-5"></div>
+            <div class="w-3 bg-emerald-500 rounded-t h-8"></div>
+            <div class="w-3 bg-emerald-600 rounded-t h-7"></div>
+            <div class="w-3 bg-emerald-700 rounded-t h-10"></div>
+            <div class="w-3 bg-emerald-500 rounded-t h-12"></div>
+          </div>
+        </div>
+
+        <!-- Tile 2 -->
+        <div class="bg-sand-0 rounded-card p-6 border border-sand-200 shadow-card flex items-center justify-between">
+          <div class="space-y-1">
+            <div class="text-xs font-bold text-ink-500 uppercase tracking-wider font-mono">OPEN ISSUES</div>
+            <div class="flex items-center gap-3">
+              <div class="font-headline font-extrabold text-3xl text-ink-950">1</div>
+              <span class="w-3 h-3 rounded-full bg-coral-500 ring-4 ring-coral-50"></span>
+            </div>
+            <div class="text-xs text-ink-500 pt-1">Requires seller resolution review</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-coral-50 text-coral-500 flex items-center justify-center font-bold text-lg">
+            !
+          </div>
+        </div>
+      </div>
+
+      <!-- Table "Recent orders" -->
+      <div class="bg-sand-0 rounded-card border border-sand-200 shadow-card overflow-hidden">
+        <div class="p-5 border-b border-sand-200 flex items-center justify-between">
+          <h3 class="font-headline font-bold text-lg text-ink-950">Recent orders</h3>
+          <span class="text-xs text-ink-500">1 active dispatch pending</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-sand-100 text-ink-600 text-xs font-bold uppercase tracking-wider font-mono">
+              <tr>
+                <th class="py-3 px-6">Item</th>
+                <th class="py-3 px-6">Order</th>
+                <th class="py-3 px-6">Buyer</th>
+                <th class="py-3 px-6">Amount</th>
+                <th class="py-3 px-6">Status</th>
+                <th class="py-3 px-6">Next deadline</th>
+                <th class="py-3 px-6 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-sand-200">
+              <tr class="hover:bg-sand-50/80 transition">
+                <td class="py-4 px-6 font-medium text-ink-950">
+                  <div>iPhone 13, 128GB</div>
+                  <div class="text-xs text-ink-500">Midnight</div>
+                </td>
+                <td class="py-4 px-6 font-mono text-xs text-ink-600 font-semibold">VK-7K3P9Q</td>
+                <td class="py-4 px-6 font-mono text-xs text-ink-600">+254 712 *** 678</td>
+                <td class="py-4 px-6 font-headline font-bold text-ink-950">KES 52,000</td>
+                <td class="py-4 px-6">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                    Paid, ready to dispatch
+                  </span>
+                </td>
+                <td class="py-4 px-6">
+                  <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-saffron-50 border border-saffron-200/60">
+                    <span class="w-2 h-2 rounded-full bg-saffron-500"></span>
+                    <span class="font-mono text-xs font-bold text-saffron-700">41h 12m</span>
+                  </div>
+                </td>
+                <td class="py-4 px-6 text-right">
+                  <button class="py-2 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-sand-0 font-bold text-xs shadow-sm transition">
+                    Dispatch
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10: Shells -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-baseline gap-3">
+          <span class="text-xs font-mono font-bold text-emerald-700">SECTION 10</span>
+          <h2 class="font-headline font-bold text-2xl text-ink-950">Shells</h2>
+        </div>
+        <span class="text-xs text-ink-500">Buyer Viewport · Seller Desktop · Admin Dark Console</span>
+      </div>
+
+      <!-- Three Framed Thumbnails -->
+      <div class="grid grid-cols-3 gap-6">
+
+        <!-- 1. Buyer 390px Phone Frame -->
+        <div class="bg-sand-100 rounded-card p-6 border border-sand-200 flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-ink-500 uppercase tracking-wider mb-3">BUYER 390PX VIEWPORT</span>
+          <div class="w-[320px] h-[520px] bg-sand-50 rounded-[36px] border-4 border-ink-950 shadow-2xl overflow-hidden flex flex-col justify-between relative">
+            
+            <!-- Frosted header -->
+            <div class="p-4 bg-sand-0/80 backdrop-blur-md border-b border-sand-200 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-5 h-5 rounded bg-emerald-700 flex items-center justify-center">
+                  <span class="text-sand-0 text-[10px] font-bold">V</span>
+                </div>
+                <span class="font-headline font-bold text-xs text-ink-950">Vekro</span>
+              </div>
+              <span class="font-mono text-[10px] text-ink-500 font-semibold">VK-7K3P9Q</span>
+            </div>
+
+            <!-- Body contents -->
+            <div class="p-4 space-y-3 overflow-y-auto">
+              <!-- Small vault card -->
+              <div class="vault-bg rounded-2xl p-4 text-sand-0 shadow-md space-y-1">
+                <div class="text-[10px] text-emerald-300 font-medium">ESCROW VAULT</div>
+                <div class="font-headline font-bold text-xl">KES 52,000</div>
+                <div class="text-[11px] text-emerald-100/80 flex items-center gap-1.5 pt-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  Paid, funds held safely
+                </div>
+              </div>
+
+              <!-- Soft emerald next-step card -->
+              <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-100 space-y-1">
+                <div class="font-bold text-xs text-emerald-900">Your item is on the way</div>
+                <div class="text-[11px] text-emerald-800/80">When it arrives, inspect it before you confirm.</div>
+              </div>
+
+              <div class="p-3 rounded-xl bg-sand-0 border border-sand-200 text-center space-y-1">
+                <div class="text-[10px] text-ink-500 uppercase font-mono">DELIVERY CODE</div>
+                <div class="font-mono font-bold text-lg text-ink-950 tracking-widest">4 8 2 7</div>
+              </div>
+            </div>
+
+            <!-- Frosted dock with one emerald button -->
+            <div class="p-4 bg-sand-0/85 backdrop-blur-md border-t border-sand-200">
+              <button class="w-full py-3 rounded-xl bg-emerald-700 text-sand-0 font-bold text-xs shadow-md">
+                Inspect and confirm
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 2. Seller Desktop -->
+        <div class="bg-sand-100 rounded-card p-6 border border-sand-200 flex flex-col">
+          <span class="text-xs font-mono font-bold text-ink-500 uppercase tracking-wider mb-3">SELLER DESKTOP (264PX SIDEBAR)</span>
+          <div class="w-full h-[520px] bg-sand-0 rounded-2xl border border-sand-200 shadow-md overflow-hidden flex">
+            
+            <!-- 264px Dark Emerald Sidebar -->
+            <div class="w-44 bg-emerald-950 text-sand-0 p-4 flex flex-col justify-between shrink-0">
+              <div class="space-y-5">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded bg-emerald-600 flex items-center justify-center font-bold text-xs text-sand-0">V</div>
+                  <span class="font-headline font-bold text-sm">Vekro</span>
+                </div>
+                <nav class="space-y-1 text-xs">
+                  <div class="px-2.5 py-1.5 rounded-lg bg-emerald-700 font-bold text-sand-0">Dashboard</div>
+                  <div class="px-2.5 py-1.5 text-sand-200 hover:text-sand-0">Orders</div>
+                  <div class="px-2.5 py-1.5 text-sand-200 hover:text-sand-0">Listings</div>
+                  <div class="px-2.5 py-1.5 text-sand-200 hover:text-sand-0">Returns</div>
+                  <div class="px-2.5 py-1.5 text-sand-200 hover:text-sand-0">Analytics</div>
+                  <div class="px-2.5 py-1.5 text-sand-200 hover:text-sand-0">Notifications</div>
+                  <div class="px-2.5 py-1.5 text-sand-200 hover:text-sand-0">Settings</div>
+                </nav>
+              </div>
+
+              <!-- Avatar row at bottom -->
+              <div class="pt-3 border-t border-emerald-900 flex items-center gap-2">
+                <div class="w-7 h-7 rounded-full bg-emerald-800 text-sand-0 flex items-center justify-center text-xs font-bold">AG</div>
+                <div class="overflow-hidden">
+                  <div class="text-[11px] font-bold truncate">Amina Gadgets</div>
+                  <div class="text-[9px] text-emerald-400">Verified Seller</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content area with "Needs your action" card -->
+            <div class="flex-1 p-5 bg-sand-50 space-y-4 overflow-hidden">
+              <div class="font-headline font-bold text-base text-ink-950">Store Overview</div>
+              
+              <div class="p-4 rounded-xl bg-sand-0 border-2 border-emerald-700 shadow-sm space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-mono font-bold text-emerald-700 uppercase">NEEDS YOUR ACTION</span>
+                  <span class="w-2 h-2 rounded-full bg-saffron-500"></span>
+                </div>
+                <div class="font-bold text-sm text-ink-950">Dispatch iPhone 13</div>
+                <p class="text-xs text-ink-500">Buyer paid KES 52,000. Courier ready for pickup.</p>
+                <div class="pt-1">
+                  <button class="py-1.5 px-3 rounded-lg bg-emerald-700 text-sand-0 text-xs font-bold">
+                    Mark dispatched
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 3. Admin Dark Console -->
+        <div class="bg-sand-100 rounded-card p-6 border border-sand-200 flex flex-col">
+          <span class="text-xs font-mono font-bold text-ink-500 uppercase tracking-wider mb-3">ADMIN DARK CONSOLE</span>
+          <div class="w-full h-[520px] bg-[#07110E] rounded-2xl border border-[#1F3A30] shadow-md overflow-hidden flex text-[#EAF5F0]">
+            
+            <!-- 240px near-black green sidebar -->
+            <div class="w-40 bg-[#0E1B17] p-4 flex flex-col justify-between border-r border-[#1F3A30] shrink-0">
+              <div class="space-y-5">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded bg-plum-500 flex items-center justify-center font-bold text-xs text-sand-0">V</div>
+                  <span class="font-headline font-bold text-sm text-[#EAF5F0]">Console</span>
+                </div>
+                <nav class="space-y-1 text-xs">
+                  <div class="px-2.5 py-1.5 rounded-lg bg-[#14261F] text-plum-500 font-bold flex items-center justify-between">
+                    <span>Queue</span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-plum-500"></span>
+                  </div>
+                  <div class="px-2.5 py-1.5 text-[#93ADA2] hover:text-[#EAF5F0]">Transactions</div>
+                  <div class="px-2.5 py-1.5 text-[#93ADA2] hover:text-[#EAF5F0]">Sign out</div>
+                </nav>
+              </div>
+              <div class="text-[10px] text-[#93ADA2] font-mono">NODE #01</div>
+            </div>
+
+            <!-- Case panel "KES 52,000 held" with action buttons -->
+            <div class="flex-1 p-5 space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-[#1F3A30]">
+                <div>
+                  <div class="text-[10px] font-mono text-plum-500 font-bold">DISPUTE ESCALATION</div>
+                  <div class="font-headline font-bold text-sm text-[#EAF5F0]">Case VK-7K3P9Q</div>
+                </div>
+                <span class="px-2 py-0.5 rounded text-[10px] bg-plum-700/30 text-plum-500 border border-plum-500/30 font-bold">Under review</span>
+              </div>
+
+              <div class="p-4 rounded-xl bg-[#14261F] border border-[#1F3A30] space-y-3">
+                <div>
+                  <div class="text-[10px] text-[#93ADA2] font-mono">STATUS</div>
+                  <div class="font-headline font-bold text-lg text-[#EAF5F0]">KES 52,000 held</div>
+                  <div class="text-xs text-[#93ADA2] mt-0.5">Buyer claims wrong colour; seller sent midnight.</div>
+                </div>
+
+                <div class="pt-2 flex flex-col gap-2">
+                  <button class="w-full py-2 px-3 rounded-lg bg-coral-600 hover:bg-coral-700 text-sand-0 font-bold text-xs transition">
+                    Refund buyer
+                  </button>
+                  <button class="w-full py-2 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-sand-0 font-bold text-xs transition">
+                    Release to seller
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="pt-8 pb-10 border-t border-sand-200 flex items-center justify-between text-xs text-ink-500">
+      <div class="flex items-center gap-3">
+        <div class="w-6 h-6 rounded-md bg-emerald-700 flex items-center justify-center">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5"><path d="M4 4l8 16L20 4"></path></svg>
+        </div>
+        <span class="font-medium text-ink-950">Vekro Design System · Only DESIGN.md tokens</span>
+      </div>
+      <div class="font-mono text-ink-500">
+        20px surface radius · 28px vault curve
+      </div>
+    </footer>
+
+  </div>
+
+</body>
+</html>
