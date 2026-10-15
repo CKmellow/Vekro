@@ -1,6 +1,6 @@
 # S9 Listing detail and share: notes
 
-Status: In review. Route `/seller/listings/:id`. Devices: desktop 1440px, mobile 390px.
+Status: Approved by Cyprian (2026-10-15). Route `/seller/listings/:id`. Devices: desktop 1440px, mobile 390px.
 
 ## Stitch screens
 

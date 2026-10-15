@@ -1,6 +1,6 @@
 # S8 Listings: notes
 
-Status: In review. Route `/seller/listings`. Devices: desktop 1440px, mobile 390px.
+Status: Approved by Cyprian (2026-10-15). Route `/seller/listings`. Devices: desktop 1440px, mobile 390px.
 
 ## Stitch screens
 
