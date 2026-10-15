@@ -1,0 +1,145 @@
+/*
+ * Hand-written theme layer on top of the generated tokens.
+ * Clears Tailwind's default palette, fonts and shadows so only DESIGN.md tokens exist,
+ * then adds what the token export does not carry: font stacks, elevation and composite type styles.
+ */
+@theme {
+  --color-*: initial;
+  --font-*: initial;
+  --shadow-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-scrim: rgb(11 21 18 / 0.4);
+}
+
+@theme {
+  --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* Elevation (DESIGN.md, Elevation & Depth) */
+  --shadow-1: 0 1px 2px rgb(11 21 18 / 0.04), 0 8px 24px rgb(11 21 18 / 0.06);
+  --shadow-3: 0 -8px 40px rgb(11 21 18 / 0.18);
+  --shadow-vault: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 20px 50px rgb(6 54 42 / 0.35);
+
+  /* Motion (DESIGN.md, Motion & Microinteractions) */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --duration-tap: 120ms;
+  --duration-state: 220ms;
+  --duration-sheet: 360ms;
+  --duration-moment: 600ms;
+}
+
+/* Composite type styles: one class per DESIGN.md typography token. */
+@utility type-display-xl {
+  font-family: var(--font-display);
+  font-size: var(--text-display-xl);
+  line-height: var(--leading-display-xl);
+  letter-spacing: var(--tracking-display-xl);
+  font-weight: var(--font-weight-display-xl);
+}
+@utility type-display-lg {
+  font-family: var(--font-display);
+  font-size: var(--text-display-lg);
+  line-height: var(--leading-display-lg);
+  letter-spacing: var(--tracking-display-lg);
+  font-weight: var(--font-weight-display-lg);
+}
+@utility type-headline {
+  font-family: var(--font-display);
+  font-size: var(--text-headline);
+  line-height: var(--leading-headline);
+  letter-spacing: var(--tracking-headline);
+  font-weight: var(--font-weight-headline);
+}
+@utility type-title {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  line-height: var(--leading-title);
+  letter-spacing: var(--tracking-title);
+  font-weight: var(--font-weight-title);
+}
+@utility type-amount {
+  font-family: var(--font-display);
+  font-size: var(--text-amount);
+  line-height: var(--leading-amount);
+  letter-spacing: var(--tracking-amount);
+  font-weight: var(--font-weight-amount);
+  font-variant-numeric: tabular-nums;
+}
+@utility type-body-lg {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-lg);
+  line-height: var(--leading-body-lg);
+  font-weight: var(--font-weight-body-lg);
+}
+@utility type-body-md {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-md);
+  line-height: var(--leading-body-md);
+  font-weight: var(--font-weight-body-md);
+}
+@utility type-body-sm {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-body-sm);
+  font-weight: var(--font-weight-body-sm);
+}
+@utility type-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
+  letter-spacing: var(--tracking-label);
+  font-weight: var(--font-weight-label);
+  text-transform: uppercase;
+}
+@utility type-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  line-height: var(--leading-mono);
+  font-weight: var(--font-weight-mono);
+  font-variant-numeric: tabular-nums;
+}
+@utility type-otp {
+  font-family: var(--font-mono);
+  font-size: var(--text-otp);
+  line-height: var(--leading-otp);
+  font-weight: var(--font-weight-otp);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The vault surface: 140deg emerald gradient with a soft glow top-right. */
+@utility bg-vault {
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgb(61 235 166 / 0.18), transparent 55%),
+    linear-gradient(140deg, var(--color-emerald-950), var(--color-emerald-800));
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-body-md);
+    line-height: var(--leading-body-md);
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-emerald-400);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
