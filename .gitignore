@@ -6,3 +6,6 @@
 !.env.example
 /LOCAL_EXECUTION_PLAN.md
 __pycache__/
+node_modules/
+dist/
+*.tsbuildinfo
