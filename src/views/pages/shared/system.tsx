@@ -1,4 +1,7 @@
+import { useEffect, useState } from 'react'
+import { Button } from '@/views/components/ui/Button'
 import { ConstructionScene } from '@/views/components/ui/ConstructionScene'
+import { VekroMark } from '@/views/components/ui/VekroMark'
 import { StatusPage } from './StatusPage'
 
 /** Actions that always lead to a built page, for visitors outside the seller area. */
@@ -88,10 +91,71 @@ export function ErrorPage({ onRetry }: { onRetry?: () => void }) {
   )
 }
 
-export function LoadingPage() {
+/** How long the loader waits before saying the wait is unusual and offering a retry. */
+export const SLOW_AFTER_MS = 8000
+
+/**
+ * Full-page wait while the session is checked: the Vekro tile inside a turning lock ring. After
+ * SLOW_AFTER_MS it says the wait is unusual and offers Try again. Reduced motion holds the ring still.
+ */
+export function LoadingPage({ onRetry }: { onRetry?: () => void }) {
+  const [slow, setSlow] = useState(false)
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSlow(true), SLOW_AFTER_MS)
+    return () => window.clearTimeout(timer)
+  }, [])
+
   return (
-    <main className="flex min-h-dvh items-center justify-center" aria-busy="true">
-      <span className="type-body-md text-text-muted">Loading…</span>
+    <main
+      aria-busy={!slow}
+      className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-background px-5 py-10 text-center"
+    >
+      <title>Loading · Vekro</title>
+      <div aria-hidden="true" className="bg-mesh pointer-events-none absolute inset-x-0 top-0 h-60" />
+      <div className="relative grid size-28 place-items-center" aria-hidden="true">
+        <span className="absolute inset-3 rounded-full bg-emerald-glow/15 blur-xl" />
+        <svg viewBox="0 0 112 112" className="absolute inset-0 animate-[spin_1.4s_linear_infinite]">
+          <circle cx="56" cy="56" r="50" fill="none" strokeWidth="4" className="stroke-primary/12" />
+          <circle
+            cx="56"
+            cy="56"
+            r="50"
+            fill="none"
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeDasharray="80 234"
+            className="stroke-primary"
+          />
+        </svg>
+        <VekroMark
+          wordmark={false}
+          className="relative [&_svg]:size-14 [&_svg]:shadow-vault [&_svg]:rounded-md"
+        />
+      </div>
+      <div
+        role="status"
+        aria-live="polite"
+        className="relative mt-8 flex max-w-sm flex-col items-center gap-2"
+      >
+        {slow ? (
+          <>
+            <p className="type-title text-text">This is taking longer than usual</p>
+            <p className="type-body-md text-pretty text-text-muted">
+              Your connection or Vekro may be slow right now. Your money and orders are safe.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="type-title text-text">Getting things ready</p>
+            <p className="type-body-md text-text-muted">Checking your account. This only takes a moment.</p>
+          </>
+        )}
+      </div>
+      {slow && (
+        <Button className="relative mt-6 px-6" onClick={onRetry ?? (() => window.location.reload())}>
+          Try again
+        </Button>
+      )}
     </main>
   )
 }
