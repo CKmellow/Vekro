@@ -7,16 +7,17 @@ Every Stitch screen for Vekro, its exports and its review status.
 - Known deviation: Stitch set roundness to `ROUND_EIGHT`; DESIGN.md asks for 14px controls, 20px cards and 28px vault cards. `update_design_system` rejects every payload through the MCP, so prompts restate the radius scale explicitly. To fix by hand: Stitch > Vekro > Design system > Roundness > 12.
 - Uploaded DESIGN.md source screen: `17679250463712788980`.
 - Status values: Not started, Draft, In review, Approved. Only Cyprian sets Approved.
+- **Specced** (from M5, Cyprian 2026-10-17): no Stitch render. The folder holds a code-ready brief (`prompt.md`) and notes (`notes.md`: checklist, build map, motion, backend dependencies, deviations); the built page, with its PR screenshots, is the visual reference.
 - Exports live in `design/<ID>-<slug>/`: `mobile.png` and/or `desktop.png`, variant PNGs, the matching `.html`, `prompt.md` and `notes.md`.
 - Review checklist: [`docs/DESIGN_REVIEW_CHECKLIST.md`](../docs/DESIGN_REVIEW_CHECKLIST.md)
 
 | ID | Name | Folder | Device | Milestone | Stitch screens | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | D0 | Design System Sheet | `D0-design-system-sheet/` | desktop | M0 | Foundations [`f11db728…`](https://stitch.withgoogle.com/projects/4950346905124660155), Components [`e711257c…`](https://stitch.withgoogle.com/projects/4950346905124660155) | Approved (2026-10-15) |
-| B1 | Order summary and pay | `B1-order-summary/` | mobile | M5 | | Not started |
-| B2 | Payment in progress | `B2-payment/` | mobile | M5 | | Not started |
-| B3 | Order tracker | `B3-order-tracker/` | mobile | M5 | | Not started |
-| B4 | Arrival, inspection and decision | `B4-inspection/` | mobile | M5 | | Not started |
+| B1 | Order summary and pay | `B1-order-summary/` | mobile | M5 | none (code-ready spec) | Specced (2026-10-17) |
+| B2 | Payment in progress | `B2-payment/` | mobile | M5 | none (code-ready spec) | Specced (2026-10-17) |
+| B3 | Order tracker | `B3-order-tracker/` | mobile | M5 | none (code-ready spec) | Specced (2026-10-17) |
+| B4 | Arrival, inspection and decision | `B4-inspection/` | mobile | M5 | none (code-ready spec) | Specced (2026-10-17) |
 | B5 | Report an issue | `B5-report-issue/` | mobile | M10 | | Not started |
 | B6 | Return flow | `B6-return-flow/` | mobile | M10 | | Not started |
 | B7 | Transaction timeline | `B7-timeline/` | mobile | M10 | | Not started |
