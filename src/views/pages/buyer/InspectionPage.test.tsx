@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
+import { waitFor } from '@testing-library/react'
 import { listingResponse, orderResponse } from '@/test/fixtures'
 import { renderWithProviders } from '@/test/render'
 import { server } from '@/test/server'
@@ -87,5 +88,66 @@ describe('B4 arrival and inspection', () => {
     ).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Track my order' }))
     expect(router.state.location.pathname).toBe(`/order/${ID}`)
+  })
+
+  describe('accepting with the delivery code', () => {
+    function withCode(response: () => Response) {
+      const sent: unknown[] = []
+      let status: string = AT_DOOR.status
+      server.use(
+        http.get(`/api/transactions/${ID}`, () =>
+          HttpResponse.json(orderResponse({ payment: null, ...AT_DOOR, status: status as never })),
+        ),
+        http.get(`/api/listings/${LISTING}`, () => HttpResponse.json(listingResponse())),
+        http.post(`/api/transactions/${ID}/otp-give`, async ({ request }) => {
+          sent.push(await request.json())
+          const result = response()
+          if (result.status === 200) status = 'hold_24h'
+          return result
+        }),
+      )
+      return sent
+    }
+
+    it('enables Accept at six digits, confirms the consequence, sends the code and shows the 24-hour hold', async () => {
+      const { user } = renderInspect(AT_DOOR)
+      const sent = withCode(() => HttpResponse.json(orderResponse({ status: 'hold_24h' })))
+      const accept = await screen.findByRole('button', { name: 'Accept item' })
+      expect(accept).toBeDisabled()
+      await user.click(screen.getByRole('textbox', { name: /digit 1/i }))
+      await user.keyboard('482913')
+      expect(accept).toBeEnabled()
+      await user.click(accept)
+      expect(await screen.findByRole('alertdialog', { name: 'Accept this item?' })).toHaveTextContent(
+        'KES 52,000 stays held for 24 hours while you test the item. After that it goes to Amina Gadgets.',
+      )
+      expect(screen.getByRole('button', { name: 'Not yet' })).toHaveFocus()
+      await user.click(screen.getByRole('button', { name: 'Yes, accept' }))
+      await waitFor(() => expect(sent).toEqual([{ otp_code: '482913' }]))
+      expect(
+        await screen.findByRole('heading', { name: 'Held for 24 hours. Test your item.' }),
+      ).toBeInTheDocument()
+      expect(screen.getByText("Won't power on")).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Report a problem' })).toBeInTheDocument()
+    })
+
+    it('clears the cells and says so when the code is wrong', async () => {
+      const { user } = renderInspect(AT_DOOR)
+      withCode(() => HttpResponse.json({ detail: 'Invalid OTP provided.' }, { status: 422 }))
+      await user.click(await screen.findByRole('textbox', { name: /digit 1/i }))
+      await user.keyboard('111111')
+      await user.click(screen.getByRole('button', { name: 'Accept item' }))
+      await user.click(await screen.findByRole('button', { name: 'Yes, accept' }))
+      expect(
+        await screen.findByText("That code doesn't match. Check the SMS and try again."),
+      ).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Accept item' })).toBeDisabled()
+    })
+  })
+
+  it('shows the release for an accepted standard item', async () => {
+    renderInspect({ status: 'released', listing: { ...orderResponse().listing, is_serialized: false } })
+    expect(await screen.findByRole('heading', { name: 'All done' })).toBeInTheDocument()
+    expect(screen.getByText('You accepted the item. Amina Gadgets has been paid.')).toBeInTheDocument()
   })
 })
