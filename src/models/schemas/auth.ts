@@ -33,3 +33,11 @@ export const logInSchema = z.object({
 
 export type SignUpValues = z.infer<typeof signUpSchema>
 export type LogInValues = z.infer<typeof logInSchema>
+
+/** B1 pay card: the M-Pesa phone and the escrow terms. The save-details step (#84) adds identity. */
+export const payBaseSchema = z.object({
+  phone: z.string().refine(isValidNational, 'Enter a Kenyan mobile number, like 712 345 678'),
+  terms: z.boolean().refine(Boolean, 'Agree to the terms to pay'),
+})
+
+export type PayBaseValues = z.infer<typeof payBaseSchema>
