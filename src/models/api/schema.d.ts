@@ -304,6 +304,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/transactions/{transaction_id}/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get an order's timeline (buyer, seller or admin)
+         * @description The order's history, oldest first, in plain words for the caller's role. Built from the caller's own notifications; message bodies and payloads (which can hold the delivery code) are never returned.
+         */
+        get: operations["get_timeline_transactions__transaction_id__timeline_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/transactions/{transaction_id}/payment/resend": {
         parameters: {
             query?: never;
@@ -335,7 +355,7 @@ export interface paths {
         put?: never;
         /**
          * Confirm payment callback and lock transaction
-         * @description Provider callback endpoint that transitions awaiting_payment transactions to locked on successful result_code and safely handles duplicate/non-success callbacks.
+         * @description Provider callback endpoint that transitions awaiting_payment transactions to locked on successful result_code and safely handles duplicate/non-success callbacks. Requires the X-Payment-Callback-Secret header when PAYMENT_CALLBACK_SECRET is set; without a configured secret it is refused in production. eConfirm transactions are never locked here (their funding is confirmed by polling eConfirm).
          */
         post: operations["payment_confirmation_callback_transactions_payment_callback_post"];
         delete?: never;
@@ -415,7 +435,7 @@ export interface paths {
         put?: never;
         /**
          * Withhold delivery OTP and trigger return-refund (buyer only)
-         * @description Buyer action that withholds OTP and applies return/refund path transitions from at_door_pending_inspection.
+         * @description Buyer action that withholds OTP and applies return/refund path transitions from at_door_pending_inspection. An optional body gives the reason and a note for the seller.
          */
         post: operations["withhold_delivery_otp_transactions__transaction_id__otp_withhold_post"];
         delete?: never;
@@ -1161,6 +1181,16 @@ export interface components {
          */
         DisputeType: "physical" | "functional";
         /**
+         * DoorRejection
+         * @description Why the buyer rejected the item at the door.
+         */
+        DoorRejection: {
+            /** Reason */
+            reason: string | null;
+            /** Note */
+            note: string | null;
+        };
+        /**
          * EscalationQueueItemResponse
          * @description Admin queue item for escalated disputes awaiting review.
          */
@@ -1551,6 +1581,22 @@ export interface components {
             otp_code: string;
         };
         /**
+         * OtpWithholdRequest
+         * @description Optional reason when the buyer rejects the item at the door.
+         */
+        OtpWithholdRequest: {
+            /**
+             * Reason
+             * @description One of the listing's dispute_policy.door_reject_reasons, or other. Without declared reasons: damaged, wrong_item, not_as_described, missing_parts or other.
+             */
+            reason?: string | null;
+            /**
+             * Note
+             * @description Optional words for the seller.
+             */
+            note?: string | null;
+        };
+        /**
          * PaymentCallbackRequest
          * @description Payment provider callback payload used to reconcile transaction payment state.
          */
@@ -1790,6 +1836,26 @@ export interface components {
             notes?: string | null;
         };
         /**
+         * TimelineEventResponse
+         * @description One step in an order's history, in plain words.
+         */
+        TimelineEventResponse: {
+            /**
+             * Kind
+             * @description transaction_created or a notification event type, e.g. transaction_locked.
+             */
+            kind: string;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+        };
+        /**
          * TransactionCreatedResponse
          * @description A new transaction and the payment prompt sent for it.
          */
@@ -1934,6 +2000,8 @@ export interface components {
              * @description Server clock when the response was built; offset countdowns with it.
              */
             server_time: string;
+            /** @description Set when the buyer rejected the item at the door with a reason. */
+            door_rejection?: components["schemas"]["DoorRejection"] | null;
             /** @description The latest payment prompt. Shown to the buyer and admins only. */
             payment?: components["schemas"]["PaymentInstructionResponse"] | null;
         };
@@ -2677,6 +2745,51 @@ export interface operations {
             };
         };
     };
+    get_timeline_transactions__transaction_id__timeline_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TimelineEventResponse"][];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Transaction not found, or the caller is not a party to it. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     resend_transaction_payment_prompt_transactions__transaction_id__payment_resend_post: {
         parameters: {
             query?: never;
@@ -2744,7 +2857,10 @@ export interface operations {
     payment_confirmation_callback_transactions_payment_callback_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Shared secret; required when PAYMENT_CALLBACK_SECRET is set. */
+                "X-Payment-Callback-Secret"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2765,6 +2881,13 @@ export interface operations {
             };
             /** @description Callback acknowledged with no state transition. */
             202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong or missing callback secret, or none configured in production. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2949,7 +3072,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["OtpWithholdRequest"] | null;
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {

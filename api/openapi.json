@@ -636,6 +636,60 @@
         }
       }
     },
+    "/transactions/{transaction_id}/timeline": {
+      "get": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Get an order's timeline (buyer, seller or admin)",
+        "description": "The order's history, oldest first, in plain words for the caller's role. Built from the caller's own notifications; message bodies and payloads (which can hold the delivery code) are never returned.",
+        "operationId": "get_timeline_transactions__transaction_id__timeline_get",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TimelineEventResponse"
+                  },
+                  "title": "Response Get Timeline Transactions  Transaction Id  Timeline Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "404": {
+            "description": "Transaction not found, or the caller is not a party to it."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/transactions/{transaction_id}/payment/resend": {
       "post": {
         "tags": [
@@ -694,17 +748,37 @@
           "Transactions"
         ],
         "summary": "Confirm payment callback and lock transaction",
-        "description": "Provider callback endpoint that transitions awaiting_payment transactions to locked on successful result_code and safely handles duplicate/non-success callbacks.",
+        "description": "Provider callback endpoint that transitions awaiting_payment transactions to locked on successful result_code and safely handles duplicate/non-success callbacks. Requires the X-Payment-Callback-Secret header when PAYMENT_CALLBACK_SECRET is set; without a configured secret it is refused in production. eConfirm transactions are never locked here (their funding is confirmed by polling eConfirm).",
         "operationId": "payment_confirmation_callback_transactions_payment_callback_post",
+        "parameters": [
+          {
+            "name": "X-Payment-Callback-Secret",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Shared secret; required when PAYMENT_CALLBACK_SECRET is set.",
+              "title": "X-Payment-Callback-Secret"
+            },
+            "description": "Shared secret; required when PAYMENT_CALLBACK_SECRET is set."
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/PaymentCallbackRequest"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -719,6 +793,9 @@
           },
           "202": {
             "description": "Callback acknowledged with no state transition."
+          },
+          "401": {
+            "description": "Wrong or missing callback secret, or none configured in production."
           },
           "404": {
             "description": "Transaction not found."
@@ -883,7 +960,7 @@
           "Transactions"
         ],
         "summary": "Withhold delivery OTP and trigger return-refund (buyer only)",
-        "description": "Buyer action that withholds OTP and applies return/refund path transitions from at_door_pending_inspection.",
+        "description": "Buyer action that withholds OTP and applies return/refund path transitions from at_door_pending_inspection. An optional body gives the reason and a note for the seller.",
         "operationId": "withhold_delivery_otp_transactions__transaction_id__otp_withhold_post",
         "parameters": [
           {
@@ -897,6 +974,23 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/OtpWithholdRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -2607,6 +2701,39 @@
         ],
         "title": "DisputeType"
       },
+      "DoorRejection": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason",
+          "note"
+        ],
+        "title": "DoorRejection",
+        "description": "Why the buyer rejected the item at the door."
+      },
       "EscalationQueueItemResponse": {
         "properties": {
           "dispute_id": {
@@ -3355,6 +3482,39 @@
         "title": "OtpGiveRequest",
         "description": "Buyer OTP payload for confirming delivery handoff."
       },
+      "OtpWithholdRequest": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "One of the listing's dispute_policy.door_reject_reasons, or other. Without declared reasons: damaged, wrong_item, not_as_described, missing_parts or other."
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "Optional words for the seller."
+          }
+        },
+        "type": "object",
+        "title": "OtpWithholdRequest",
+        "description": "Optional reason when the buyer rejects the item at the door."
+      },
       "PaymentCallbackRequest": {
         "properties": {
           "transaction_id": {
@@ -3808,6 +3968,37 @@
         "title": "SellerResolutionActionRequest",
         "description": "Seller-selected resolution action in dispute flow."
       },
+      "TimelineEventResponse": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "description": "transaction_created or a notification event type, e.g. transaction_locked."
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "at",
+          "title",
+          "description"
+        ],
+        "title": "TimelineEventResponse",
+        "description": "One step in an order's history, in plain words."
+      },
       "TransactionCreatedResponse": {
         "properties": {
           "id": {
@@ -4031,6 +4222,17 @@
             "format": "date-time",
             "title": "Server Time",
             "description": "Server clock when the response was built; offset countdowns with it."
+          },
+          "door_rejection": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DoorRejection"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when the buyer rejected the item at the door with a reason."
           },
           "payment": {
             "anyOf": [
