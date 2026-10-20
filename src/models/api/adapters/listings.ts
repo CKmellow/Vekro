@@ -36,7 +36,7 @@ export class GapUnavailableError extends Error {
   }
 }
 
-function toPolicy(raw: Record<string, unknown>): DisputePolicy {
+export function toPolicy(raw: Record<string, unknown>): DisputePolicy {
   const list = (value: unknown) => (Array.isArray(value) ? value.map(String) : [])
   const resolution = raw.resolution
   return {
