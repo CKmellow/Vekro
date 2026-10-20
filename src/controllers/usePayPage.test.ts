@@ -26,4 +26,13 @@ describe('B1 view mapping', () => {
     expect(view.seller.meta).toBe('1 sale · On Vekro since Jan 2026')
     expect(view.reservedFor).toBe('Wanjiku')
   })
+
+  it('maps listing status to availability', () => {
+    const at = (status: 'active' | 'sold' | 'archived' | 'awaiting_payment') =>
+      toPayListingView({ ...toListing(listingResponse()), status }).availability
+    expect(at('active')).toBe('open')
+    expect(at('awaiting_payment')).toBe('open')
+    expect(at('sold')).toBe('sold')
+    expect(at('archived')).toBe('withdrawn')
+  })
 })

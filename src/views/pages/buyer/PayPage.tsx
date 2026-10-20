@@ -181,8 +181,29 @@ export function PayPage() {
     <>
       <form noValidate onSubmit={page.onPay} className="flex flex-col gap-4">
         <Reveal index={0}>
-          <ProductCard listing={listing} />
+          <ProductCard listing={listing} dimmed={listing.availability === 'withdrawn'} />
         </Reveal>
+        {listing.availability === 'sold' && (
+          <div role="status" className="flex gap-3 rounded-lg bg-emerald-50 p-5">
+            <ShieldCheck aria-hidden="true" className="size-6 shrink-0 text-emerald-700" />
+            <div>
+              <p className="type-body-md font-semibold text-emerald-800">
+                This item has already been paid for
+              </p>
+              <p className="type-body-sm text-emerald-800/80">
+                If you paid for it, open the order link we sent you by SMS to track it.
+              </p>
+            </div>
+          </div>
+        )}
+        {listing.availability === 'withdrawn' && (
+          <div role="status" className="rounded-lg bg-sand-100 p-5">
+            <p className="type-body-md font-semibold text-text">The seller has withdrawn this item</p>
+            <p className="type-body-sm text-ink-600">
+              It can&apos;t be paid for. Ask the seller if they have another link.
+            </p>
+          </div>
+        )}
         {listing.description && (
           <Reveal index={1}>
             <Description text={listing.description} />
@@ -200,77 +221,81 @@ export function PayPage() {
         <Reveal index={3}>
           <HowItWorks />
         </Reveal>
-        <Reveal index={4}>
-          <Card className="flex flex-col gap-5">
-            <DetailsSection
-              identity={page.identity}
-              form={form}
-              notice={page.notice}
-              passwordHints={page.passwordHints}
-              onSwitchMode={page.switchMode}
-              onNotYou={page.notYou}
-            />
-            <dl className="flex flex-col gap-2 rounded-md bg-surface-sunken p-4">
-              <div className="type-body-md flex justify-between gap-3">
-                <dt className="text-ink-600">Item</dt>
-                <dd>
-                  <MoneyText amount={listing.price} className="font-mono" />
-                </dd>
-              </div>
-              <div className="type-body-md flex justify-between gap-3">
-                <dt className="text-ink-600">Vekro fee</dt>
-                <dd className="text-text-muted">No extra fees for you</dd>
-              </div>
-              <div className="type-body-md flex justify-between gap-3 border-t border-border pt-2 font-bold text-text">
-                <dt>Total</dt>
-                <dd>
-                  <MoneyText amount={listing.price} className="font-mono" />
-                </dd>
-              </div>
-            </dl>
-            <Controller
-              control={form.control}
-              name="terms"
-              render={({ field, fieldState }) => (
-                <div>
-                  <Checkbox
-                    name={field.name}
-                    checked={field.value}
-                    onChange={(e) => field.onChange(e.target.checked)}
-                    onBlur={field.onBlur}
-                  >
-                    I agree to the{' '}
-                    <button
-                      type="button"
-                      onClick={() => page.setTermsOpen(true)}
-                      className="font-semibold text-primary underline underline-offset-2"
-                    >
-                      Terms
-                    </button>{' '}
-                    and understand how Vekro escrow works
-                  </Checkbox>
-                  {fieldState.error && (
-                    <p role="status" className="type-body-sm text-coral-600">
-                      {fieldState.error.message}
-                    </p>
+        {listing.availability === 'open' && (
+          <>
+            <Reveal index={4}>
+              <Card className="flex flex-col gap-5">
+                <DetailsSection
+                  identity={page.identity}
+                  form={form}
+                  notice={page.notice}
+                  passwordHints={page.passwordHints}
+                  onSwitchMode={page.switchMode}
+                  onNotYou={page.notYou}
+                />
+                <dl className="flex flex-col gap-2 rounded-md bg-surface-sunken p-4">
+                  <div className="type-body-md flex justify-between gap-3">
+                    <dt className="text-ink-600">Item</dt>
+                    <dd>
+                      <MoneyText amount={listing.price} className="font-mono" />
+                    </dd>
+                  </div>
+                  <div className="type-body-md flex justify-between gap-3">
+                    <dt className="text-ink-600">Vekro fee</dt>
+                    <dd className="text-text-muted">No extra fees for you</dd>
+                  </div>
+                  <div className="type-body-md flex justify-between gap-3 border-t border-border pt-2 font-bold text-text">
+                    <dt>Total</dt>
+                    <dd>
+                      <MoneyText amount={listing.price} className="font-mono" />
+                    </dd>
+                  </div>
+                </dl>
+                <Controller
+                  control={form.control}
+                  name="terms"
+                  render={({ field, fieldState }) => (
+                    <div>
+                      <Checkbox
+                        name={field.name}
+                        checked={field.value}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        onBlur={field.onBlur}
+                      >
+                        I agree to the{' '}
+                        <button
+                          type="button"
+                          onClick={() => page.setTermsOpen(true)}
+                          className="font-semibold text-primary underline underline-offset-2"
+                        >
+                          Terms
+                        </button>{' '}
+                        and understand how Vekro escrow works
+                      </Checkbox>
+                      {fieldState.error && (
+                        <p role="status" className="type-body-sm text-coral-600">
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </div>
                   )}
-                </div>
+                />
+              </Card>
+            </Reveal>
+            <ActionDock note="Secured by Vekro Escrow">
+              {page.payError && <Banner tone="danger" title={page.payError} />}
+              <Button type="submit" fullWidth disabled={!page.canPay} loading={page.paying}>
+                <Lock aria-hidden="true" className="size-5" />
+                Pay {listing.priceLabel} with M-Pesa
+              </Button>
+              {!page.online && (
+                <p role="status" className="type-body-sm text-center text-coral-600">
+                  You&apos;re offline. Connect to pay.
+                </p>
               )}
-            />
-          </Card>
-        </Reveal>
-        <ActionDock note="Secured by Vekro Escrow">
-          {page.payError && <Banner tone="danger" title={page.payError} />}
-          <Button type="submit" fullWidth disabled={!page.canPay} loading={page.paying}>
-            <Lock aria-hidden="true" className="size-5" />
-            Pay {listing.priceLabel} with M-Pesa
-          </Button>
-          {!page.online && (
-            <p role="status" className="type-body-sm text-center text-coral-600">
-              You&apos;re offline. Connect to pay.
-            </p>
-          )}
-        </ActionDock>
+            </ActionDock>
+          </>
+        )}
       </form>
 
       <Sheet

@@ -25,6 +25,8 @@ export interface PayListingView {
   promise: { title: string; line: string }
   /** For a link meant for one buyer. */
   reservedFor: string | null
+  /** open: payable. sold: someone paid. withdrawn: the seller archived it (#140). */
+  availability: 'open' | 'sold' | 'withdrawn'
 }
 
 /** The seller's fix in buyer words (the seller-facing labels say what happens to the payout). */
@@ -76,6 +78,7 @@ export function toPayListingView(listing: Listing): PayListingView {
           line: policySummary({ isSerialized: false, ...listing.policy }),
         },
     reservedFor: listing.buyerName,
+    availability: listing.status === 'sold' ? 'sold' : listing.status === 'archived' ? 'withdrawn' : 'open',
   }
 }
 
@@ -133,6 +136,8 @@ export function usePayPage(listingId: string) {
   const values = form.watch()
   const canPay =
     state === 'ready' &&
+    listing.data?.status !== 'sold' &&
+    listing.data?.status !== 'archived' &&
     online &&
     (identity.kind === 'buyer' || identity.kind === 'form') &&
     paySchema.safeParse({ ...values, mode }).success

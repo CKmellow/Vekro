@@ -197,6 +197,19 @@ describe('B1 order summary and pay', () => {
     expect(await screen.findByRole('dialog', { name: 'Terms' })).toBeInTheDocument()
   })
 
+  it('says when the item is already paid for, with no way to pay', async () => {
+    renderPay({ status: 'sold' })
+    expect(await screen.findByText('This item has already been paid for')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Pay KES/ })).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('M-Pesa phone number')).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('iPhone 13, 128GB, Midnight')
+  })
+
+  it('still takes payment while another buyer has an unpaid order', async () => {
+    renderPay({ status: 'awaiting_payment' })
+    expect(await screen.findByRole('button', { name: /Pay KES 52,000/ })).toBeInTheDocument()
+  })
+
   it('says when the link points nowhere', async () => {
     renderPay('missing')
     expect(await screen.findByRole('heading', { name: "We can't find this item" })).toBeInTheDocument()
