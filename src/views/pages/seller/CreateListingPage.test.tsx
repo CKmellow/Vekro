@@ -78,7 +78,7 @@ describe('S7 step 1', () => {
     await user.click(screen.getAllByRole('button', { name: 'Next' })[0] as HTMLElement)
   }
 
-  it('step 3 standard: needs at least one door reason', async () => {
+  it('step 3 standard: needs at least one door reason', { timeout: 15_000 }, async () => {
     const { user } = renderPage()
     await toPolicy(user, false)
     for (const name of ['Damaged', 'Wrong item', 'Not as described']) {

@@ -50,6 +50,9 @@ export function toOrder(raw: DetailResponse, receivedAt = Date.now()): Order {
     },
     serverOffsetMs: new Date(raw.server_time).getTime() - receivedAt,
     payment: raw.payment ? toPaymentInstruction(raw.payment) : null,
+    doorRejection: raw.door_rejection
+      ? { reason: raw.door_rejection.reason ?? null, note: raw.door_rejection.note ?? null }
+      : null,
     createdAt: raw.created_at,
     updatedAt: raw.updated_at,
   }
