@@ -150,4 +150,65 @@ describe('B4 arrival and inspection', () => {
     expect(await screen.findByRole('heading', { name: 'All done' })).toBeInTheDocument()
     expect(screen.getByText('You accepted the item. Amina Gadgets has been paid.')).toBeInTheDocument()
   })
+
+  it("rejects with the seller's declared reasons and a note, then shows the refund", async () => {
+    const STANDARD = {
+      ...AT_DOOR,
+      listing: {
+        ...orderResponse().listing,
+        is_serialized: false,
+        dispute_policy: { door_reject_reasons: ['damaged', 'wrong_item'] },
+      },
+    }
+    const { user } = renderInspect(STANDARD, { is_serialized: false, unique_id: null })
+    let status: string = AT_DOOR.status
+    let sent: unknown
+    server.use(
+      http.get(`/api/transactions/${ID}`, () =>
+        HttpResponse.json(
+          orderResponse({
+            payment: null,
+            ...STANDARD,
+            status: status as never,
+            door_rejection: status === 'refunded_buyer' ? { reason: 'wrong_item', note: 'Size 40' } : null,
+          }),
+        ),
+      ),
+      http.post(`/api/transactions/${ID}/otp-withhold`, async ({ request }) => {
+        sent = await request.json()
+        status = 'refunded_buyer'
+        return HttpResponse.json(orderResponse({ status: 'refunded_buyer' }))
+      }),
+    )
+    await user.click(await screen.findByRole('button', { name: "Item isn't right, reject" }))
+    const sheet = await screen.findByRole('dialog', { name: "What's wrong?" })
+    expect(sheet).toHaveTextContent('Damaged')
+    expect(sheet).toHaveTextContent('Wrong item')
+    expect(sheet).not.toHaveTextContent('Not as described')
+    expect(screen.getByRole('button', { name: 'Confirm rejection' })).toBeDisabled()
+    await user.click(screen.getByRole('radio', { name: /Wrong item/ }))
+    await user.type(screen.getByLabelText("Tell the seller what's wrong (optional)"), 'Size 40')
+    await user.click(screen.getByRole('button', { name: 'Confirm rejection' }))
+    expect(
+      await screen.findByRole('heading', { name: 'The item is going back to the seller' }),
+    ).toBeInTheDocument()
+    expect(sent).toEqual({ reason: 'wrong_item', note: 'Size 40' })
+    expect(
+      screen.getByText('Your refund of KES 52,000 is on its way to +254 712 *** 678.'),
+    ).toBeInTheDocument()
+  })
+
+  it('offers the standard reasons when the seller declared none', async () => {
+    const { user } = renderInspect(AT_DOOR)
+    await user.click(await screen.findByRole('button', { name: "Item isn't right, reject" }))
+    const sheet = await screen.findByRole('dialog', { name: "What's wrong?" })
+    for (const reason of ['Damaged', 'Wrong item', 'Not as described', 'Missing parts', 'Something else'])
+      expect(sheet).toHaveTextContent(reason)
+  })
+
+  it('says time ran out when the inspection window closed with no decision', async () => {
+    renderInspect({ status: 'refunded_buyer', door_rejection: null })
+    expect(await screen.findByRole('heading', { name: 'Time ran out' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Track my order' })).toBeInTheDocument()
+  })
 })
