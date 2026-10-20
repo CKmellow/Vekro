@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router'
 import { useInspection } from '@/controllers/useInspection'
 import { cn } from '@/lib/cn'
+import { formatKes } from '@/lib/money'
 import { spring } from '@/lib/motion'
 import { CountdownRing } from '../../components/domain/CountdownRing'
 import { MoneyPath } from '../../components/domain/MoneyPath'
@@ -12,6 +13,9 @@ import { ActionDock } from '../../components/ui/ActionDock'
 import { Banner } from '../../components/ui/Banner'
 import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'
+import { RadioCardGroup } from '../../components/ui/Choice'
+import { TextArea } from '../../components/ui/Field'
+import { Sheet } from '../../components/ui/Sheet'
 import { CodeCells } from '../../components/ui/CodeCells'
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog'
 import { EmptyState } from '../../components/ui/EmptyState'
@@ -184,6 +188,43 @@ export function InspectionPage() {
       </div>
     )
 
+  if (page.variant === 'rejected' || page.variant === 'timed_out')
+    return (
+      <div className="flex flex-col gap-5">
+        <VaultCard
+          reference={order.reference}
+          amountLabel="Coming back to you"
+          amount={order.amount}
+          status={{ label: 'Returned to seller', tone: 'coral', icon: 'undo' }}
+          ring="returned"
+        />
+        <div
+          aria-live="polite"
+          className={cn('rounded-lg p-5', page.variant === 'timed_out' ? 'bg-coral-50' : 'bg-surface')}
+        >
+          <h1 className="type-headline text-text">
+            {page.variant === 'rejected' ? 'The item is going back to the seller' : 'Time ran out'}
+          </h1>
+          <p className="type-body-md text-ink-600">
+            {page.variant === 'rejected'
+              ? `Your refund of ${formatKes(order.amount)} is on its way to ${page.phoneMasked ?? 'your M-Pesa number'}.`
+              : "The item goes back to the seller and you're refunded."}
+          </p>
+        </div>
+        <MoneyPath
+          buyer={{ title: 'You' }}
+          vault={{ title: 'Vekro vault' }}
+          seller={{ title: order.sellerName }}
+          position="buyer"
+        />
+        <ActionDock>
+          <Button fullWidth onClick={page.trackOrder}>
+            Track my order
+          </Button>
+        </ActionDock>
+      </div>
+    )
+
   if (page.variant !== 'inspect')
     return (
       <Card className="mt-4">
@@ -286,8 +327,49 @@ export function InspectionPage() {
           <Lock aria-hidden="true" className="size-5" />
           Accept item
         </Button>
+        <Button variant="danger" fullWidth disabled={!page.online} onClick={() => page.setRejectOpen(true)}>
+          Item isn&apos;t right, reject
+        </Button>
         {!page.online && <p className="type-body-sm text-center text-coral-600">You&apos;re offline</p>}
       </ActionDock>
+      <Sheet
+        open={page.rejectOpen}
+        onOpenChange={page.setRejectOpen}
+        title="What's wrong?"
+        description="The item goes back to the seller and you're refunded. Your code stays unused."
+        footer={
+          <>
+            <Button
+              variant="destructive"
+              onClick={page.reject}
+              loading={page.rejecting}
+              disabled={!page.reason}
+            >
+              Confirm rejection
+            </Button>
+            <Button variant="ghost" onClick={() => page.setRejectOpen(false)}>
+              Go back
+            </Button>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-4">
+          <RadioCardGroup
+            legend="Reason"
+            name="reject-reason"
+            options={page.reasons.map((r) => ({ value: r.value, title: r.label }))}
+            value={page.reason}
+            onChange={page.setReason}
+          />
+          <TextArea
+            label="Tell the seller what's wrong (optional)"
+            maxLength={500}
+            value={page.note}
+            onChange={(e) => page.setNote(e.target.value)}
+          />
+          {page.rejectError && <Banner tone="danger" title={page.rejectError} />}
+        </div>
+      </Sheet>
       <ConfirmDialog
         open={page.confirmOpen}
         onOpenChange={page.setConfirmOpen}

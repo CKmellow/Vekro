@@ -5,7 +5,8 @@ import { currentDeadline } from '@/models/domain/deadlines'
 import { STATE_META } from '@/models/domain/stateMeta'
 import { formatKes } from '@/lib/money'
 import { useListing } from '@/models/queries/listings'
-import { useGiveCode, useOrder } from '@/models/queries/orders'
+import { DOOR_REJECT_REASONS } from '@/models/domain/listing'
+import { useGiveCode, useOrder, useRejectAtDoor } from '@/models/queries/orders'
 import { useOnline } from './useOnline'
 
 const POLL_MS = 15_000
@@ -22,6 +23,17 @@ export function inspectionVariant(status: string, rejected: boolean): Inspection
   if (status === 'hold_24h') return 'hold'
   if (REFUNDED.has(status)) return rejected ? 'rejected' : 'timed_out'
   return 'other'
+}
+
+const STANDARD_REASONS = [...DOOR_REJECT_REASONS, { value: 'missing_parts', label: 'Missing parts' }]
+
+/**
+ * Reasons the buyer can give: the seller's declared door reasons, or the standard set when none were
+ * declared (as the backend accepts), plus "Something else".
+ */
+export function rejectReasons(declared: string[]): { value: string; label: string }[] {
+  const pool = declared.length ? STANDARD_REASONS.filter((r) => declared.includes(r.value)) : STANDARD_REASONS
+  return [...pool, { value: 'other', label: 'Something else' }]
 }
 
 /** Guidance only: nothing here is sent or required (design/B4-inspection). */
@@ -49,6 +61,25 @@ export function useInspection(orderId: string) {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
   const giveCode = useGiveCode(orderId)
+  const rejectAtDoor = useRejectAtDoor(orderId)
+  const [rejectOpen, setRejectOpen] = useState(false)
+  const [reason, setReason] = useState<string | undefined>()
+  const [note, setNote] = useState('')
+  const [rejectError, setRejectError] = useState<string | null>(null)
+
+  const reject = async () => {
+    setRejectError(null)
+    try {
+      await rejectAtDoor.mutateAsync({ reason: reason ?? 'other', note: note.trim() || null })
+      setRejectOpen(false)
+    } catch (error) {
+      setRejectError(
+        error instanceof ApiError && error.kind === 'network'
+          ? "You're offline. Nothing changed; try again when you're connected."
+          : "We couldn't record the rejection. Try again.",
+      )
+    }
+  }
 
   const accept = async () => {
     try {
@@ -121,6 +152,19 @@ export function useInspection(orderId: string) {
     holdDeadline: deadline?.kind === 'hold' ? deadline : null,
     acceptedProblems: order?.listing.policy.acceptedProblems ?? [],
     reportProblem: () => navigate(`/order/${orderId}/report`),
+    rejectOpen,
+    setRejectOpen: (open: boolean) => {
+      setRejectOpen(open)
+      setRejectError(null)
+    },
+    reasons: order ? rejectReasons(order.listing.policy.doorRejectReasons) : [],
+    reason,
+    setReason,
+    note,
+    setNote,
+    reject: () => void reject(),
+    rejecting: rejectAtDoor.isPending,
+    rejectError,
     trackOrder: () => navigate(`/order/${orderId}`),
   }
 }

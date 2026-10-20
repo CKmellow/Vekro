@@ -23,3 +23,17 @@ describe('B4 checklist', () => {
     expect(checklist(true, null)).toHaveLength(3)
   })
 })
+
+describe('B4 reject reasons', () => {
+  it("uses the seller's declared reasons, or the standard set, plus Something else", async () => {
+    const { rejectReasons } = await import('./useInspection')
+    expect(rejectReasons(['damaged']).map((r) => r.value)).toEqual(['damaged', 'other'])
+    expect(rejectReasons([]).map((r) => r.value)).toEqual([
+      'damaged',
+      'wrong_item',
+      'not_as_described',
+      'missing_parts',
+      'other',
+    ])
+  })
+})
