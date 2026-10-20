@@ -1,10 +1,10 @@
-import * as Dialog from '@radix-ui/react-dialog'
-import { Eye, Package, ScanBarcode, X } from 'lucide-react'
+import { Eye, Package, ScanBarcode } from 'lucide-react'
 import { useRef, useState } from 'react'
 import type { PayListingView } from '@/controllers/usePayPage'
 import { cn } from '@/lib/cn'
 import { Card } from '../../../components/ui/Card'
 import { MoneyText } from '../../../components/ui/MoneyText'
+import { PhotoViewer } from '../../../components/ui/PhotoViewer'
 
 /** B1 hero: photos (swipe, tap to zoom), item-type pill, title, seller and the price. */
 export function ProductCard({ listing, dimmed = false }: { listing: PayListingView; dimmed?: boolean }) {
@@ -105,30 +105,7 @@ export function ProductCard({ listing, dimmed = false }: { listing: PayListingVi
         <MoneyText amount={listing.price} countUp className="type-amount text-text" />
       </div>
 
-      <Dialog.Root open={zoomed !== null} onOpenChange={(open) => !open && setZoomed(null)}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-40 bg-ink-950/95" />
-          <Dialog.Content
-            aria-describedby={undefined}
-            className="fixed inset-0 z-50 flex items-center justify-center focus:outline-none"
-          >
-            <Dialog.Title className="sr-only">{listing.title}</Dialog.Title>
-            {zoomed !== null && (
-              <img
-                src={photos[zoomed]}
-                alt={`${listing.title} (${zoomed + 1} of ${photos.length})`}
-                className="max-h-dvh max-w-full touch-pinch-zoom object-contain"
-              />
-            )}
-            <Dialog.Close
-              aria-label="Close photo"
-              className="absolute top-[max(12px,env(safe-area-inset-top))] right-3 grid size-12 place-items-center rounded-full bg-ink-950/60 text-sand-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-400"
-            >
-              <X aria-hidden="true" className="size-6" />
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+      <PhotoViewer photos={photos} index={zoomed} title={listing.title} onClose={() => setZoomed(null)} />
     </Card>
   )
 }

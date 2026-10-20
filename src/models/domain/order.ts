@@ -57,6 +57,8 @@ export interface Order {
   serverOffsetMs: number
   /** Only for the buyer and admins. */
   payment: PaymentInstruction | null
+  /** Why the buyer rejected at the door, when they said. */
+  doorRejection: { reason: string | null; note: string | null } | null
   createdAt: string
   updatedAt: string
 }
