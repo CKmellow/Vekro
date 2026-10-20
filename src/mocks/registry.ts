@@ -3,7 +3,7 @@ import type { Gap } from '@/models/api/adapters/gaps'
 
 /**
  * Gap mock handlers, keyed by gap. Each handler file is tagged `// backend-gap #<issue>`
- * and registers itself here, e.g. `gapHandlers.TRANSACTION_READ = [...]`.
+ * and registers itself here, e.g. `gapHandlers.SELLER_LISTS = [...]`.
  */
 export const gapHandlers: Partial<Record<Gap, RequestHandler[]>> = {}
 
