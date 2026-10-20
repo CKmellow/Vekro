@@ -34,10 +34,37 @@ export const logInSchema = z.object({
 export type SignUpValues = z.infer<typeof signUpSchema>
 export type LogInValues = z.infer<typeof logInSchema>
 
-/** B1 pay card: the M-Pesa phone and the escrow terms. The save-details step (#84) adds identity. */
-export const payBaseSchema = z.object({
-  phone: z.string().refine(isValidNational, 'Enter a Kenyan mobile number, like 712 345 678'),
-  terms: z.boolean().refine(Boolean, 'Agree to the terms to pay'),
-})
+/**
+ * B1 pay card (FRONTEND_CONTRACT A): signed-out buyers save their details (register) or log in in the same
+ * card; a signed-in buyer only ticks the terms. `mode` is set by the controller, never typed by the buyer.
+ */
+export const paySchema = z
+  .object({
+    mode: z.enum(['register', 'login', 'signed_in']),
+    phone: z.string(),
+    name: z.string(),
+    password: z.string(),
+    terms: z.boolean().refine(Boolean, 'Agree to the terms to pay'),
+  })
+  .superRefine((v, ctx) => {
+    if (v.mode === 'signed_in') return
+    if (!isValidNational(v.phone))
+      ctx.addIssue({
+        code: 'custom',
+        path: ['phone'],
+        message: 'Enter a Kenyan mobile number, like 712 345 678',
+      })
+    if (v.mode === 'register') {
+      const name = v.name.trim()
+      if (name.length < 2 || name.length > 120)
+        ctx.addIssue({ code: 'custom', path: ['name'], message: 'Enter your name' })
+      const check = password.safeParse(v.password)
+      if (!check.success)
+        ctx.addIssue({ code: 'custom', path: ['password'], message: check.error.issues[0]?.message ?? '' })
+    } else if (!v.password) {
+      ctx.addIssue({ code: 'custom', path: ['password'], message: 'Enter your password' })
+    }
+  })
 
-export type PayBaseValues = z.infer<typeof payBaseSchema>
+export type PayValues = z.infer<typeof paySchema>
+export type PayMode = PayValues['mode']

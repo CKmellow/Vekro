@@ -1,10 +1,11 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { createMemoryRouter, RouterProvider } from 'react-router'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { listingResponse } from '@/test/fixtures'
 import { renderWithProviders } from '@/test/render'
 import { server } from '@/test/server'
+import { sampleUser, signedInAs } from '@/test/session'
 import { PayPage } from './PayPage'
 
 const ID = listingResponse().id
@@ -21,6 +22,15 @@ function renderPay(listing: Parameters<typeof listingResponse>[0] | 'missing' = 
     initialEntries: [`/pay/${ID}`],
   })
   return renderWithProviders(<RouterProvider router={router} />)
+}
+
+beforeEach(() => signedInAs(null))
+
+async function fillRegister(user: ReturnType<typeof renderPay>['user']) {
+  await user.type(await screen.findByLabelText('M-Pesa phone number'), '712345678')
+  await user.type(screen.getByLabelText('Your name'), 'Wanjiku Kamau')
+  await user.type(screen.getByLabelText('Create a password'), 'Mango2026')
+  await user.click(screen.getByRole('checkbox'))
 }
 
 describe('B1 order summary and pay', () => {
@@ -59,17 +69,99 @@ describe('B1 order summary and pay', () => {
     expect(screen.getByRole('button', { name: /Pay KES 6,500 with M-Pesa/ })).toBeDisabled()
   })
 
-  it('enables Pay only with a valid phone and the terms ticked', async () => {
+  it('enables Pay only when the details are valid and the terms ticked', async () => {
     const { user } = renderPay()
     const pay = await screen.findByRole('button', { name: /Pay KES 52,000 with M-Pesa/ })
     expect(pay).toBeDisabled()
-    await user.type(screen.getByLabelText('M-Pesa phone number'), '712345678')
-    expect(pay).toBeDisabled()
-    await user.click(screen.getByRole('checkbox'))
+    await fillRegister(user)
     expect(pay).toBeEnabled()
     await user.clear(screen.getByLabelText('M-Pesa phone number'))
     await user.type(screen.getByLabelText('M-Pesa phone number'), '512')
     expect(pay).toBeDisabled()
+  })
+
+  it('saves the details as a buyer account with the M-Pesa phone, then logs in', async () => {
+    const calls: { path: string; body: unknown }[] = []
+    server.use(
+      http.post('/api/auth/register', async ({ request }) => {
+        calls.push({ path: 'register', body: await request.json() })
+        return HttpResponse.json(sampleUser('buyer'), { status: 201 })
+      }),
+      http.post('/api/auth/login', async ({ request }) => {
+        calls.push({ path: 'login', body: await request.json() })
+        return HttpResponse.json(sampleUser('buyer'))
+      }),
+    )
+    const { user } = renderPay()
+    await fillRegister(user)
+    await user.click(screen.getByRole('button', { name: /Pay KES 52,000/ }))
+    await waitFor(() => expect(calls).toHaveLength(2))
+    expect(calls[0]?.body).toEqual({
+      name: 'Wanjiku Kamau',
+      phone: '+254712345678',
+      password: 'Mango2026',
+      role: 'buyer',
+      mpesa_phone: '+254712345678',
+    })
+    expect(calls[1]?.body).toEqual({ phone: '+254712345678', password: 'Mango2026' })
+  })
+
+  it('switches to log in when the number already has an account', async () => {
+    server.use(
+      http.post('/api/auth/register', () =>
+        HttpResponse.json({ detail: 'Phone already registered.' }, { status: 409 }),
+      ),
+    )
+    const { user } = renderPay()
+    await fillRegister(user)
+    await user.click(screen.getByRole('button', { name: /Pay KES 52,000/ }))
+    expect(await screen.findByRole('heading', { name: 'Welcome back' })).toBeInTheDocument()
+    expect(screen.getByText('This number already has a Vekro account. Log in to pay.')).toBeInTheDocument()
+    expect(screen.queryByLabelText('Your name')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Password')).toHaveValue('')
+  })
+
+  it('says when the log in details are wrong', async () => {
+    server.use(
+      http.post('/api/auth/login', () =>
+        HttpResponse.json({ detail: 'Invalid credentials.' }, { status: 401 }),
+      ),
+    )
+    const { user } = renderPay()
+    await user.click(await screen.findByRole('button', { name: 'Already have a Vekro account? Log in' }))
+    await user.type(screen.getByLabelText('M-Pesa phone number'), '712345678')
+    await user.type(screen.getByLabelText('Password'), 'wrong-one-1')
+    await user.click(screen.getByRole('checkbox'))
+    await user.click(screen.getByRole('button', { name: /Pay KES 52,000/ }))
+    expect(
+      await screen.findByText("Phone or password doesn't match. Check them and try again."),
+    ).toBeInTheDocument()
+  })
+
+  it('shows who is paying when a buyer is signed in, and Not you? logs out', async () => {
+    signedInAs('buyer')
+    let loggedOut = false
+    server.use(
+      http.post('/api/auth/logout', () => {
+        loggedOut = true
+        return new HttpResponse(null, { status: 204 })
+      }),
+    )
+    const { user } = renderPay()
+    expect(await screen.findByText('+254 722 *** 904')).toBeInTheDocument()
+    const pay = screen.getByRole('button', { name: /Pay KES 52,000/ })
+    await user.click(screen.getByRole('checkbox'))
+    expect(pay).toBeEnabled()
+    await user.click(screen.getByRole('button', { name: 'Not you?' }))
+    await waitFor(() => expect(loggedOut).toBe(true))
+    expect(await screen.findByLabelText('M-Pesa phone number')).toBeInTheDocument()
+  })
+
+  it('does not let a seller account pay', async () => {
+    signedInAs('seller')
+    renderPay()
+    expect(await screen.findByText("This account can't pay for items")).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Pay KES 52,000/ })).toBeDisabled()
   })
 
   it('expands the steps and the description, and opens the terms', async () => {
