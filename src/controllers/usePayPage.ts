@@ -1,13 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { formatKes } from '@/lib/money'
-import { isValidNational } from '@/lib/phone'
+import { passwordStrength, PASSWORD_RULES } from '@/lib/password'
+import { maskPhone, toE164 } from '@/lib/phone'
 import { ApiError } from '@/models/api/errors'
 import { policySummary, type Listing, type Resolution } from '@/models/domain/listing'
 import { useListing } from '@/models/queries/listings'
-import { payBaseSchema, type PayBaseValues } from '@/models/schemas/auth'
+import { useRegister, useSignIn, useSignOut } from '@/models/queries/session'
+import { paySchema, type PayMode, type PayValues } from '@/models/schemas/auth'
 import { useOnline } from './useOnline'
+import { useSession } from './useSession'
 
 export interface PayListingView {
   title: string
@@ -76,16 +79,41 @@ export function toPayListingView(listing: Listing): PayListingView {
 
 export type PayPageState = 'loading' | 'ready' | 'not_found' | 'error'
 
+/** Who is paying: a form to fill, a signed-in buyer, or an account that cannot buy. */
+export type PayIdentity =
+  | { kind: 'form'; mode: Exclude<PayMode, 'signed_in'> }
+  | { kind: 'buyer'; phoneMasked: string }
+  | { kind: 'wrong_role' }
+  | { kind: 'checking' }
+
 /** B1: the public listing, the pay card form and the Pay action (docs/PAGES.md B1, FRONTEND_CONTRACT A and B). */
 export function usePayPage(listingId: string) {
   const listing = useListing(listingId)
   const online = useOnline()
+  const session = useSession()
+  const register = useRegister()
+  const signIn = useSignIn()
+  const signOut = useSignOut()
   const [termsOpen, setTermsOpen] = useState(false)
-  const form = useForm<PayBaseValues>({
-    resolver: zodResolver(payBaseSchema),
-    defaultValues: { phone: '', terms: false },
+  const [formMode, setFormMode] = useState<'register' | 'login'>('register')
+  const [notice, setNotice] = useState<string | null>(null)
+  const form = useForm<PayValues>({
+    resolver: zodResolver(paySchema),
+    defaultValues: { mode: 'register', phone: '', name: '', password: '', terms: false },
     mode: 'onTouched',
   })
+
+  const identity: PayIdentity =
+    session.status === 'loading'
+      ? { kind: 'checking' }
+      : session.status === 'authenticated'
+        ? session.role === 'buyer'
+          ? { kind: 'buyer', phoneMasked: maskPhone(session.user.mpesa_phone ?? session.user.phone) }
+          : { kind: 'wrong_role' }
+        : { kind: 'form', mode: formMode }
+
+  const mode: PayMode = identity.kind === 'buyer' ? 'signed_in' : formMode
+  useEffect(() => form.setValue('mode', mode), [form, mode])
 
   const state: PayPageState = listing.data
     ? 'ready'
@@ -95,12 +123,54 @@ export function usePayPage(listingId: string) {
         ? 'not_found'
         : 'error'
 
-  const phone = form.watch('phone')
-  const terms = form.watch('terms')
-  const canPay = state === 'ready' && online && isValidNational(phone) && terms
+  const values = form.watch()
+  const canPay =
+    state === 'ready' &&
+    online &&
+    (identity.kind === 'buyer' || identity.kind === 'form') &&
+    paySchema.safeParse({ ...values, mode }).success
 
-  // Starting the payment lands with the save-details step (#84) and payment initiation (#85).
-  const onPay = form.handleSubmit(() => undefined)
+  /** Signs the buyer in (or saves their details) when needed. Resolves false when the form shows why not. */
+  async function ensureBuyer(v: PayValues): Promise<boolean> {
+    if (v.mode === 'signed_in') return true
+    const phone = toE164(v.phone)
+    try {
+      if (v.mode === 'register')
+        await register.mutateAsync({
+          name: v.name.trim(),
+          phone,
+          password: v.password,
+          role: 'buyer',
+          mpesaPhone: phone,
+        })
+      else await signIn.mutateAsync({ phone, password: v.password })
+      return true
+    } catch (error) {
+      if (error instanceof ApiError && error.kind === 'conflict') {
+        setFormMode('login')
+        form.setValue('password', '')
+        setNotice('This number already has a Vekro account. Log in to pay.')
+      } else if (error instanceof ApiError && (error.kind === 'unauthorized' || error.kind === 'forbidden')) {
+        form.setError('password', { message: "Phone or password doesn't match. Check them and try again." })
+      } else if (error instanceof ApiError && error.kind === 'validation') {
+        for (const [field, message] of Object.entries(error.fieldErrors))
+          if (field === 'phone' || field === 'name' || field === 'password') form.setError(field, { message })
+      } else {
+        setNotice(
+          error instanceof ApiError && error.kind === 'network'
+            ? "You're offline. Your details are still here."
+            : "We couldn't save your details. Try again.",
+        )
+      }
+      return false
+    }
+  }
+
+  // Payment initiation (#85) continues after the buyer is known.
+  const onPay = form.handleSubmit(async (v) => {
+    setNotice(null)
+    await ensureBuyer(v)
+  })
 
   return {
     state,
@@ -108,10 +178,30 @@ export function usePayPage(listingId: string) {
     retry: () => void listing.refetch(),
     online,
     form,
+    identity,
+    switchMode: () => {
+      setNotice(null)
+      setFormMode((m) => (m === 'register' ? 'login' : 'register'))
+    },
+    notYou: () => signOut.mutate(),
+    notice,
+    // S1 rules under "Create a password" (register only).
+    passwordHints:
+      mode === 'register'
+        ? {
+            strength: passwordStrength(values.password),
+            rules: PASSWORD_RULES.map((rule) => ({
+              id: rule.id,
+              label: rule.label,
+              met: rule.test(values.password),
+            })),
+          }
+        : null,
     canPay,
     onPay,
-    paying: false,
+    paying: register.isPending || signIn.isPending,
     termsOpen,
     setTermsOpen,
   }
 }
+export type { PayValues }

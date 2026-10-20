@@ -13,9 +13,9 @@ import { Card } from '../../components/ui/Card'
 import { Checkbox } from '../../components/ui/Choice'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { MoneyText } from '../../components/ui/MoneyText'
-import { PhoneField } from '../../components/ui/PhoneField'
 import { Sheet } from '../../components/ui/Sheet'
 import { Skeleton, SkeletonGroup } from '../../components/ui/Skeleton'
+import { DetailsSection } from './pay/DetailsSection'
 import { ProductCard } from './pay/ProductCard'
 
 const STEPS = [
@@ -202,25 +202,13 @@ export function PayPage() {
         </Reveal>
         <Reveal index={4}>
           <Card className="flex flex-col gap-5">
-            <div>
-              <h2 className="type-title text-text">Save your details to track this order</h2>
-              <p className="type-body-sm text-text-muted">
-                We&apos;ll send the M-Pesa prompt to this number and text you a link to track your order.
-              </p>
-            </div>
-            <Controller
-              control={form.control}
-              name="phone"
-              render={({ field, fieldState }) => (
-                <PhoneField
-                  label="M-Pesa phone number"
-                  name={field.name}
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  error={fieldState.error?.message}
-                />
-              )}
+            <DetailsSection
+              identity={page.identity}
+              form={form}
+              notice={page.notice}
+              passwordHints={page.passwordHints}
+              onSwitchMode={page.switchMode}
+              onNotYou={page.notYou}
             />
             <dl className="flex flex-col gap-2 rounded-md bg-surface-sunken p-4">
               <div className="type-body-md flex justify-between gap-3">
