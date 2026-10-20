@@ -43,9 +43,9 @@ describe('router', () => {
   })
 
   it('lazy-loads public buyer routes without a session', async () => {
-    renderAt('/pay/3fa85f64')
+    renderAt('/buyer/orders')
     expect(await screen.findByRole('heading', { name: 'Still under construction' })).toBeInTheDocument()
-    expect(screen.getByText(/building the Order summary page/)).toBeInTheDocument()
+    expect(screen.getByText(/building the My orders page/)).toBeInTheDocument()
   })
 
   it('sends visitors from / to log in until the landing page ships', async () => {

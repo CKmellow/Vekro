@@ -1,11 +1,12 @@
-import { CircleCheck, Package, Plus, Smartphone, Vault } from 'lucide-react'
+import { CircleCheck, Package, Plus, Smartphone, Unlink, Vault } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 
-export type EmptyIllustration = 'done' | 'listing' | 'parcel' | 'phone' | 'vault'
+export type EmptyIllustration = 'done' | 'link' | 'listing' | 'parcel' | 'phone' | 'vault'
 
 const art: Record<EmptyIllustration, { Icon: typeof Vault; tone: string }> = {
   done: { Icon: CircleCheck, tone: 'bg-emerald-50 text-emerald-700' },
+  link: { Icon: Unlink, tone: 'bg-sand-100 text-ink-600' },
   listing: { Icon: Plus, tone: 'bg-emerald-50 text-emerald-700' },
   parcel: { Icon: Package, tone: 'bg-sand-100 text-ink-600' },
   phone: { Icon: Smartphone, tone: 'bg-sand-100 text-ink-600' },
