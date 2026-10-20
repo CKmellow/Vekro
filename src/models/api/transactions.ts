@@ -105,3 +105,15 @@ export async function rejectAtDoor(
     body: reason || note ? { reason, note } : null,
   })
 }
+
+export interface TimelineEvent {
+  kind: string
+  at: string
+  title: string
+  description: string
+}
+
+/** The order's history, oldest first, in words for the caller's role (never includes the code). */
+export async function getTimeline(orderId: string, signal?: AbortSignal): Promise<TimelineEvent[]> {
+  return api.get('/transactions/{transaction_id}/timeline', { path: { transaction_id: orderId }, signal })
+}
