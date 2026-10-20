@@ -13,7 +13,6 @@ Reconciled against `api/openapi.json` on 2026-10-20 (resynced from CKmellow/Vekr
 | P1-1 Public order summary | #10 | M6 | Open | `VITE_MOCK_PUBLIC_ORDER` | not yet |
 | P1-2 Phone-verified guest session | #11 | M15 | Open | `VITE_MOCK_PHONE_AUTH` | not yet |
 | P1-3 Buyer order history | #12 | M15 | Open | `VITE_MOCK_BUYER_ORDERS` | not yet |
-| P1-5 Order timeline for buyer and seller | #142 | M7 | Open | `VITE_MOCK_TIMELINE` | not yet |
 | P1-7 Seller profile and payout settings update | #144 | M4 | Open (mocked) | `VITE_MOCK_SELLER_PROFILE` | `src/mocks/gaps/sellerProfile.ts` |
 | P1-8 Notifications mark as read | #145 | M9 | Open | `VITE_MOCK_NOTIFICATION_READ` | not yet |
 | P1-9 Seller disagree-and-escalate | #146 | M12 | Open | `VITE_MOCK_ESCALATE` | not yet |
@@ -35,3 +34,4 @@ Reconciled against `api/openapi.json` on 2026-10-20 (resynced from CKmellow/Vekr
 | P0-7 State deadlines | #141 | 2026-10-20 | Same PR as P0-1. `deadlines` (`dispatch_by`, `inspect_by`, `hold_until`, `return_send_by`, `return_confirm_by`) come from the same windows as the backend timeout jobs; `server_time` gives the clock offset. |
 | P0-3 Payment instruction | #8 | 2026-10-20 | Backend PR CKmellow/Vekro-backend#166 (issue #165). `POST /transactions` returns `payment` with an explicit `kind` (`STK_PROMPT` or `REDIRECT`); a 202 has `failed_to_initiate`. |
 | P1-6 Payment failure reason and resend | #143 | 2026-10-20 | Same PR as P0-3. `payment.failure_reason` (`cancelled`, `wrong_pin`, `insufficient_funds`, `timeout`, `provider_error`), `expired` after 90s, and `POST /transactions/{id}/payment/resend` with a 30s cooldown (429 + Retry-After). |
+| P1-5 Order timeline for buyer and seller | #142 | 2026-10-20 | Backend PR CKmellow/Vekro-backend#172 (issue #171). `GET /transactions/{id}/timeline` returns `{ kind, at, title, description }` oldest first, in words for the caller's role; notification messages and payloads (which hold the delivery code) are never returned. Used by B3 and B7. |
