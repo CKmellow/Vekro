@@ -1,14 +1,15 @@
-// backend-gap #139 (listing content), #7 (seller listing list), #140 (update and archive).
+// backend-gap #7 (seller listing list) and #140 (update and archive).
 // In-memory only: a page reload resets the store. Delete each block when its gap ships.
 import { http, HttpResponse, passthrough } from 'msw'
-import type { ListingContent } from '@/models/api/adapters/listings'
+import type { ListingExtras } from '@/models/api/adapters/listings'
 import type { Schemas } from '@/models/api/client'
+import type { ListingStatus } from '@/models/domain/listing'
 import { gapHandlers } from '../registry'
 
 type ListingResponse = Schemas['ListingResponse']
 interface Row {
   listing: ListingResponse
-  content: ListingContent
+  extras: Required<ListingExtras>
 }
 
 const SELLER = '6a0e6b52-8a43-4c35-9c3f-2f0a3b1d7e11'
@@ -18,7 +19,7 @@ const seed = (
   title: string,
   price: number,
   serialized: boolean,
-  status: ListingContent['status'],
+  status: ListingStatus,
   category: string,
   views: number,
 ): Row => ({
@@ -26,6 +27,9 @@ const seed = (
     id,
     seller_id: SELLER,
     title,
+    description: '',
+    category,
+    buyer_name: null,
     price: price.toFixed(2),
     is_serialized: serialized,
     unique_id: serialized ? '352098114371234' : null,
@@ -36,10 +40,13 @@ const seed = (
           allowed_seller_actions: ['repair_shipped', 'refund_issued'],
         }
       : { door_reject_reasons: ['damaged', 'wrong_item', 'not_as_described'] },
+    status: status === 'sold' || status === 'awaiting_payment' ? status : 'active',
+    photos: [],
+    seller: { name: 'Amina Gadgets', member_since: '2026-01-05T00:00:00Z', completed_sales: 12 },
     created_at: at,
     updated_at: at,
   },
-  content: { description: '', category, photoUrls: [], buyerName: null, status, views },
+  extras: { status, views },
 })
 
 export const listingStore = new Map<string, Row>(
@@ -88,45 +95,25 @@ export const listingStore = new Map<string, Row>(
 const notFound = () => HttpResponse.json({ detail: 'Listing not found.' }, { status: 404 })
 const now = () => new Date().toISOString()
 
-gapHandlers.LISTING_CONTENT = [
+gapHandlers.SELLER_LISTS = [
   // Seeded listings exist only here; every other id goes to the real API.
   http.get('/api/listings/:id', ({ params }) => {
     const row = listingStore.get(String(params.id))
     return row ? HttpResponse.json(row.listing) : passthrough()
   }),
-  http.get('/api/__gaps__/listings/:id/content', ({ params }) => {
-    const row = listingStore.get(String(params.id))
-    return row ? HttpResponse.json(row.content) : notFound()
-  }),
-  http.put('/api/__gaps__/listings/:id/content', async ({ params, request }) => {
-    const body = (await request.json()) as Partial<ListingContent> & { snapshot: ListingResponse }
-    const content: ListingContent = {
-      description: body.description ?? '',
-      category: body.category ?? null,
-      photoUrls: body.photoUrls ?? [],
-      buyerName: body.buyerName ?? null,
-      status: 'active',
-      views: 0,
-    }
-    listingStore.set(String(params.id), { listing: body.snapshot, content })
-    return HttpResponse.json(content)
-  }),
-]
-
-gapHandlers.SELLER_LISTS = [
   http.get('/api/__gaps__/seller/listings', ({ request }) => {
     const url = new URL(request.url)
     const status = url.searchParams.get('status')
     const q = url.searchParams.get('q')?.toLowerCase().trim()
     const rows = [...listingStore.values()]
-      .filter((row) => !status || row.content.status === status)
+      .filter((row) => !status || row.extras.status === status)
       .filter((row) => !q || row.listing.title.toLowerCase().includes(q))
       .sort((a, b) => b.listing.created_at.localeCompare(a.listing.created_at))
     return HttpResponse.json(rows)
   }),
 ]
 
-const locked = (row: Row) => row.content.status === 'sold' || row.content.status === 'awaiting_payment'
+const locked = (row: Row) => row.extras.status === 'sold' || row.extras.status === 'awaiting_payment'
 
 gapHandlers.LISTING_UPDATE = [
   http.patch('/api/__gaps__/listings/:id', async ({ params, request }) => {
@@ -143,14 +130,12 @@ gapHandlers.LISTING_UPDATE = [
         unique_id: (body.unique_id as string | null | undefined) ?? row.listing.unique_id,
         dispute_policy:
           (body.dispute_policy as Record<string, unknown> | undefined) ?? row.listing.dispute_policy,
+        description: String(body.description ?? row.listing.description),
+        category: (body.category as string | null | undefined) ?? row.listing.category,
+        buyer_name: (body.buyer_name as string | null | undefined) ?? row.listing.buyer_name,
         updated_at: now(),
       },
-      content: {
-        ...row.content,
-        description: String(body.description ?? row.content.description),
-        category: (body.category as string | null | undefined) ?? row.content.category,
-        buyerName: (body.buyerName as string | null | undefined) ?? row.content.buyerName,
-      },
+      extras: row.extras,
     }
     listingStore.set(row.listing.id, next)
     return HttpResponse.json(next)
@@ -161,7 +146,7 @@ gapHandlers.LISTING_UPDATE = [
     if (locked(row)) return HttpResponse.json({ detail: 'This listing has a paid order.' }, { status: 409 })
     const next = {
       listing: { ...row.listing, updated_at: now() },
-      content: { ...row.content, status: 'archived' as const },
+      extras: { ...row.extras, status: 'archived' as const },
     }
     listingStore.set(row.listing.id, next)
     return HttpResponse.json(next)

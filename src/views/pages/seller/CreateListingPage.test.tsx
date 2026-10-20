@@ -2,6 +2,7 @@ import { act, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { toast } from '@/lib/toast'
+import { listingResponse } from '@/test/fixtures'
 import { renderWithProviders } from '@/test/render'
 import { signedInAs } from '@/test/session'
 import { CreateListingPage } from './CreateListingPage'
@@ -124,7 +125,7 @@ describe('S7 step 1', () => {
       http.post('/api/listings', async ({ request }) => {
         posted = (await request.json()) as Record<string, unknown>
         return HttpResponse.json(
-          { id: 'l-new', seller_id: 's1', created_at: '', updated_at: '', ...posted, price: '52000.00' },
+          listingResponse({ id: 'l-new', title: String(posted.title), is_serialized: false }),
           { status: 201 },
         )
       }),
@@ -151,6 +152,9 @@ describe('S7 step 1', () => {
     )
     expect(posted).toMatchObject({
       title: 'Nike Air Force 1, size 42',
+      description: '',
+      category: 'Phones and tablets',
+      buyer_name: null,
       price: '6500',
       is_serialized: false,
       dispute_policy: { door_reject_reasons: ['damaged', 'wrong_item', 'not_as_described'] },

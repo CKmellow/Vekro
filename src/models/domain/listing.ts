@@ -1,4 +1,4 @@
-/** Listings as the screens see them: the API's ListingResponse plus content fields from backend-gap #139. */
+/** Listings as the screens see them, mapped from the API's ListingResponse. */
 
 export type ListingStatus = 'draft' | 'active' | 'awaiting_payment' | 'sold' | 'archived'
 
@@ -27,14 +27,24 @@ export interface Listing {
   policy: DisputePolicy
   createdAt: string
   updatedAt: string
-  // Content fields (backend-gap #139): empty until the backend stores them.
   description: string
   category: string | null
+  /** Absolute photo URLs, cover first. */
   photoUrls: string[]
   /** For a private link to one buyer. */
   buyerName: string | null
+  /** `draft` is device-local; `archived` needs backend-gap #140. */
   status: ListingStatus
+  /** No view tracking yet: always null. */
   views: number | null
+  /** What a buyer may see about the seller before paying. */
+  seller: ListingSeller
+}
+
+export interface ListingSeller {
+  name: string
+  memberSince: string
+  completedSales: number
 }
 
 export const CATEGORIES = [

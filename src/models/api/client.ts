@@ -75,13 +75,17 @@ async function request<P extends keyof paths, M extends Method>(
     if (token) headers[CSRF_HEADER] = token
   }
 
+  const raw = body instanceof Blob
+  if (raw) headers['Content-Type'] = body.type || 'application/octet-stream'
+
   let response: Response
   try {
     response = await fetch(new URL(buildUrl(String(path), params, query), window.location.origin), {
       method: upper,
       headers,
       credentials: 'include',
-      body: body === undefined ? undefined : JSON.stringify(body),
+      // Bytes rather than the Blob itself: every fetch implementation sends an ArrayBuffer as is.
+      body: body === undefined ? undefined : raw ? await body.arrayBuffer() : JSON.stringify(body),
       signal,
     })
   } catch (cause) {
@@ -125,6 +129,11 @@ export const api = {
     request('patch', path, options),
   delete: <P extends PathsWith<'delete'>>(path: P, options: Options<Operation<P, 'delete'>>) =>
     request('delete', path, options),
+  /** POST a file as the raw request body (its `type` becomes the Content-Type), e.g. listing photos. */
+  upload: <P extends PathsWith<'post'>>(
+    path: P,
+    options: Omit<Options<Operation<P, 'post'>>, 'body'> & { body: Blob },
+  ) => request('post', path, options as unknown as Options<Operation<P, 'post'>>),
 }
 
 /**

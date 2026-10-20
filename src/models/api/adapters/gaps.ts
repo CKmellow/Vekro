@@ -7,7 +7,6 @@ export const GAPS = {
   TRANSACTION_READ: { id: 'P0-1', issue: 6 },
   SELLER_LISTS: { id: 'P0-2', issue: 7 },
   PAYMENT_INSTRUCTION: { id: 'P0-3', issue: 8 },
-  LISTING_CONTENT: { id: 'P0-5', issue: 139 },
   LISTING_UPDATE: { id: 'P0-6', issue: 140 },
   DEADLINES: { id: 'P0-7', issue: 141 },
   PUBLIC_ORDER: { id: 'P1-1', issue: 10 },

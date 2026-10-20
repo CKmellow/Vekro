@@ -34,12 +34,8 @@ describe('S8 listings', () => {
 
   describe('with the gap mocks on', () => {
     beforeEach(() => {
-      mocked.add('SELLER_LISTS').add('LISTING_UPDATE').add('LISTING_CONTENT')
-      server.use(
-        ...(gapHandlers.SELLER_LISTS ?? []),
-        ...(gapHandlers.LISTING_UPDATE ?? []),
-        ...(gapHandlers.LISTING_CONTENT ?? []),
-      )
+      mocked.add('SELLER_LISTS').add('LISTING_UPDATE')
+      server.use(...(gapHandlers.SELLER_LISTS ?? []), ...(gapHandlers.LISTING_UPDATE ?? []))
     })
 
     it('shows active listings with counts, filters and search', async () => {

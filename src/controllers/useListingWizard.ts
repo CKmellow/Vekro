@@ -99,10 +99,15 @@ export function useListingWizard() {
     async (draft) => {
       setPublishError(null)
       try {
-        const { listing, contentSaved } = await create.mutateAsync({ draft, photos: photos.readyBlobs() })
+        const { listing, photosFailed } = await create.mutateAsync({ draft, photos: photos.readyBlobs() })
         clearDraft()
-        if (!contentSaved)
-          toast.show('Published. Photos and description will be added once Vekro can store them.', 'info')
+        if (photosFailed > 0)
+          toast.show(
+            photosFailed === 1
+              ? "Published, but 1 photo didn't upload."
+              : `Published, but ${photosFailed} photos didn't upload.`,
+            'info',
+          )
         navigate(`/seller/listings/${listing.id}?published=1`, { replace: true })
       } catch (error) {
         setPublishError(

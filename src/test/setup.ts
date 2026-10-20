@@ -6,6 +6,20 @@ import { recordUnhandled, server, takeUnhandled } from './server'
 // jsdom has no canvas. Views that draw (the S9 QR card) treat a null context as "cannot draw".
 HTMLCanvasElement.prototype.getContext = (() => null) as typeof HTMLCanvasElement.prototype.getContext
 
+// jsdom's Blob has no arrayBuffer() (browsers do); the API client reads uploads with it.
+if (!('arrayBuffer' in Blob.prototype)) {
+  Object.defineProperty(Blob.prototype, 'arrayBuffer', {
+    value(this: Blob) {
+      return new Promise<ArrayBuffer>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as ArrayBuffer)
+        reader.onerror = () => reject(reader.error ?? new Error('read failed'))
+        reader.readAsArrayBuffer(this)
+      })
+    },
+  })
+}
+
 beforeAll(() =>
   server.listen({
     // Block the request (never reach the network) and record it: a query often swallows the failed

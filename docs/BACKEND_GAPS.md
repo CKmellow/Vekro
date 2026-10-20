@@ -2,7 +2,7 @@
 
 Each gap has a `backend-gap` issue, an MSW mock tagged `// backend-gap #<n>`, and a `VITE_MOCK_<GAP>` flag. When the backend ships, delete the mock and flag.
 
-Reconciled against `api/openapi.json` on 2026-10-15 (resynced from CKmellow/Vekro-backend at `6ff02d4`).
+Reconciled against `api/openapi.json` on 2026-10-20 (resynced from CKmellow/Vekro-backend `main`).
 
 ## Open
 
@@ -11,7 +11,6 @@ Reconciled against `api/openapi.json` on 2026-10-15 (resynced from CKmellow/Vekr
 | P0-1 Single-transaction read | #6 | M6 | Open | `VITE_MOCK_TRANSACTION_READ` | not yet |
 | P0-2 Seller order and listing lists | #7 | M4 | Open (listings mocked; orders in M9) | `VITE_MOCK_SELLER_LISTS` | `src/mocks/gaps/listings.ts` |
 | P0-3 Payment instruction in initiate response | #8 | M6 | Open | `VITE_MOCK_PAYMENT_INSTRUCTION` | not yet |
-| P0-5 Listing content fields and public seller profile | #139 | M4 | Open (mocked) | `VITE_MOCK_LISTING_CONTENT` | `src/mocks/gaps/listings.ts` |
 | P0-6 Listing update, archive and duplicate | #140 | M4 | Open (mocked) | `VITE_MOCK_LISTING_UPDATE` | `src/mocks/gaps/listings.ts` |
 | P0-7 State deadlines on transactions | #141 | M7 | Open | `VITE_MOCK_DEADLINES` | not yet |
 | P1-1 Public order summary | #10 | M6 | Open | `VITE_MOCK_PUBLIC_ORDER` | not yet |
@@ -35,3 +34,4 @@ Reconciled against `api/openapi.json` on 2026-10-15 (resynced from CKmellow/Vekr
 | P0-4 Server-derived transaction amount | #9 | 2026-10-15 | Backend PR CKmellow/Vekro-backend#140 (issue #139). `CreateTransactionRequest.amount` is optional; the server uses the listing price and rejects a different amount with 422. The client omits `amount`. |
 | P1-4 Delivery code to buyer only | #13 | 2026-10-15 | Backend PR #140. The code is sent in the buyer's notification (and by SMS), never the seller's; covered by `test_service_arrival_sends_delivery_code_to_buyer_only`. |
 | P2-2 Non-sequential order reference | #15 | 2026-10-15 | Backend PR #140. `TransactionResponse.reference` is a random human reference such as `VK-7K3P9Q`. Show it instead of the UUID. |
+| P0-5 Listing content and public seller profile | #139 | 2026-10-20 | Backend PR CKmellow/Vekro-backend#168 (issue #167). `ListingResponse` has `description`, `category`, `buyer_name`, `status` (`active`, `awaiting_payment`, `sold`), ordered `photos` and a `seller` summary (`name`, `member_since`, `completed_sales`); photos upload to `POST /listings/{id}/photos`. Sold listings refuse new transactions. No seller area, verified badge or view counts (not stored). The `VITE_MOCK_LISTING_CONTENT` mock is deleted. |

@@ -28,8 +28,9 @@ function renderAt(url: string) {
 
 beforeEach(() => {
   mocked.clear()
-  mocked.add('LISTING_CONTENT').add('LISTING_UPDATE')
-  server.use(...(gapHandlers.LISTING_CONTENT ?? []), ...(gapHandlers.LISTING_UPDATE ?? []))
+  // The seeded listings come from the #7 list mock; archive comes from the #140 mock.
+  mocked.add('SELLER_LISTS').add('LISTING_UPDATE')
+  server.use(...(gapHandlers.SELLER_LISTS ?? []), ...(gapHandlers.LISTING_UPDATE ?? []))
   act(() => toast.current().forEach((t) => toast.dismiss(t.id)))
 })
 
