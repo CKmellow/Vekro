@@ -7,6 +7,12 @@ import { renderWithProviders } from '@/test/render'
 import { server } from '@/test/server'
 import { OrderTrackerPage } from './OrderTrackerPage'
 
+// Reduced motion: state changes swap at once, as the design specifies for that setting.
+vi.mock('motion/react', async (original) => ({
+  ...(await original<object>()),
+  useReducedMotion: () => true,
+}))
+
 const ID = orderResponse().id
 const NOW = '2026-10-20T09:00:00Z'
 
@@ -35,7 +41,14 @@ function renderTracker() {
   return { router, ...renderWithProviders(<RouterProvider router={router} />) }
 }
 
-beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: true, now: new Date(NOW) }))
+// Fake timers and Date only: animation frames stay real so motion's cross-fade completes.
+beforeEach(() =>
+  vi.useFakeTimers({
+    shouldAdvanceTime: true,
+    now: new Date(NOW),
+    toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'],
+  }),
+)
 afterEach(() => vi.useRealTimers())
 
 describe('B3 order tracker', () => {
@@ -47,6 +60,7 @@ describe('B3 order tracker', () => {
     ).toBeInTheDocument()
     expect(screen.getAllByText('Paid, funds held safely').length).toBeGreaterThan(0)
     expect(screen.getAllByText('VK-7K3P9Q').length).toBeGreaterThan(0)
+    expect(screen.getByRole('timer', { name: /Time left to dispatch/ })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Inspect and confirm' })).not.toBeInTheDocument()
   })
 
@@ -74,11 +88,47 @@ describe('B3 order tracker', () => {
     expect(await screen.findByRole('heading', { name: heading })).toBeInTheDocument()
   })
 
+  it.each([
+    ['awaiting_payment', 'Pay now', 'payment'],
+    ['at_door_pending_inspection', 'Inspect and confirm', 'inspect'],
+    ['hold_24h', 'Report a problem', 'report'],
+    ['disputed_functional', 'Continue', 'return'],
+    ['awaiting_buyer_reconfirmation', 'Continue', 'return'],
+  ] as const)('%s offers one action: %s', async (status, action, screenName) => {
+    serve({ status })
+    const { user, router } = renderTracker()
+    await user.click(await screen.findByRole('button', { name: action }))
+    expect(router.state.location.pathname).toBe(`/order/${ID}/${screenName}`)
+    expect(
+      screen.queryAllByRole('button', { name: /Pay now|Inspect and confirm|Report a problem|Continue/ }),
+    ).toHaveLength(0)
+  })
+
+  it.each(['locked', 'out_for_delivery', 'escalated_admin_review', 'released', 'refunded_buyer'] as const)(
+    '%s has no dock action',
+    async (status) => {
+      serve({ status })
+      renderTracker()
+      await screen.findByRole('region', { name: 'Next step' })
+      expect(
+        screen.queryByRole('button', { name: /Pay now|Inspect and confirm|Report a problem|Continue/ }),
+      ).not.toBeInTheDocument()
+    },
+  )
+
+  it('marks a derived deadline as approximate', async () => {
+    serve({ status: 'at_door_pending_inspection', updated_at: NOW })
+    renderTracker()
+    expect(await screen.findByText(/Times are approximate\./)).toBeInTheDocument()
+  })
+
   it('refetches every 15 seconds while active and moves to the next state', async () => {
     const reads = serve({ status: 'out_for_delivery' }, { status: 'at_door_pending_inspection' })
     renderTracker()
     await screen.findByRole('heading', { name: 'Waiting for the courier' })
     await act(() => vi.advanceTimersByTimeAsync(15_100))
+    // Let the next-step card cross-fade (220ms).
+    await act(() => vi.advanceTimersByTimeAsync(500))
     expect(await screen.findByRole('heading', { name: 'Your item has arrived' })).toBeInTheDocument()
     expect(reads.count).toBe(2)
   })

@@ -10,12 +10,16 @@ import {
   ShieldCheck,
   Truck,
 } from 'lucide-react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { Link, useParams } from 'react-router'
 import { useOrderTracker, type NextStep } from '@/controllers/useOrderTracker'
 import { cn } from '@/lib/cn'
+import { duration, spring } from '@/lib/motion'
+import { CountdownRing } from '../../components/domain/CountdownRing'
 import { MoneyPath } from '../../components/domain/MoneyPath'
 import { Stepper } from '../../components/domain/Stepper'
 import { VaultCard } from '../../components/domain/VaultCard'
+import { ActionDock } from '../../components/ui/ActionDock'
 import { ActionsMenu } from '../../components/ui/ActionsMenu'
 import { Banner } from '../../components/ui/Banner'
 import { Button } from '../../components/ui/Button'
@@ -33,7 +37,9 @@ const TONES: Record<NextStep['tone'], { box: string; icon: string }> = {
 }
 const ICONS = { emerald: Lock, saffron: Clock, coral: CircleAlert, plum: ShieldCheck, lake: Truck }
 
-function NextStepCard({ step }: { step: NextStep }) {
+/** Cross-fades (220ms) when the state changes; the countdown runs on server time. */
+function NextStepCard({ step, offsetMs }: { step: NextStep; offsetMs: number }) {
+  const reduce = useReducedMotion()
   const { box, icon } = TONES[step.tone]
   const Icon =
     step.title === 'Your item has arrived'
@@ -42,13 +48,34 @@ function NextStepCard({ step }: { step: NextStep }) {
         ? Hourglass
         : ICONS[step.tone]
   return (
-    <section aria-label="Next step" className={cn('flex items-center gap-4 rounded-lg p-5', box)}>
-      <Icon aria-hidden="true" className={cn('size-6 shrink-0 self-start', icon)} />
-      <div className="min-w-0 flex-1">
-        <h2 className="type-title text-text">{step.title}</h2>
-        <p className="type-body-sm text-ink-600">{step.body}</p>
-      </div>
-    </section>
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.section
+        key={step.title}
+        aria-label="Next step"
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={reduce ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: reduce ? 0 : duration.state }}
+        className={cn('flex items-center gap-4 rounded-lg p-5', box)}
+      >
+        <Icon aria-hidden="true" className={cn('size-6 shrink-0 self-start', icon)} />
+        <div className="min-w-0 flex-1">
+          <h2 className="type-title text-text">{step.title}</h2>
+          <p className="type-body-sm text-ink-600">
+            {step.body}
+            {step.deadline?.approximate && ' Times are approximate.'}
+          </p>
+        </div>
+        {step.deadline && (
+          <CountdownRing
+            deadline={step.deadline.at}
+            totalMs={step.deadline.totalMs}
+            serverOffsetMs={offsetMs}
+            label={step.deadline.label}
+          />
+        )}
+      </motion.section>
+    </AnimatePresence>
   )
 }
 
@@ -56,6 +83,7 @@ function NextStepCard({ step }: { step: NextStep }) {
 export function OrderTrackerPage() {
   const { orderId = '' } = useParams()
   const page = useOrderTracker(orderId)
+  const reduce = useReducedMotion()
 
   if (page.state === 'loading')
     return (
@@ -95,6 +123,7 @@ export function OrderTrackerPage() {
     )
 
   const { order } = page
+  const dock = order.dock
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -140,7 +169,7 @@ export function OrderTrackerPage() {
           />
         </Card>
         <div aria-live="polite">
-          <NextStepCard step={order.next} />
+          <NextStepCard step={order.next} offsetMs={order.serverOffsetMs} />
         </div>
         {order.simulated && (
           <p className="type-body-sm rounded-md bg-lake-50 px-4 py-3 text-lake-600">
@@ -169,6 +198,27 @@ export function OrderTrackerPage() {
           </Link>
         </p>
       </div>
+      <AnimatePresence>
+        {dock && (
+          <motion.div
+            key={dock.label}
+            initial={reduce ? false : { y: 80 }}
+            animate={{ y: 0 }}
+            exit={reduce ? { opacity: 0 } : { y: 80 }}
+            transition={reduce ? { duration: 0 } : spring}
+          >
+            <ActionDock>
+              <Button
+                variant={dock.variant === 'danger' ? 'danger' : 'primary'}
+                fullWidth
+                onClick={() => page.go(dock.to)}
+              >
+                {dock.label}
+              </Button>
+            </ActionDock>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
