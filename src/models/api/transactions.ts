@@ -85,3 +85,23 @@ export async function resendPayment(orderId: string): Promise<PaymentInstruction
   })
   return toPaymentInstruction(raw)
 }
+
+/** B4 accept: the buyer types the code they received (contract C). A wrong code is a 422. */
+export async function giveDeliveryCode(orderId: string, code: string): Promise<void> {
+  await api.post('/transactions/{transaction_id}/otp-give', {
+    path: { transaction_id: orderId },
+    body: { otp_code: code },
+  })
+}
+
+/** B4 reject: withhold the code; the item goes back and the buyer is refunded. */
+export async function rejectAtDoor(
+  orderId: string,
+  reason: string | null,
+  note: string | null,
+): Promise<void> {
+  await api.post('/transactions/{transaction_id}/otp-withhold', {
+    path: { transaction_id: orderId },
+    body: reason || note ? { reason, note } : null,
+  })
+}

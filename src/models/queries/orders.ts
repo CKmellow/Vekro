@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createOrder, getOrder, resendPayment } from '@/models/api/transactions'
+import {
+  createOrder,
+  getOrder,
+  giveDeliveryCode,
+  rejectAtDoor,
+  resendPayment,
+} from '@/models/api/transactions'
 import type { Order } from '@/models/domain/order'
 
 export const orderKeys = {
@@ -45,3 +51,19 @@ export function useResendPayment(orderId: string) {
     },
   })
 }
+
+/** Refetch the order after a door decision so every screen sees the new state. */
+function useDoorDecision<V>(orderId: string, run: (variables: V) => Promise<void>) {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: run,
+    onSettled: () => client.invalidateQueries({ queryKey: orderKeys.detail(orderId) }),
+  })
+}
+
+export const useGiveCode = (orderId: string) =>
+  useDoorDecision(orderId, (code: string) => giveDeliveryCode(orderId, code))
+export const useRejectAtDoor = (orderId: string) =>
+  useDoorDecision(orderId, ({ reason, note }: { reason: string | null; note: string | null }) =>
+    rejectAtDoor(orderId, reason, note),
+  )

@@ -1,4 +1,4 @@
-import { Check, Info, PackageCheck } from 'lucide-react'
+import { Check, Info, Lock, PackageCheck } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import { useState } from 'react'
 import { useParams } from 'react-router'
@@ -6,9 +6,14 @@ import { useInspection } from '@/controllers/useInspection'
 import { cn } from '@/lib/cn'
 import { spring } from '@/lib/motion'
 import { CountdownRing } from '../../components/domain/CountdownRing'
+import { MoneyPath } from '../../components/domain/MoneyPath'
+import { VaultCard } from '../../components/domain/VaultCard'
+import { ActionDock } from '../../components/ui/ActionDock'
 import { Banner } from '../../components/ui/Banner'
 import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'
+import { CodeCells } from '../../components/ui/CodeCells'
+import { ConfirmDialog } from '../../components/ui/ConfirmDialog'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { PhotoViewer } from '../../components/ui/PhotoViewer'
 import { Skeleton, SkeletonGroup } from '../../components/ui/Skeleton'
@@ -102,6 +107,83 @@ export function InspectionPage() {
 
   const { order } = page
 
+  if (page.variant === 'done')
+    return (
+      <div className="flex flex-col gap-5">
+        <VaultCard
+          reference={order.reference}
+          amountLabel="Paid to the seller"
+          amount={order.amount}
+          status={{ label: 'Complete, seller paid', tone: 'emerald', icon: 'check' }}
+          ring="released"
+        />
+        <div aria-live="polite">
+          <h1 className="type-headline text-text">All done</h1>
+          <p className="type-body-md text-ink-600">
+            You accepted the item. {order.sellerName} has been paid.
+          </p>
+        </div>
+        <MoneyPath
+          buyer={{ title: 'You' }}
+          vault={{ title: 'Vekro vault' }}
+          seller={{ title: order.sellerName }}
+          position="seller"
+        />
+        <ActionDock>
+          <Button fullWidth onClick={page.trackOrder}>
+            Track my order
+          </Button>
+        </ActionDock>
+      </div>
+    )
+
+  if (page.variant === 'hold')
+    return (
+      <div className="flex flex-col gap-5">
+        <VaultCard
+          reference={order.reference}
+          amountLabel="Held for 24 hours"
+          amount={order.amount}
+          status={{ label: 'Held 24 hours for checks', tone: 'saffron', icon: 'hourglass' }}
+          ring="draining"
+        />
+        <div aria-live="polite" className="flex items-center gap-4">
+          <div className="min-w-0 flex-1">
+            <h1 className="type-headline text-text">Held for 24 hours. Test your item.</h1>
+            <p className="type-body-md text-ink-600">
+              If something doesn&apos;t work, report it before the timer ends.
+            </p>
+          </div>
+          {page.holdDeadline && (
+            <CountdownRing
+              deadline={page.holdDeadline.at}
+              totalMs={page.holdDeadline.totalMs}
+              serverOffsetMs={order.serverOffsetMs}
+              label="Time left to report"
+            />
+          )}
+        </div>
+        {page.acceptedProblems.length > 0 && (
+          <Card>
+            <p className="type-body-sm font-semibold text-text">You can report</p>
+            <ul className="type-body-md mt-2 flex list-disc flex-col gap-1 pl-5 text-ink-600">
+              {page.acceptedProblems.map((problem) => (
+                <li key={problem}>{problem}</li>
+              ))}
+            </ul>
+          </Card>
+        )}
+        <ActionDock>
+          <Button variant="danger" fullWidth onClick={page.reportProblem}>
+            Report a problem
+          </Button>
+          <Button variant="ghost" fullWidth onClick={page.trackOrder}>
+            Everything works
+          </Button>
+        </ActionDock>
+      </div>
+    )
+
   if (page.variant !== 'inspect')
     return (
       <Card className="mt-4">
@@ -175,6 +257,47 @@ export function InspectionPage() {
         <Info aria-hidden="true" className="size-5 shrink-0 text-ink-600" />
         <p className="type-body-md text-ink-600">{accepting}</p>
       </div>
+      <Card className="flex flex-col gap-4">
+        <div>
+          <p className="type-label text-text-muted">Delivery code</p>
+          <h2 className="type-title text-text">Enter the code we sent you</h2>
+          <p className="type-body-sm text-ink-600">
+            We sent a 6-digit code to {page.phoneMasked ?? 'your phone'} by SMS and in your Vekro
+            notifications. Only enter it once you&apos;re happy with the item.
+          </p>
+        </div>
+        <CodeCells label="Delivery code" value={page.code} onChange={page.setCode} error={page.codeError} />
+        <button
+          type="button"
+          onClick={page.toggleHelp}
+          aria-expanded={page.helpOpen}
+          className="type-body-sm min-h-12 self-start font-semibold text-primary"
+        >
+          Didn&apos;t get the code?
+        </button>
+        {page.helpOpen && (
+          <p className="type-body-sm text-ink-600">
+            Codes arrive within a minute. Check your SMS inbox and notifications. Still nothing? Get help.
+          </p>
+        )}
+      </Card>
+      <ActionDock>
+        <Button fullWidth disabled={!page.canAccept} onClick={() => page.setConfirmOpen(true)}>
+          <Lock aria-hidden="true" className="size-5" />
+          Accept item
+        </Button>
+        {!page.online && <p className="type-body-sm text-center text-coral-600">You&apos;re offline</p>}
+      </ActionDock>
+      <ConfirmDialog
+        open={page.confirmOpen}
+        onOpenChange={page.setConfirmOpen}
+        title="Accept this item?"
+        body={page.confirmBody}
+        confirmLabel="Yes, accept"
+        cancelLabel="Not yet"
+        onConfirm={page.accept}
+        loading={page.accepting}
+      />
       <PhotoViewer photos={page.photos} index={zoomed} title={order.title} onClose={() => setZoomed(null)} />
     </div>
   )
