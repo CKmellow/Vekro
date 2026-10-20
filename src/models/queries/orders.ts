@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createOrder,
   getOrder,
+  getTimeline,
   giveDeliveryCode,
   rejectAtDoor,
   resendPayment,
@@ -11,7 +12,17 @@ import type { Order } from '@/models/domain/order'
 export const orderKeys = {
   all: ['orders'] as const,
   detail: (id: string) => ['orders', 'detail', id] as const,
+  timeline: (id: string) => ['orders', 'timeline', id] as const,
 }
+
+/** GET /transactions/{id}/timeline; refreshed whenever the order itself changes (see useDoorDecision). */
+export const useOrderTimeline = (id: string, options: { enabled?: boolean; updatedAt?: string } = {}) =>
+  useQuery({
+    queryKey: [...orderKeys.timeline(id), options.updatedAt ?? ''],
+    queryFn: ({ signal }) => getTimeline(id, signal),
+    enabled: options.enabled ?? true,
+    placeholderData: (previous) => previous,
+  })
 
 interface OrderOptions {
   enabled?: boolean

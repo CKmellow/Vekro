@@ -1,19 +1,8 @@
 import { motion, useReducedMotion } from 'motion/react'
 import { cn } from '@/lib/cn'
+import type { TimelineActor, TimelineEntry } from '@/lib/timeline'
 
-export type TimelineActor = 'you' | 'seller' | 'vekro' | 'support'
-
-export interface TimelineEntry {
-  id: string
-  /** Already formatted in EAT: "Today 14:36". */
-  time?: string
-  actor?: TimelineActor
-  text: string
-  /** A note quoted from the actor, such as the seller's dispatch note. */
-  quote?: string
-  /** Not happened yet: dashed and greyed. */
-  upcoming?: boolean
-}
+export type { TimelineActor, TimelineEntry }
 
 const actors: Record<TimelineActor, { name: string; node: string; chip: string }> = {
   you: { name: 'You', node: 'bg-emerald-600', chip: 'bg-emerald-50 text-emerald-700' },
@@ -74,6 +63,7 @@ export function Timeline({
               <p className={cn('type-body-md', entry.upcoming ? 'text-ink-400' : 'text-text')}>
                 {entry.text}
               </p>
+              {entry.detail && <p className="type-body-sm text-text-muted">{entry.detail}</p>}
               {entry.quote && (
                 <blockquote className="type-body-sm rounded-sm border-l-2 border-sand-300 bg-sand-50 px-3 py-2 text-ink-600 italic">
                   “{entry.quote}”
