@@ -20,7 +20,8 @@
     "test:coverage": "vitest run --coverage",
     "tokens": "node scripts/tokens.mjs",
     "api:sync": "node scripts/api-sync.mjs",
-    "api:types": "node scripts/api-sync.mjs --types-only"
+    "api:types": "node scripts/api-sync.mjs --types-only",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@fontsource/bricolage-grotesque": "5.3.0",
@@ -44,6 +45,7 @@
   "devDependencies": {
     "@eslint/js": "9.39.5",
     "@google/design.md": "0.4.0",
+    "@playwright/test": "1.48.2",
     "@tailwindcss/vite": "4.3.3",
     "@testing-library/dom": "10.4.2",
     "@testing-library/jest-dom": "6.9.1",
