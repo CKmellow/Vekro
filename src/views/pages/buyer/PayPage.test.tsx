@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { listingResponse } from '@/test/fixtures'
+import { listingResponse, paymentResponse } from '@/test/fixtures'
 import { renderWithProviders } from '@/test/render'
 import { server } from '@/test/server'
 import { sampleUser, signedInAs } from '@/test/session'
@@ -18,10 +18,31 @@ function renderPay(listing: Parameters<typeof listingResponse>[0] | 'missing' = 
         : HttpResponse.json(listingResponse(listing)),
     ),
   )
-  const router = createMemoryRouter([{ path: '/pay/:listingId', element: <PayPage /> }], {
-    initialEntries: [`/pay/${ID}`],
-  })
-  return renderWithProviders(<RouterProvider router={router} />)
+  const router = createMemoryRouter(
+    [
+      { path: '/pay/:listingId', element: <PayPage /> },
+      { path: '/order/:orderId/payment', element: <h1>Complete payment</h1> },
+    ],
+    { initialEntries: [`/pay/${ID}`] },
+  )
+  return { router, ...renderWithProviders(<RouterProvider router={router} />) }
+}
+
+const ORDER = {
+  id: 'order-1',
+  reference: 'VK-7K3P9Q',
+  status: 'awaiting_payment',
+  payment: paymentResponse(),
+}
+
+function acceptOrders(posts: unknown[] = [], respond = () => HttpResponse.json(ORDER, { status: 201 })) {
+  server.use(
+    http.post('/api/transactions', async ({ request }) => {
+      posts.push(await request.json())
+      return respond()
+    }),
+  )
+  return posts
 }
 
 beforeEach(() => signedInAs(null))
@@ -92,10 +113,12 @@ describe('B1 order summary and pay', () => {
         return HttpResponse.json(sampleUser('buyer'))
       }),
     )
+    acceptOrders()
     const { user } = renderPay()
     await fillRegister(user)
     await user.click(screen.getByRole('button', { name: /Pay KES 52,000/ }))
     await waitFor(() => expect(calls).toHaveLength(2))
+    expect(await screen.findByRole('heading', { name: 'Complete payment' })).toBeInTheDocument()
     expect(calls[0]?.body).toEqual({
       name: 'Wanjiku Kamau',
       phone: '+254712345678',
@@ -190,5 +213,70 @@ describe('B1 order summary and pay', () => {
     server.use(http.get(`/api/listings/${ID}`, () => HttpResponse.json(listingResponse())))
     await user.click(screen.getByRole('button', { name: 'Try again' }))
     expect(await screen.findByRole('heading', { level: 1 })).toBeInTheDocument()
+  })
+
+  describe('starting the payment', () => {
+    beforeEach(() => signedInAs('buyer'))
+
+    async function pressPay(user: ReturnType<typeof renderPay>['user']) {
+      await user.click(await screen.findByRole('checkbox'))
+      await user.click(screen.getByRole('button', { name: /Pay KES 52,000/ }))
+    }
+
+    it('creates the transaction with the listing only and goes to B2', async () => {
+      const posts = acceptOrders()
+      const { user, router } = renderPay()
+      await pressPay(user)
+      expect(await screen.findByRole('heading', { name: 'Complete payment' })).toBeInTheDocument()
+      expect(posts).toEqual([{ listing_id: ID }])
+      expect(router.state.location.pathname).toBe('/order/order-1/payment')
+    })
+
+    it('continues to B2 when the prompt failed to start (202)', async () => {
+      acceptOrders([], () =>
+        HttpResponse.json(
+          { ...ORDER, payment: paymentResponse({ status: 'failed_to_initiate' }) },
+          { status: 202 },
+        ),
+      )
+      const { user } = renderPay()
+      await pressPay(user)
+      expect(await screen.findByRole('heading', { name: 'Complete payment' })).toBeInTheDocument()
+    })
+
+    it('sends one request for a double press', async () => {
+      let release = () => {}
+      const gate = new Promise<void>((resolve) => (release = resolve))
+      const posts = acceptOrders(
+        [],
+        () => gate.then(() => HttpResponse.json(ORDER, { status: 201 })) as never,
+      )
+      const { user } = renderPay()
+      await user.click(await screen.findByRole('checkbox'))
+      const pay = screen.getByRole('button', { name: /Pay KES 52,000/ })
+      await user.click(pay)
+      await user.click(pay)
+      release()
+      await screen.findByRole('heading', { name: 'Complete payment' })
+      expect(posts).toHaveLength(1)
+    })
+
+    it('says when someone else already paid for the item', async () => {
+      acceptOrders([], () =>
+        HttpResponse.json({ detail: 'This item has already been paid for.' }, { status: 422 }),
+      )
+      const { user } = renderPay()
+      await pressPay(user)
+      expect(await screen.findByRole('alert')).toHaveTextContent('This item has already been paid for.')
+    })
+
+    it('says nothing was charged when the server fails', async () => {
+      acceptOrders([], () => HttpResponse.json({ detail: 'down' }, { status: 503 }))
+      const { user } = renderPay()
+      await pressPay(user)
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        "We couldn't start the payment. Nothing was charged. Try again.",
+      )
+    })
   })
 })
