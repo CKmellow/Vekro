@@ -132,4 +132,18 @@ describe('B2 payment', () => {
     renderPayment()
     expect(await screen.findByRole('heading', { name: "We can't find this payment" })).toBeInTheDocument()
   })
+
+  it('sends a hosted-checkout buyer to the secure page', async () => {
+    serve({
+      server_time: NOW.toISOString(),
+      payment: paymentResponse({ kind: 'REDIRECT', redirect_url: 'https://pay.example/checkout/1' }),
+    })
+    renderPayment()
+    expect(await screen.findByRole('heading', { name: 'Continue to secure checkout' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Continue to secure checkout' })).toHaveAttribute(
+      'href',
+      'https://pay.example/checkout/1',
+    )
+    expect(screen.queryByRole('button', { name: /Resend/ })).not.toBeInTheDocument()
+  })
 })
