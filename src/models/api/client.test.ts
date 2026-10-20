@@ -1,22 +1,17 @@
 import { http, HttpResponse } from 'msw'
 import { afterEach, describe, expect, expectTypeOf, it } from 'vitest'
+import { listingResponse } from '@/test/fixtures'
 import { server } from '@/test/server'
 import { api, buildUrl, type Schemas } from './client'
 import { CSRF_HEADER, readCookie } from './csrf'
 import { ApiError } from './errors'
 
 const LISTING_ID = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
-const listing: Schemas['ListingResponse'] = {
+const listing: Schemas['ListingResponse'] = listingResponse({
   id: LISTING_ID,
-  seller_id: LISTING_ID,
-  title: 'iPhone 13, 128GB, Midnight',
-  price: '52000.00',
-  is_serialized: true,
   unique_id: 'IMEI-1234',
   dispute_policy: {},
-  created_at: '2026-10-15T09:00:00Z',
-  updated_at: '2026-10-15T09:00:00Z',
-}
+})
 
 function setCookie(value: string) {
   document.cookie = value
@@ -70,6 +65,27 @@ describe('api client', () => {
     await api.post('/transactions', { body: { listing_id: LISTING_ID } })
     expect(header).toBe('tok=123')
     expect(body).toEqual({ listing_id: LISTING_ID })
+  })
+
+  it('uploads a file as the raw body with its type and the CSRF header', async () => {
+    setCookie('vekro_csrf=tok; path=/')
+    let seen: { type: string | null; csrf: string | null; size: number } | undefined
+    server.use(
+      http.post('/api/listings/:id/photos', async ({ request }) => {
+        seen = {
+          type: request.headers.get('Content-Type'),
+          csrf: request.headers.get(CSRF_HEADER),
+          size: (await request.arrayBuffer()).byteLength,
+        }
+        return HttpResponse.json({ id: 'p1', url: '/listings/l1/photos/p1' }, { status: 201 })
+      }),
+    )
+    const photo = await api.upload('/listings/{listing_id}/photos', {
+      path: { listing_id: 'l1' },
+      body: new Blob(['abcd'], { type: 'image/jpeg' }),
+    })
+    expect(photo).toEqual({ id: 'p1', url: '/listings/l1/photos/p1' })
+    expect(seen).toEqual({ type: 'image/jpeg', csrf: 'tok', size: 4 })
   })
 
   it.each([

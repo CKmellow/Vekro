@@ -115,7 +115,7 @@ export interface paths {
         put?: never;
         /**
          * Create listing (seller only)
-         * @description Create a listing owned by the authenticated seller. Serialized listings must satisfy unique_id and dispute policy requirements.
+         * @description Create a listing owned by the authenticated seller. Serialized listings must satisfy unique_id and dispute policy requirements. Add photos afterwards with POST /listings/{listing_id}/photos.
          */
         post: operations["create_seller_listing_listings_post"];
         delete?: never;
@@ -133,9 +133,49 @@ export interface paths {
         };
         /**
          * Get listing by id
-         * @description Fetch a listing by UUID with serialized/dispute policy metadata when present.
+         * @description Public read used by the buyer's Trust Link: content, photos, status and a seller summary, with serialized/dispute policy metadata when present.
          */
         get: operations["get_listing_listings__listing_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/listings/{listing_id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a listing photo (owner only)
+         * @description Upload one photo as the raw request body (image/jpeg, image/png or image/webp, at most 2 MB). Photos keep upload order; the first is the cover. At most 4 per listing.
+         */
+        post: operations["upload_listing_photo_listings__listing_id__photos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/listings/{listing_id}/photos/{photo_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a listing photo
+         * @description Public. Serves the image bytes; photos never change, so they cache for a year.
+         */
+        get: operations["get_listing_photo_image_listings__listing_id__photos__photo_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -235,9 +275,49 @@ export interface paths {
         put?: never;
         /**
          * Create transaction (buyer only)
-         * @description Create an escrow transaction from a listing as the authenticated buyer. New transactions start in awaiting_payment state.
+         * @description Create an escrow transaction from a listing as the authenticated buyer. New transactions start in awaiting_payment state. The response carries the payment instruction: an STK prompt sent to the buyer's phone, or a checkout URL to redirect to.
          */
         post: operations["create_buyer_transaction_transactions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/transactions/{transaction_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get one transaction (buyer, seller or admin)
+         * @description Read a transaction as its buyer, its seller or an admin: state, listing summary, masked parties and the server deadline for the current state. Clients poll this to learn state changes; anyone else gets 404 so existence is not leaked.
+         */
+        get: operations["get_transaction_transactions__transaction_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/transactions/{transaction_id}/payment/resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resend the payment prompt (buyer only)
+         * @description Send a new STK prompt for an unpaid transaction, for example after the buyer cancelled or missed it. At most one prompt per cooldown (see resend_available_at).
+         */
+        post: operations["resend_transaction_payment_prompt_transactions__transaction_id__payment_resend_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -896,6 +976,12 @@ export interface components {
              */
             payout_priority: string[];
             /**
+             * Econfirm Needs Reconciliation Count
+             * @description Count of eConfirm escrows flagged for manual reconciliation (A3).
+             * @default 0
+             */
+            econfirm_needs_reconciliation_count: number;
+            /**
              * Rails
              * @description Per-rail breaker and routability state.
              */
@@ -929,6 +1015,22 @@ export interface components {
              * @description Listing title.
              */
             title: string;
+            /**
+             * Description
+             * @description What the buyer gets.
+             * @default
+             */
+            description: string;
+            /**
+             * Category
+             * @description Shop category.
+             */
+            category?: string | null;
+            /**
+             * Buyer Name
+             * @description Optional: the one buyer this link is meant for.
+             */
+            buyer_name?: string | null;
             /**
              * Price
              * @description Listing price amount.
@@ -1113,6 +1215,19 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
+         * ListingPhotoResponse
+         * @description A listing photo. `url` is relative to the API root.
+         */
+        ListingPhotoResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Url */
+            url: string;
+        };
+        /**
          * ListingResponse
          * @description Listing representation returned by create/get listing endpoints.
          */
@@ -1129,6 +1244,12 @@ export interface components {
             seller_id: string;
             /** Title */
             title: string;
+            /** Description */
+            description: string;
+            /** Category */
+            category: string | null;
+            /** Buyer Name */
+            buyer_name: string | null;
             /** Price */
             price: string;
             /** Is Serialized */
@@ -1140,6 +1261,18 @@ export interface components {
                 [key: string]: unknown;
             };
             /**
+             * Status
+             * @description active: open for payment. awaiting_payment: a buyer started paying. sold: paid and not refunded; new transactions are refused.
+             * @enum {string}
+             */
+            status: "active" | "awaiting_payment" | "sold";
+            /**
+             * Photos
+             * @description Ordered; the first is the cover.
+             */
+            photos: components["schemas"]["ListingPhotoResponse"][];
+            seller: components["schemas"]["ListingSellerSummary"];
+            /**
              * Created At
              * Format: date-time
              */
@@ -1149,6 +1282,24 @@ export interface components {
              * Format: date-time
              */
             updated_at: string;
+        };
+        /**
+         * ListingSellerSummary
+         * @description What a buyer may see about the seller before paying.
+         */
+        ListingSellerSummary: {
+            /** Name */
+            name: string;
+            /**
+             * Member Since
+             * Format: date-time
+             */
+            member_since: string;
+            /**
+             * Completed Sales
+             * @description Transactions released to this seller.
+             */
+            completed_sales: number;
         };
         /**
          * LoginRequest
@@ -1454,6 +1605,50 @@ export interface components {
             detail: string;
         };
         /**
+         * PaymentInstructionResponse
+         * @description What the buyer was asked to do to pay, and how it went. Names no payment provider.
+         */
+        PaymentInstructionResponse: {
+            /**
+             * Kind
+             * @description STK_PROMPT: a PIN prompt was sent to the buyer's phone. REDIRECT: send the buyer to redirect_url.
+             * @enum {string}
+             */
+            kind: "STK_PROMPT" | "REDIRECT";
+            /**
+             * Redirect Url
+             * @description Only when kind is REDIRECT.
+             */
+            redirect_url?: string | null;
+            /**
+             * Status
+             * @description expired: no answer before expires_at. Success is only final when the transaction status is locked.
+             * @enum {string}
+             */
+            status: "pending" | "succeeded" | "failed" | "expired" | "failed_to_initiate";
+            /**
+             * Failure Reason
+             * @description Why the prompt failed, when status is failed.
+             */
+            failure_reason?: ("cancelled" | "wrong_pin" | "insufficient_funds" | "timeout" | "provider_error") | null;
+            /**
+             * Sent At
+             * Format: date-time
+             */
+            sent_at: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /**
+             * Resend Available At
+             * Format: date-time
+             * @description Earliest time POST /transactions/{id}/payment/resend is accepted.
+             */
+            resend_available_at: string;
+        };
+        /**
          * PayoutOutcome
          * @enum {string}
          */
@@ -1595,6 +1790,188 @@ export interface components {
             notes?: string | null;
         };
         /**
+         * TransactionCreatedResponse
+         * @description A new transaction and the payment prompt sent for it.
+         */
+        TransactionCreatedResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Reference
+             * @description Random, non-sequential human-readable reference, for example VK-7K3P9Q.
+             */
+            reference: string;
+            /**
+             * Listing Id
+             * Format: uuid
+             */
+            listing_id: string;
+            /**
+             * Buyer Id
+             * Format: uuid
+             */
+            buyer_id: string;
+            /**
+             * Seller Id
+             * Format: uuid
+             */
+            seller_id: string;
+            /** Amount */
+            amount: string;
+            status: components["schemas"]["TransactionStatus"];
+            /**
+             * Custody Provider
+             * @description Who holds the money. 'econfirm' is real Tier-1 custody; 'simulated' is the Vekro-side simulated ledger and must never be presented as real money.
+             * @default simulated
+             * @enum {string}
+             */
+            custody_provider: "econfirm" | "simulated";
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            payment: components["schemas"]["PaymentInstructionResponse"];
+        };
+        /**
+         * TransactionDeadlinesResponse
+         * @description When the current state times out (UTC). Only the field for the current state is set.
+         */
+        TransactionDeadlinesResponse: {
+            /**
+             * Dispatch By
+             * @description locked: the seller must dispatch by then or the buyer is refunded.
+             */
+            dispatch_by?: string | null;
+            /**
+             * Inspect By
+             * @description at_door_pending_inspection: no decision by then withholds the code.
+             */
+            inspect_by?: string | null;
+            /**
+             * Hold Until
+             * @description hold_24h: payment is released to the seller at this time.
+             */
+            hold_until?: string | null;
+            /**
+             * Return Send By
+             * @description disputed_functional: the buyer must send the item back by then.
+             */
+            return_send_by?: string | null;
+            /**
+             * Return Confirm By
+             * @description return_in_transit: the seller must confirm receipt by then.
+             */
+            return_confirm_by?: string | null;
+        };
+        /**
+         * TransactionDetailResponse
+         * @description One transaction as its buyer, its seller or an admin sees it.
+         */
+        TransactionDetailResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Reference
+             * @description Random, non-sequential human-readable reference, for example VK-7K3P9Q.
+             */
+            reference: string;
+            /**
+             * Listing Id
+             * Format: uuid
+             */
+            listing_id: string;
+            /**
+             * Buyer Id
+             * Format: uuid
+             */
+            buyer_id: string;
+            /**
+             * Seller Id
+             * Format: uuid
+             */
+            seller_id: string;
+            /** Amount */
+            amount: string;
+            status: components["schemas"]["TransactionStatus"];
+            /**
+             * Custody Provider
+             * @description Who holds the money. 'econfirm' is real Tier-1 custody; 'simulated' is the Vekro-side simulated ledger and must never be presented as real money.
+             * @default simulated
+             * @enum {string}
+             */
+            custody_provider: "econfirm" | "simulated";
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** @description How the caller relates to this transaction. */
+            viewer_role: components["schemas"]["UserRole"];
+            listing: components["schemas"]["TransactionListingSummary"];
+            buyer: components["schemas"]["TransactionParty"];
+            seller: components["schemas"]["TransactionParty"];
+            deadlines: components["schemas"]["TransactionDeadlinesResponse"];
+            /**
+             * Server Time
+             * Format: date-time
+             * @description Server clock when the response was built; offset countdowns with it.
+             */
+            server_time: string;
+            /** @description The latest payment prompt. Shown to the buyer and admins only. */
+            payment?: components["schemas"]["PaymentInstructionResponse"] | null;
+        };
+        /**
+         * TransactionListingSummary
+         * @description The listing the transaction was created from.
+         */
+        TransactionListingSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Price */
+            price: string;
+            /** Is Serialized */
+            is_serialized: boolean;
+            /** Dispute Policy */
+            dispute_policy: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * TransactionParty
+         * @description A party to the transaction, safe to show to the other party.
+         */
+        TransactionParty: {
+            /** Name */
+            name: string;
+            /**
+             * Phone Masked
+             * @description Masked phone, for example +254 712 *** 678.
+             */
+            phone_masked: string | null;
+        };
+        /**
          * TransactionResponse
          * @description Current transaction state and ownership metadata.
          */
@@ -1627,6 +2004,13 @@ export interface components {
             /** Amount */
             amount: string;
             status: components["schemas"]["TransactionStatus"];
+            /**
+             * Custody Provider
+             * @description Who holds the money. 'econfirm' is real Tier-1 custody; 'simulated' is the Vekro-side simulated ledger and must never be presented as real money.
+             * @default simulated
+             * @enum {string}
+             */
+            custody_provider: "econfirm" | "simulated";
             /**
              * Created At
              * Format: date-time
@@ -1917,6 +2301,126 @@ export interface operations {
             };
         };
     };
+    upload_listing_photo_listings__listing_id__photos_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "content-type": string;
+            };
+            path: {
+                listing_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "image/jpeg": string;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingPhotoResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Caller is not the listing's seller. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Listing not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The listing already has the maximum photos. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Photo is larger than allowed. */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a JPEG, PNG or WebP. */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_listing_photo_image_listings__listing_id__photos__photo_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listing_id: string;
+                photo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/jpeg": unknown;
+                    "image/png": unknown;
+                    "image/webp": unknown;
+                };
+            };
+            /** @description Photo not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_current_user_notifications_notifications_get: {
         parameters: {
             query?: {
@@ -2081,10 +2585,10 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TransactionResponse"];
+                    "application/json": components["schemas"]["TransactionCreatedResponse"];
                 };
             };
-            /** @description Transaction created, but payment initiation transport failed. Client should continue with this transaction id. */
+            /** @description Transaction created, but payment initiation transport failed (payment.status is failed_to_initiate). Continue with this transaction id and offer a resend. */
             202: {
                 headers: {
                     [name: string]: unknown;
@@ -2121,6 +2625,115 @@ export interface operations {
             };
             /** @description Payment initiation failed before a partial-success response could be returned. */
             503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_transaction_transactions__transaction_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransactionDetailResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Transaction not found, or the caller is not a party to it. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resend_transaction_payment_prompt_transactions__transaction_id__payment_resend_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentInstructionResponse"];
+                };
+            };
+            /** @description A prompt was recorded but sending it failed (failed_to_initiate). */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated user is not a buyer. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Transaction not found, or the caller is not its buyer. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Transaction is not awaiting payment. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too soon after the last prompt; see the Retry-After header. */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };

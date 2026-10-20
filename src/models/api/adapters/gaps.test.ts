@@ -20,7 +20,7 @@ describe('gap flags', () => {
   })
 
   it('lists every open gap from docs/BACKEND_GAPS.md with its issue', () => {
-    expect(Object.keys(GAPS)).toHaveLength(18)
+    expect(Object.keys(GAPS)).toHaveLength(17)
     expect(GAPS.TRANSACTION_READ).toEqual({ id: 'P0-1', issue: 6 })
     expect(GAPS.NOTIFICATION_PREFS).toEqual({ id: 'P2-5', issue: 150 })
   })
