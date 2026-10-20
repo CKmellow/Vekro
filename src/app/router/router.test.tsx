@@ -1,7 +1,7 @@
 import { act, screen, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { createMemoryRouter, RouterProvider } from 'react-router'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { renderWithProviders } from '@/test/render'
 import { server } from '@/test/server'
 import { RouteError } from './RouteError'
@@ -151,6 +151,8 @@ describe('router', () => {
 
 describe('route error boundary', () => {
   it('catches render errors and shows the error page', async () => {
+    // React and the router log the caught error; keep the expected noise out of the test output.
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {})
     function Boom(): never {
       throw new Error('boom')
     }
@@ -162,5 +164,6 @@ describe('route error boundary', () => {
     )
     renderWithProviders(<RouterProvider router={router} />)
     expect(await screen.findByRole('heading', { name: 'Something went wrong' })).toBeInTheDocument()
+    expect(logged).toHaveBeenCalled()
   })
 })

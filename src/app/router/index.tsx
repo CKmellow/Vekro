@@ -1,5 +1,5 @@
 import { createBrowserRouter, type RouteObject } from 'react-router'
-import { NotFoundPage } from '@/views/pages/shared/system'
+import { LoadingPage, NotFoundPage } from '@/views/pages/shared/system'
 import { RequireRole } from './guards'
 import { HomeRedirect } from './HomeRedirect'
 import { RouteError } from './RouteError'
@@ -24,6 +24,8 @@ const page =
 export const routes: RouteObject[] = [
   {
     errorElement: <RouteError />,
+    // Shown while the first lazy route loads.
+    HydrateFallback: LoadingPage,
     children: [
       // X1 (landing, #68) replaces this redirect when it ships.
       { path: '/', element: <HomeRedirect /> },

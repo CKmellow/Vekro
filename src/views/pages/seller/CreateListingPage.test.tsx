@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { toast } from '@/lib/toast'
 import { renderWithProviders } from '@/test/render'
+import { signedInAs } from '@/test/session'
 import { CreateListingPage } from './CreateListingPage'
 
 const renderPage = () =>
@@ -13,6 +14,7 @@ const renderPage = () =>
   )
 
 beforeEach(() => {
+  signedInAs('seller')
   localStorage.clear()
   act(() => toast.current().forEach((t) => toast.dismiss(t.id)))
 })

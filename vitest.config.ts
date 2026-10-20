@@ -14,7 +14,19 @@ export default mergeConfig(
       coverage: {
         provider: 'v8',
         include: ['src/**/*.{ts,tsx}'],
-        exclude: ['src/test/**', 'src/**/*.test.*'],
+        exclude: [
+          'src/test/**',
+          'src/**/*.test.*',
+          '**/*.d.ts',
+          // Entry points and dev-only wiring, exercised by the build and Playwright instead.
+          'src/main.tsx',
+          'src/App.tsx',
+          'src/preview.tsx',
+          'src/mocks/browser.ts',
+          'src/styles/fonts.ts',
+        ],
+        // Floor, not target: CI fails if coverage drops below today's level.
+        thresholds: { statements: 90, lines: 90, branches: 82, functions: 78 },
       },
     },
   }),
