@@ -21,8 +21,10 @@ describe('order queries', () => {
       useOrder(ID, { refetchInterval: (order) => (order?.status === 'locked' ? false : 20) }),
     )
     await waitFor(() => expect(result.current.data?.status).toBe('locked'))
+    // A poll already in flight when the data flipped may still land; after that, nothing more.
+    await new Promise((resolve) => setTimeout(resolve, 60))
     const settled = reads
-    await new Promise((resolve) => setTimeout(resolve, 80))
+    await new Promise((resolve) => setTimeout(resolve, 120))
     expect(reads).toBe(settled)
   })
 
