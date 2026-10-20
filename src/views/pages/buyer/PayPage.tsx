@@ -260,6 +260,7 @@ export function PayPage() {
           </Card>
         </Reveal>
         <ActionDock note="Secured by Vekro Escrow">
+          {page.payError && <Banner tone="danger" title={page.payError} />}
           <Button type="submit" fullWidth disabled={!page.canPay} loading={page.paying}>
             <Lock aria-hidden="true" className="size-5" />
             Pay {listing.priceLabel} with M-Pesa

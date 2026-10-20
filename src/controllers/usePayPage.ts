@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { useForm } from 'react-hook-form'
 import { formatKes } from '@/lib/money'
 import { passwordStrength, PASSWORD_RULES } from '@/lib/password'
@@ -7,6 +8,7 @@ import { maskPhone, toE164 } from '@/lib/phone'
 import { ApiError } from '@/models/api/errors'
 import { policySummary, type Listing, type Resolution } from '@/models/domain/listing'
 import { useListing } from '@/models/queries/listings'
+import { useCreateOrder } from '@/models/queries/orders'
 import { useRegister, useSignIn, useSignOut } from '@/models/queries/session'
 import { paySchema, type PayMode, type PayValues } from '@/models/schemas/auth'
 import { useOnline } from './useOnline'
@@ -94,9 +96,14 @@ export function usePayPage(listingId: string) {
   const register = useRegister()
   const signIn = useSignIn()
   const signOut = useSignOut()
+  const createOrder = useCreateOrder()
+  const navigate = useNavigate()
+  // Guards the whole save-details-then-pay sequence against a second press.
+  const submitting = useRef(false)
   const [termsOpen, setTermsOpen] = useState(false)
   const [formMode, setFormMode] = useState<'register' | 'login'>('register')
   const [notice, setNotice] = useState<string | null>(null)
+  const [payError, setPayError] = useState<string | null>(null)
   const form = useForm<PayValues>({
     resolver: zodResolver(paySchema),
     defaultValues: { mode: 'register', phone: '', name: '', password: '', terms: false },
@@ -166,10 +173,38 @@ export function usePayPage(listingId: string) {
     }
   }
 
-  // Payment initiation (#85) continues after the buyer is known.
+  /** POST /transactions with the listing only; 201 and 202 both continue to B2 (contract B). */
+  async function startPayment() {
+    try {
+      const order = await createOrder.mutateAsync(listingId)
+      navigate(`/order/${order.id}/payment`)
+    } catch (error) {
+      const kind = error instanceof ApiError ? error.kind : null
+      if (kind === 'validation' || kind === 'conflict') void listing.refetch()
+      setPayError(
+        kind === 'validation'
+          ? error instanceof ApiError && error.message
+            ? error.message
+            : 'This item can no longer be paid for.'
+          : kind === 'not_found'
+            ? 'This item is no longer available.'
+            : kind === 'network'
+              ? "You're offline. Nothing was charged. Try again when you're connected."
+              : "We couldn't start the payment. Nothing was charged. Try again.",
+      )
+    }
+  }
+
   const onPay = form.handleSubmit(async (v) => {
+    if (submitting.current) return
+    submitting.current = true
     setNotice(null)
-    await ensureBuyer(v)
+    setPayError(null)
+    try {
+      if (await ensureBuyer(v)) await startPayment()
+    } finally {
+      submitting.current = false
+    }
   })
 
   return {
@@ -199,7 +234,8 @@ export function usePayPage(listingId: string) {
         : null,
     canPay,
     onPay,
-    paying: register.isPending || signIn.isPending,
+    payError,
+    paying: register.isPending || signIn.isPending || createOrder.isPending,
     termsOpen,
     setTermsOpen,
   }
