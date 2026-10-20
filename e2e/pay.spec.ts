@@ -53,6 +53,11 @@ test('a seller lists an item and a buyer pays into escrow', async ({ browser, ba
   await expect(buyer.getByRole('heading', { name: 'Payment received' })).toBeVisible()
   await expect(buyer.getByText('Paid, funds held safely')).toBeVisible()
 
+  // The tracker shows the order paid and waiting for dispatch.
+  await buyer.getByRole('button', { name: 'Track my order' }).click()
+  await expect(buyer.getByRole('heading', { name: 'Waiting for the seller to dispatch' })).toBeVisible()
+  await expect(buyer.getByText('Paid, funds held safely').first()).toBeVisible()
+
   // The Trust Link now says the item is paid for.
   const other = await (await browser.newContext()).newPage()
   await other.goto(`/pay/${listingId}`)
