@@ -6,6 +6,7 @@ export const NOTIFICATION_PAGE = 50
 const toNotification = (raw: Schemas['NotificationResponse']): AppNotification => ({
   id: raw.id,
   orderId: raw.transaction_id,
+  reference: raw.transaction_reference ?? null,
   event: raw.event_type,
   title: raw.title,
   message: raw.message,

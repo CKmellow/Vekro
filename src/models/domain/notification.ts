@@ -6,6 +6,8 @@ export type NotificationEvent = components['schemas']['NotificationEventType']
 export interface AppNotification {
   id: string
   orderId: string
+  /** The order's human reference (VK-7K3P9Q), never the id. */
+  reference: string | null
   event: NotificationEvent
   title: string
   message: string
