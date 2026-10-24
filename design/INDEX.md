@@ -18,9 +18,9 @@ Every Stitch screen for Vekro, its exports and its review status.
 | B2 | Payment in progress | `B2-payment/` | mobile | M5 | none (code-ready spec) | Specced (2026-10-17) |
 | B3 | Order tracker | `B3-order-tracker/` | mobile | M5 | none (code-ready spec) | Specced (2026-10-17) |
 | B4 | Arrival, inspection and decision | `B4-inspection/` | mobile | M5 | none (code-ready spec) | Specced (2026-10-17) |
-| B5 | Report an issue | `B5-report-issue/` | mobile | M10 | | Not started |
-| B6 | Return flow | `B6-return-flow/` | mobile | M10 | | Not started |
-| B7 | Transaction timeline | `B7-timeline/` | mobile | M10 | | Not started |
+| B5 | Report an issue | `B5-report-issue/` | mobile | M10 | none (code-ready spec) | Specced (2026-10-24) |
+| B6 | Return flow | `B6-return-flow/` | mobile | M10 | none (code-ready spec) | Specced (2026-10-24) |
+| B7 | Transaction timeline | `B7-timeline/` | mobile | M10 | none (code-ready spec) | Specced (2026-10-24) |
 | B8 | Buyer sign-in | `B8-buyer-sign-in/` | mobile | M10 | | Not started |
 | B9 | My orders | `B9-my-orders/` | mobile | M10 | | Not started |
 | S1 | Sign up | `S1-sign-up/` | mobile, desktop | M3 | Desktop [`2830a77a…`](https://stitch.withgoogle.com/projects/4950346905124660155), mobile [`80b6474e…`](https://stitch.withgoogle.com/projects/4950346905124660155), states [`3a116cfb…`](https://stitch.withgoogle.com/projects/4950346905124660155) | Approved (2026-10-15) |
