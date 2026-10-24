@@ -4,6 +4,7 @@ export { DashboardPage as S4 } from '@/views/pages/seller/DashboardPage'
 export { ListingDetailPage as S9 } from '@/views/pages/seller/ListingDetailPage'
 export { ListingsPage as S8 } from '@/views/pages/seller/ListingsPage'
 export { LogInPage as S2 } from '@/views/pages/seller/LogInPage'
+export { NotificationsPage as S14 } from '@/views/pages/seller/NotificationsPage'
 export { OrderDetailPage as S6 } from '@/views/pages/seller/OrderDetailPage'
 export { OrdersPage as S5 } from '@/views/pages/seller/OrdersPage'
 export { PayoutSetupPage as S3 } from '@/views/pages/seller/PayoutSetupPage'
@@ -14,4 +15,3 @@ export const S10 = notReady('seller', 'Returns')
 export const S11 = notReady('seller', 'Return case')
 export const S12 = notReady('seller', 'Analytics')
 export const S13 = notReady('seller', 'Settings')
-export const S14 = notReady('seller', 'Notifications')

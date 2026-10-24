@@ -153,3 +153,23 @@ export const sellerSummaryResponse = (
   server_time: '2026-10-24T09:00:00Z',
   ...overrides,
 })
+
+/** A seller notification: payment received for VK-7K3P9Q at 09:00 UTC on 24 Oct, unread. */
+export const notificationResponse = (
+  overrides: Partial<Schemas['NotificationResponse']> = {},
+): Schemas['NotificationResponse'] => ({
+  id: 'n-1',
+  user_id: listingResponse().seller_id,
+  transaction_id: orderResponse().id,
+  event_type: 'transaction_locked',
+  channel: 'in_app',
+  title: 'Payment received for VK-7K3P9Q',
+  message: 'KES 52,000 is held in escrow. Dispatch within 48 hours.',
+  payload: {},
+  is_read: false,
+  read_at: null,
+  delivered_at: null,
+  delivery_status: 'not_attempted',
+  created_at: '2026-10-24T09:00:00Z',
+  ...overrides,
+})

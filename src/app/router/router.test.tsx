@@ -42,6 +42,7 @@ describe('router', () => {
       http.get('/api/listings', () => HttpResponse.json(listingListResponse([]))),
       http.get('/api/transactions', () => HttpResponse.json(orderListResponse([]))),
       http.get('/api/transactions/summary', () => HttpResponse.json(sellerSummaryResponse())),
+      http.get('/api/notifications/unread-count', () => HttpResponse.json({ unread_count: 0 })),
     )
   })
 
