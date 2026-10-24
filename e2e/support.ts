@@ -68,10 +68,46 @@ const SERIALIZED = {
   },
 }
 
+/** The seller lists, the buyer orders and M-Pesa confirms: the order is locked (paid, in escrow). */
+export async function paidOrder(
+  sellerContext: BrowserContext,
+  buyerContext: BrowserContext,
+  baseURL: string,
+  serialized: boolean,
+): Promise<{ orderId: string; reference: string }> {
+  await signUpVia(sellerContext, 'seller', 'Amina Gadgets', freshPhone('1'))
+  await signUpVia(buyerContext, 'buyer', 'Wanjiku Kamau', freshPhone())
+  const listing = await (
+    await sellerContext.request.post('/api/listings', {
+      data: serialized ? SERIALIZED : STANDARD,
+      headers: await csrfHeader(sellerContext),
+    })
+  ).json()
+  const created = await (
+    await buyerContext.request.post('/api/transactions', {
+      data: { listing_id: listing.id },
+      headers: await csrfHeader(buyerContext),
+    })
+  ).json()
+  await mpesaCallback(await provider(baseURL), created.id, 0)
+  return { orderId: created.id as string, reference: created.reference as string }
+}
+
+/** The delivery code from the buyer's own notifications, as the buyer would read it in the SMS. */
+export async function deliveryCode(buyerContext: BrowserContext, orderId: string): Promise<string> {
+  const notifications = (await (await buyerContext.request.get('/api/notifications')).json()) as {
+    transaction_id: string
+    payload?: { delivery_code?: string }
+  }[]
+  const code = notifications.find((n) => n.transaction_id === orderId && n.payload?.delivery_code)?.payload
+    ?.delivery_code
+  if (!code) throw new Error('no delivery code in the buyer notifications')
+  return code
+}
+
 /**
- * A paid order with the item at the buyer's door: the seller lists, the buyer pays, M-Pesa confirms,
- * the seller dispatches and marks arrival. Returns the order id and the code from the buyer's own
- * notifications (as the buyer would read it in the SMS).
+ * A paid order with the item at the buyer's door: paid, then the seller dispatches and marks arrival.
+ * Returns the order id and the buyer's delivery code.
  */
 export async function orderAtTheDoor(
   sellerContext: BrowserContext,
@@ -79,31 +115,13 @@ export async function orderAtTheDoor(
   baseURL: string,
   serialized: boolean,
 ): Promise<{ orderId: string; code: string }> {
-  await signUpVia(sellerContext, 'seller', 'Amina Gadgets', freshPhone('1'))
-  await signUpVia(buyerContext, 'buyer', 'Wanjiku Kamau', freshPhone())
+  const { orderId } = await paidOrder(sellerContext, buyerContext, baseURL, serialized)
   const seller = await csrfHeader(sellerContext)
-  const listing = await (
-    await sellerContext.request.post('/api/listings', {
-      data: serialized ? SERIALIZED : STANDARD,
-      headers: seller,
-    })
-  ).json()
-  const created = await buyerContext.request.post('/api/transactions', {
-    data: { listing_id: listing.id },
-    headers: await csrfHeader(buyerContext),
-  })
-  const orderId = (await created.json()).id as string
-  await mpesaCallback(await provider(baseURL), orderId, 0)
   for (const step of ['dispatch', 'arrival']) {
     const moved = await sellerContext.request.post(`/api/transactions/${orderId}/${step}`, {
       headers: seller,
     })
     if (!moved.ok()) throw new Error(`${step} ${moved.status()}`)
   }
-  const notifications = (await (await buyerContext.request.get('/api/notifications')).json()) as {
-    payload?: { delivery_code?: string }
-  }[]
-  const code = notifications.find((n) => n.payload?.delivery_code)?.payload?.delivery_code
-  if (!code) throw new Error('no delivery code in the buyer notifications')
-  return { orderId, code }
+  return { orderId, code: await deliveryCode(buyerContext, orderId) }
 }
