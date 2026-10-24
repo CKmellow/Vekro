@@ -29,9 +29,9 @@ Every Stitch screen for Vekro, its exports and its review status.
 | S7 | Create listing | `S7-create-listing/` | mobile, desktop | M3 | Step 1 [`00fdf965…`](https://stitch.withgoogle.com/projects/4950346905124660155), step 1 mobile [`282be5b7…`](https://stitch.withgoogle.com/projects/4950346905124660155), preview [`0870ffc0…`](https://stitch.withgoogle.com/projects/4950346905124660155), step 2 [`e0beedd1…`](https://stitch.withgoogle.com/projects/4950346905124660155), step 3 standard [`617842fe…`](https://stitch.withgoogle.com/projects/4950346905124660155), step 3 serial [`aec9f2af…`](https://stitch.withgoogle.com/projects/4950346905124660155), warning [`1eab9d05…`](https://stitch.withgoogle.com/projects/4950346905124660155), step 4 [`80395412…`](https://stitch.withgoogle.com/projects/4950346905124660155) | Approved (2026-10-15) |
 | S8 | Listings | `S8-listings/` | mobile, desktop | M3 | Grid [`3c740dda…`](https://stitch.withgoogle.com/projects/4950346905124660155), list mobile [`5bf4234c…`](https://stitch.withgoogle.com/projects/4950346905124660155), states [`8c66dd07…`](https://stitch.withgoogle.com/projects/4950346905124660155) | Approved (2026-10-15) |
 | S9 | Listing detail and share | `S9-listing-detail/` | mobile, desktop | M3 | Published [`dc69bb47…`](https://stitch.withgoogle.com/projects/4950346905124660155), published mobile [`01532281…`](https://stitch.withgoogle.com/projects/4950346905124660155), paid [`eaab8d88…`](https://stitch.withgoogle.com/projects/4950346905124660155), archived [`e52fd4e2…`](https://stitch.withgoogle.com/projects/4950346905124660155) | Approved (2026-10-15) |
-| S4 | Dashboard | `S4-dashboard/` | mobile, desktop | M8 | | Not started |
-| S5 | Orders list | `S5-orders/` | mobile, desktop | M8 | | Not started |
-| S6 | Order detail | `S6-order-detail/` | mobile, desktop | M8 | | Not started |
+| S4 | Dashboard | `S4-dashboard/` | mobile, desktop | M8 | none (code-ready spec) | Specced (2026-10-24) |
+| S5 | Orders list | `S5-orders/` | mobile, desktop | M8 | none (code-ready spec) | Specced (2026-10-24) |
+| S6 | Order detail | `S6-order-detail/` | mobile, desktop | M8 | none (code-ready spec) | Specced (2026-10-24) |
 | S14 | Notifications | `S14-notifications/` | mobile, desktop | M8 | | Not started |
 | S10 | Returns inbox | `S10-returns/` | mobile, desktop | M8 | | Not started |
 | S11 | Return case | `S11-return-case/` | mobile, desktop | M8 | | Not started |
