@@ -710,6 +710,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/transactions/{transaction_id}/escalate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send an open return case to Vekro support (buyer or seller)
+         * @description Either party can disagree with how a return is going. The order and the dispute move to escalated_admin_review; the reason is kept for support and both parties are notified.
+         */
+        post: operations["escalate_transaction_dispute_transactions__transaction_id__escalate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/disputes/escalation-queue": {
         parameters: {
             query?: never;
@@ -1367,6 +1387,17 @@ export interface components {
             reason: string | null;
             /** Note */
             note: string | null;
+        };
+        /**
+         * EscalateDisputeRequest
+         * @description Why the party disagrees; Vekro support reads it with the case.
+         */
+        EscalateDisputeRequest: {
+            /**
+             * Reason
+             * @description What's wrong with the case so far.
+             */
+            reason: string;
         };
         /**
          * EscalationQueueItemResponse
@@ -4333,6 +4364,67 @@ export interface operations {
                 content?: never;
             };
             /** @description Transaction is not in a resolved state or validation failed. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    escalate_transaction_dispute_transactions__transaction_id__escalate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EscalateDisputeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransactionResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Caller is not the buyer or the seller. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Transaction not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The order has no open return case. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The reason is missing or too short. */
             422: {
                 headers: {
                     [name: string]: unknown;
