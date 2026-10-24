@@ -43,3 +43,39 @@ describe('getAvailableActions', () => {
         expect(getAvailableActions(role, { status })).toEqual([])
   })
 })
+
+describe('confirm resolved', () => {
+  const dispute = (buyer: boolean, seller: boolean) => ({
+    id: 'd1',
+    status: 'resolved_release',
+    category: 'not_working',
+    description: 'x',
+    openedAt: '2026-10-20T09:00:00Z',
+    escalatedAt: null,
+    resolvedAt: null,
+    sellerAction: null,
+    sellerNotes: null,
+    buyerNotes: null,
+    reconfirmRejections: 0,
+    buyerConfirmedResolved: buyer,
+    sellerConfirmedResolved: seller,
+  })
+
+  it.each(['resolved_release', 'resolved_refund', 'resolved_split'] as const)(
+    'offers closure on %s to each side until it confirms',
+    (status) => {
+      expect(getAvailableActions('buyer', { status, dispute: dispute(false, true) })).toEqual([
+        'confirm_resolved',
+      ])
+      expect(getAvailableActions('seller', { status, dispute: dispute(false, true) })).toEqual([])
+      expect(getAvailableActions('admin', { status, dispute: dispute(false, false) })).toEqual([])
+    },
+  )
+
+  it('never offers closure without a dispute or before the case is resolved', () => {
+    expect(getAvailableActions('buyer', { status: 'resolved_release', dispute: null })).toEqual([])
+    expect(
+      getAvailableActions('buyer', { status: 'refunded_buyer', dispute: dispute(false, false) }),
+    ).toEqual([])
+  })
+})

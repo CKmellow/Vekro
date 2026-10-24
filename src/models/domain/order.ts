@@ -42,6 +42,30 @@ export interface SellerPayout {
   paidAt: string | null
 }
 
+/** The backend's functional-issue categories (report-functional-issue). `other` goes straight to support. */
+export type DisputeCategory =
+  'not_working' | 'damaged_on_arrival' | 'missing_parts' | 'not_as_described' | 'other'
+
+/** The dispute behind an order (the newest one). */
+export interface OrderDispute {
+  id: string
+  status: string
+  /** One of DisputeCategory, as sent by the server. */
+  category: string
+  /** The buyer's own words. */
+  description: string
+  openedAt: string
+  escalatedAt: string | null
+  resolvedAt: string | null
+  sellerAction: 'refund_issued' | 'repair_shipped' | 'replacement_shipped' | null
+  sellerNotes: string | null
+  buyerNotes: string | null
+  /** How many times the buyer said "not fixed"; at the limit the next "No" goes to support. */
+  reconfirmRejections: number
+  buyerConfirmedResolved: boolean
+  sellerConfirmedResolved: boolean
+}
+
 /** One transaction as its buyer, seller or an admin sees it. */
 export interface Order {
   id: string
@@ -69,6 +93,7 @@ export interface Order {
   payment: PaymentInstruction | null
   /** Only for the seller and admins. */
   payout: SellerPayout | null
+  dispute: OrderDispute | null
   /** Why the buyer rejected at the door, when they said. */
   doorRejection: { reason: string | null; note: string | null } | null
   createdAt: string
@@ -98,6 +123,8 @@ export interface OrderSummary {
   /** The buyer for a seller, the seller for a buyer. */
   counterpart: OrderParty
   deadlines: OrderDeadlines
+  /** The latest dispute's category, if any. */
+  disputeCategory: string | null
   createdAt: string
   updatedAt: string
 }

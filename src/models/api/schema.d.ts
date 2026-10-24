@@ -1279,6 +1279,58 @@ export interface components {
          */
         DisputeStatus: "open" | "buyer_sent_back" | "return_received" | "awaiting_buyer_reconfirmation" | "escalated_admin_review" | "resolved_release" | "resolved_refund" | "resolved_split" | "canceled";
         /**
+         * DisputeSummaryResponse
+         * @description The dispute behind this order. The raw evidence blob is never included.
+         */
+        DisputeSummaryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["DisputeStatus"];
+            /**
+             * Category
+             * @description not_working, damaged_on_arrival, missing_parts, not_as_described or other.
+             */
+            category: string;
+            /**
+             * Description
+             * @description The buyer's own words.
+             */
+            description: string;
+            /**
+             * Opened At
+             * Format: date-time
+             */
+            opened_at: string;
+            /** Escalated At */
+            escalated_at: string | null;
+            /** Resolved At */
+            resolved_at: string | null;
+            seller_action: components["schemas"]["SellerResolutionAction"] | null;
+            /**
+             * Seller Notes
+             * @description The seller's note with their chosen action.
+             */
+            seller_notes: string | null;
+            /**
+             * Buyer Notes
+             * @description The buyer's note when reconfirming.
+             */
+            buyer_notes: string | null;
+            /**
+             * Reconfirm Rejections
+             * @description How many times the buyer said "not fixed".
+             */
+            reconfirm_rejections: number;
+            /** Buyer Confirmed Resolved */
+            buyer_confirmed_resolved: boolean;
+            /** Seller Confirmed Resolved */
+            seller_confirmed_resolved: boolean;
+            admin_decision: components["schemas"]["AdminDecision"] | null;
+        };
+        /**
          * DisputeTimelineEventResponse
          * @description Single timeline event shown in admin dispute timeline views.
          */
@@ -2065,6 +2117,11 @@ export interface components {
          */
         SellerPayoutStatus: "not_paid" | "held" | "in_progress" | "paid_out" | "delayed" | "refunded";
         /**
+         * SellerResolutionAction
+         * @enum {string}
+         */
+        SellerResolutionAction: "refund_issued" | "repair_shipped" | "replacement_shipped";
+        /**
          * SellerResolutionActionRequest
          * @description Seller-selected resolution action in dispute flow.
          */
@@ -2272,6 +2329,8 @@ export interface components {
             payment?: components["schemas"]["PaymentInstructionResponse"] | null;
             /** @description The seller's payout. Shown to the seller and admins only. */
             payout?: components["schemas"]["SellerPayoutResponse"] | null;
+            /** @description The dispute behind this order, when there is one. */
+            dispute?: components["schemas"]["DisputeSummaryResponse"] | null;
         };
         /**
          * TransactionListResponse
@@ -2432,6 +2491,11 @@ export interface components {
             /** @description The other party: the buyer for a seller, the seller for a buyer. */
             counterpart: components["schemas"]["TransactionParty"];
             deadlines: components["schemas"]["TransactionDeadlinesResponse"];
+            /**
+             * Dispute Category
+             * @description The category of the order's latest dispute, if any.
+             */
+            dispute_category?: string | null;
             /**
              * Created At
              * Format: date-time

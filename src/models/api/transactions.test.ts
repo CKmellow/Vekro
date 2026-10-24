@@ -6,7 +6,11 @@ import { ApiError } from './errors'
 import {
   createOrder,
   getOrder,
+  confirmResolved,
   listOrders,
+  markSentBack,
+  reconfirm,
+  reportIssue,
   resendPayment,
   toOrder,
   toOrderSummary,
@@ -171,6 +175,7 @@ describe('order list', () => {
         returnSendBy: null,
         returnConfirmBy: null,
       },
+      disputeCategory: null,
       createdAt: '2026-10-24T09:10:00Z',
       updatedAt: '2026-10-24T09:10:00Z',
     })
@@ -233,5 +238,71 @@ describe('order list', () => {
     const { serverOffsetMs } = await listOrders()
     expect(serverOffsetMs).toBeGreaterThan(55_000)
     expect(serverOffsetMs).toBeLessThan(65_000)
+  })
+})
+
+describe('disputes', () => {
+  it('maps the dispute summary', () => {
+    const order = toOrder(
+      orderResponse({
+        status: 'awaiting_buyer_reconfirmation',
+        dispute: {
+          id: 'd1',
+          status: 'awaiting_buyer_reconfirmation',
+          category: 'not_working',
+          description: 'Screen flickers.',
+          opened_at: '2026-10-21T11:02:00Z',
+          escalated_at: null,
+          resolved_at: null,
+          seller_action: 'repair_shipped',
+          seller_notes: 'New screen fitted.',
+          buyer_notes: null,
+          reconfirm_rejections: 1,
+          buyer_confirmed_resolved: false,
+          seller_confirmed_resolved: false,
+          admin_decision: null,
+        },
+      }),
+    )
+    expect(order.dispute).toMatchObject({
+      category: 'not_working',
+      sellerAction: 'repair_shipped',
+      sellerNotes: 'New screen fitted.',
+      reconfirmRejections: 1,
+    })
+    expect(toOrder(orderResponse()).dispute).toBeNull()
+  })
+
+  it('posts each buyer step to its endpoint', async () => {
+    const calls: [string, unknown][] = []
+    const record =
+      (name: string) =>
+      async ({ request }: { request: Request }) => {
+        const text = await request.text()
+        calls.push([name, text ? JSON.parse(text) : null])
+        return HttpResponse.json({})
+      }
+    server.use(
+      http.post(`/api/transactions/${ORDER_ID}/report-functional-issue`, record('report')),
+      http.post(`/api/transactions/${ORDER_ID}/buyer-sent-back`, record('sent')),
+      http.post(`/api/transactions/${ORDER_ID}/buyer-reconfirmation`, record('reconfirm')),
+      http.post(`/api/transactions/${ORDER_ID}/confirm-resolved-buyer`, record('buyer')),
+      http.post(`/api/transactions/${ORDER_ID}/confirm-resolved-seller`, record('seller')),
+    )
+    await reportIssue(ORDER_ID, 'not_working', 'The screen flickers after a few minutes.')
+    await markSentBack(ORDER_ID)
+    await reconfirm(ORDER_ID, false, 'Still flickers.')
+    await confirmResolved(ORDER_ID, 'buyer')
+    await confirmResolved(ORDER_ID, 'seller')
+    expect(calls).toEqual([
+      [
+        'report',
+        { category: 'not_working', description: 'The screen flickers after a few minutes.', evidence: {} },
+      ],
+      ['sent', null],
+      ['reconfirm', { accepted: false, notes: 'Still flickers.' }],
+      ['buyer', null],
+      ['seller', null],
+    ])
   })
 })
