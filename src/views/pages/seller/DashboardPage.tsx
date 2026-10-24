@@ -88,9 +88,9 @@ function ActionCard({
         <div className="min-w-0 flex-1">
           <Link
             to={`/seller/orders/${action.id}`}
-            className="type-body-md block truncate font-semibold text-text hover:text-primary"
+            className="type-body-md flex min-h-11 items-center font-semibold text-text hover:text-primary"
           >
-            {action.title}
+            <span className="truncate">{action.title}</span>
           </Link>
           <p className="type-mono text-text-muted">{action.reference}</p>
         </div>
@@ -313,7 +313,10 @@ export function DashboardPage() {
                 <h2 id="recent" className="type-title text-text">
                   Recent orders
                 </h2>
-                <Link to="/seller/orders" className="type-body-md font-semibold text-primary">
+                <Link
+                  to="/seller/orders"
+                  className="type-body-md inline-flex min-h-11 items-center font-semibold text-primary"
+                >
                   View all orders
                 </Link>
               </div>

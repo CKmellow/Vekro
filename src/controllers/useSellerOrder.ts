@@ -62,6 +62,11 @@ export function actionPanel(order: Order): ActionPanel {
   const timed = deadline ? { ...deadline, label: DEADLINE_LABEL[deadline.kind] } : null
   const [allowed] = getAvailableActions('seller', order)
   const caseLink = `/seller/returns/${order.id}`
+  // A resolved return still needs both sides to close it (confirm-resolved), from the case page.
+  const closeCase: PanelAction | null =
+    allowed === 'confirm_resolved'
+      ? { kind: 'open_case', label: 'Close the case', to: caseLink, secondary: true }
+      : null
   const panel = (p: Omit<ActionPanel, 'deadline' | 'action'> & Partial<ActionPanel>): ActionPanel => ({
     deadline: null,
     action: null,
@@ -138,6 +143,7 @@ export function actionPanel(order: Order): ActionPanel {
         icon: 'check',
         title: "You've been paid",
         body: `The buyer accepted. ${kes(order.payout?.amount ?? order.amount)} is on its way to your M-Pesa.`,
+        action: closeCase,
       })
     case 'refunded_buyer':
     case 'resolved_refund':
@@ -152,6 +158,7 @@ export function actionPanel(order: Order): ActionPanel {
         icon: 'closed',
         title: 'Order closed',
         body: `The buyer was refunded.${why ? ` ${why}` : ''}`,
+        action: closeCase,
       })
     }
     case 'resolved_split':
@@ -160,6 +167,7 @@ export function actionPanel(order: Order): ActionPanel {
         icon: 'shield',
         title: 'Settled by Vekro support',
         body: 'Support divided the payment. Check your notifications for the split.',
+        action: closeCase,
       })
   }
 }

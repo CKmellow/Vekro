@@ -92,30 +92,36 @@ export function OrderDetailPage() {
     )
   if (p.state === 'not_yours' || (p.state === 'ready' && !p.order))
     return (
-      <div className="rounded-lg bg-surface shadow-1">
-        <EmptyState
-          illustration="vault"
-          title="This order isn't in your shop"
-          body="It may belong to another seller account."
-          action={
-            <Link to="/seller/orders" className="type-title text-primary">
-              Back to orders
-            </Link>
-          }
-        />
-      </div>
+      <>
+        <h1 className="sr-only">Order detail</h1>
+        <div className="rounded-lg bg-surface shadow-1">
+          <EmptyState
+            illustration="vault"
+            title="This order isn't in your shop"
+            body="It may belong to another seller account."
+            action={
+              <Link to="/seller/orders" className="type-title text-primary">
+                Back to orders
+              </Link>
+            }
+          />
+        </div>
+      </>
     )
   if (p.state === 'error' || !p.order)
     return (
-      <Banner
-        tone="danger"
-        title="We couldn't load this order."
-        action={
-          <Button variant="secondary" className="h-10" onClick={p.retry}>
-            Try again
-          </Button>
-        }
-      />
+      <>
+        <h1 className="sr-only">Order detail</h1>
+        <Banner
+          tone="danger"
+          title="We couldn't load this order."
+          action={
+            <Button variant="secondary" className="h-10" onClick={p.retry}>
+              Try again
+            </Button>
+          }
+        />
+      </>
     )
 
   const { order } = p
@@ -220,7 +226,7 @@ export function OrderDetailPage() {
             </p>
             <Link
               to={`/seller/listings/${order.item.listingId}`}
-              className="type-body-sm font-semibold text-primary"
+              className="type-body-sm inline-flex min-h-11 items-center font-semibold text-primary"
             >
               View listing
             </Link>

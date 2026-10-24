@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { toOrder } from '@/models/api/transactions'
 import { STATE_META, type TransactionStatus } from '@/models/domain/stateMeta'
-import { orderResponse } from '@/test/fixtures'
-import { moneyAt, nextStep, progress } from './useOrderTracker'
+import { disputeResponse, orderResponse } from '@/test/fixtures'
+import { dockAction, moneyAt, nextStep, progress } from './useOrderTracker'
 
 const order = (status: TransactionStatus, overrides: Parameters<typeof orderResponse>[0] = {}) =>
   toOrder(orderResponse({ status, ...overrides }))
@@ -58,5 +58,19 @@ describe('B3 mappings', () => {
     })
     expect(progress(order('released'))?.current).toBe(6)
     expect(progress(order('refunded_buyer'))).toBeNull()
+  })
+})
+
+describe('closing a resolved case', () => {
+  it('sends the buyer to the return screen until they confirm', () => {
+    const open = toOrder(orderResponse({ status: 'resolved_refund', dispute: disputeResponse() }))
+    expect(dockAction(open)).toMatchObject({ label: 'Close the case', to: `/order/${open.id}/return` })
+    const done = toOrder(
+      orderResponse({
+        status: 'resolved_refund',
+        dispute: disputeResponse({ buyer_confirmed_resolved: true }),
+      }),
+    )
+    expect(dockAction(done)).toBeNull()
   })
 })

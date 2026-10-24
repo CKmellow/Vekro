@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { toOrder } from '@/models/api/transactions'
 import type { TransactionStatus } from '@/models/domain/stateMeta'
-import { sellerOrderResponse } from '@/test/fixtures'
+import { disputeResponse, sellerOrderResponse } from '@/test/fixtures'
 import { actionPanel, payoutLine } from './useSellerOrder'
 
 const at = (status: TransactionStatus, extra = {}) => toOrder(sellerOrderResponse({ status, ...extra }))
@@ -82,5 +82,21 @@ describe('S6 payout line', () => {
     ['not_paid', 'Waiting for the buyer to pay'],
   ] as const)('%s reads "%s"', (status, text) => {
     expect(payoutLine({ status, amount: null, reference: null, paidAt: null }).text).toBe(text)
+  })
+})
+
+describe('closing a resolved case', () => {
+  it('links the seller to the case until they confirm', () => {
+    expect(actionPanel(at('resolved_release', { dispute: disputeResponse() })).action).toEqual({
+      kind: 'open_case',
+      label: 'Close the case',
+      to: `/seller/returns/${sellerOrderResponse().id}`,
+      secondary: true,
+    })
+    expect(
+      actionPanel(at('resolved_release', { dispute: disputeResponse({ seller_confirmed_resolved: true }) }))
+        .action,
+    ).toBeNull()
+    expect(actionPanel(at('released')).action).toBeNull()
   })
 })

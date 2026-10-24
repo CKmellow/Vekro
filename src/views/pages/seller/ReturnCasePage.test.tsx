@@ -136,5 +136,6 @@ describe('S11 return case', () => {
     server.use(http.get(`/api/transactions/${ID}`, () => HttpResponse.json({ detail: 'x' }, { status: 404 })))
     renderPage()
     expect(await screen.findByRole('heading', { name: "This order isn't in your shop" })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Return case' })).toBeInTheDocument()
   })
 })

@@ -62,23 +62,29 @@ export function ReportIssuePage() {
     )
   if (state === 'not_found')
     return (
-      <EmptyState
-        illustration="parcel"
-        title="We can't find this order"
-        body="Check the link in your SMS, or log in with the phone you paid with."
-      />
+      <>
+        <h1 className="sr-only">Report a problem</h1>
+        <EmptyState
+          illustration="parcel"
+          title="We can't find this order"
+          body="Check the link in your SMS, or log in with the phone you paid with."
+        />
+      </>
     )
   if (state === 'error')
     return (
-      <Banner
-        tone="danger"
-        title="We couldn't load your order."
-        action={
-          <Button variant="secondary" onClick={p.retry}>
-            Try again
-          </Button>
-        }
-      />
+      <>
+        <h1 className="sr-only">Report a problem</h1>
+        <Banner
+          tone="danger"
+          title="We couldn't load your order."
+          action={
+            <Button variant="secondary" onClick={p.retry}>
+              Try again
+            </Button>
+          }
+        />
+      </>
     )
   if (state === 'not_eligible')
     return (

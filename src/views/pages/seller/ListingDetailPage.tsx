@@ -102,7 +102,7 @@ export function ListingDetailPage() {
       <div className="flex flex-col gap-3">
         <Link
           to="/seller/listings"
-          className="type-body-sm inline-flex items-center gap-1.5 self-start text-text-muted hover:text-text"
+          className="type-body-sm inline-flex min-h-11 items-center gap-1.5 self-start text-text-muted hover:text-text"
         >
           <ArrowLeft aria-hidden="true" className="size-4" />
           Listings
