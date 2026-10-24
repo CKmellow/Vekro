@@ -1,6 +1,6 @@
 /** Listings as the screens see them, mapped from the API's ListingResponse. */
 
-export type ListingStatus = 'draft' | 'active' | 'awaiting_payment' | 'sold' | 'archived'
+export type ListingStatus = 'active' | 'awaiting_payment' | 'sold' | 'archived'
 
 export type DoorRejectReason = 'damaged' | 'wrong_item' | 'not_as_described'
 export type Resolution = 'refund' | 'repair' | 'replacement'
@@ -33,7 +33,7 @@ export interface Listing {
   photoUrls: string[]
   /** For a private link to one buyer. */
   buyerName: string | null
-  /** `draft` is device-local; `archived` needs backend-gap #140. */
+  /** Unfinished drafts live on the device (listingDraftStore), never here. */
   status: ListingStatus
   /** No view tracking yet: always null. */
   views: number | null
@@ -151,6 +151,5 @@ export const LISTING_STATUS_VIEW: Record<
   active: { label: 'Active', tone: 'emerald', icon: 'check' },
   awaiting_payment: { label: 'Waiting for payment', tone: 'saffron', icon: 'clock' },
   sold: { label: 'Sold', tone: 'lake', icon: 'lock' },
-  draft: { label: 'Draft', tone: 'sand', icon: 'tag' },
   archived: { label: 'Archived', tone: 'sand', icon: 'box' },
 }

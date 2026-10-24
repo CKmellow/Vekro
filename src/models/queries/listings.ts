@@ -4,6 +4,7 @@ import {
   createListing,
   getListing,
   listListings,
+  restoreListing,
   updateListing,
   type ListingFilter,
 } from '@/models/api/adapters/listings'
@@ -51,3 +52,4 @@ export function useCreateListing() {
 export const useUpdateListing = () =>
   useListingWrite(({ id, draft }: { id: string; draft: ListingDraft }) => updateListing(id, draft))
 export const useArchiveListing = () => useListingWrite((id: string) => archiveListing(id))
+export const useRestoreListing = () => useListingWrite((id: string) => restoreListing(id))

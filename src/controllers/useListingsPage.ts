@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { toast } from '@/lib/toast'
-import { GapUnavailableError } from '@/models/api/adapters/listings'
 import { LISTING_STATUS_VIEW, type Listing, type ListingStatus } from '@/models/domain/listing'
 import { useArchiveListing, useListings } from '@/models/queries/listings'
 
@@ -9,7 +8,6 @@ const FILTERS: { value: ListingStatus; label: string }[] = [
   { value: 'active', label: 'Active' },
   { value: 'awaiting_payment', label: 'Awaiting payment' },
   { value: 'sold', label: 'Sold' },
-  { value: 'draft', label: 'Draft' },
   { value: 'archived', label: 'Archived' },
 ]
 
@@ -24,15 +22,15 @@ async function copy(text: string) {
   }
 }
 
-/** S8: the seller's listings (backend-gap #7 list, mocked until it ships). */
+/** S8: the seller's listings (GET /listings). Counts come with every page, so one query serves both. */
 export function useListingsPage() {
   const navigate = useNavigate()
   const [status, setStatus] = useState<ListingStatus>('active')
   const [q, setQ] = useState('')
   const [view, setView] = useState<'grid' | 'list'>('grid')
   const [archiving, setArchiving] = useState<Listing | null>(null)
-  const all = useListings()
   const shown = useListings({ status, q: q.trim() || undefined })
+  const page = shown.data
   const archive = useArchiveListing()
 
   const copyLink = async (listing: Listing) => {
@@ -48,16 +46,14 @@ export function useListingsPage() {
     } else await copyLink(listing)
   }
 
-  const counts = Object.fromEntries(
-    FILTERS.map((f) => [f.value, all.data?.filter((l) => l.status === f.value).length ?? 0]),
-  )
-  const unavailable = all.error instanceof GapUnavailableError
+  const counts = page?.counts
+  const total = counts ? Object.values(counts).reduce((a, b) => a + b, 0) : undefined
 
   return {
     filters: FILTERS.map((f) => ({
       value: f.value,
       label: f.label,
-      count: all.data ? counts[f.value] : undefined,
+      count: counts?.[f.value],
     })),
     status,
     setStatus,
@@ -65,8 +61,8 @@ export function useListingsPage() {
     setQ,
     view,
     setView,
-    total: all.data?.length,
-    listings: (shown.data ?? []).map((listing) => ({
+    total,
+    listings: (page?.listings ?? []).map((listing) => ({
       data: {
         id: listing.id,
         title: listing.title,
@@ -86,18 +82,16 @@ export function useListingsPage() {
         onArchive: () => setArchiving(listing),
       },
     })),
-    state: unavailable
-      ? ('unavailable' as const)
-      : all.isPending || shown.isPending
+    state: page
+      ? total === 0
+        ? ('empty' as const)
+        : page.listings.length === 0
+          ? ('no-results' as const)
+          : ('ready' as const)
+      : shown.isPending
         ? ('loading' as const)
-        : all.isError || shown.isError
-          ? ('error' as const)
-          : all.data?.length === 0
-            ? ('empty' as const)
-            : shown.data?.length === 0
-              ? ('no-results' as const)
-              : ('ready' as const),
-    retry: () => void Promise.all([all.refetch(), shown.refetch()]),
+        : ('error' as const),
+    retry: () => void shown.refetch(),
     clearFilters: () => {
       setQ('')
       setStatus('active')

@@ -114,3 +114,15 @@ export const orderListResponse = (
   server_time: '2026-10-24T09:00:00Z',
   ...overrides,
 })
+
+/** One page of the seller's listings with counts per status. */
+export const listingListResponse = (
+  items: Schemas['ListingResponse'][] = [listingResponse()],
+  counts: Partial<Schemas['ListingListResponse']['counts']> = {},
+): Schemas['ListingListResponse'] => ({
+  items,
+  total: items.length,
+  page: 1,
+  page_size: 100,
+  counts: { active: items.length, awaiting_payment: 0, sold: 0, archived: 0, ...counts },
+})

@@ -145,7 +145,11 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update a listing (owner only)
+         * @description Change any of the create fields; the result must pass the create rules. Refused (409) once the listing has a paid or pending order, or while it is archived.
+         */
+        patch: operations["update_seller_listing_listings__listing_id__patch"];
         trace?: never;
     };
     "/listings/{listing_id}/photos": {
@@ -188,6 +192,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/listings/{listing_id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Archive a listing (owner only)
+         * @description The Trust Link stops taking payments. Idempotent. Refused (409) once the listing has a paid or pending order.
+         */
+        post: operations["archive_seller_listing_listings__listing_id__archive_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/listings/{listing_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Restore an archived listing (owner only)
+         * @description The Trust Link takes payments again. Idempotent.
+         */
+        post: operations["restore_seller_listing_listings__listing_id__restore_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/notifications": {
         parameters: {
             query?: never;
@@ -197,11 +241,65 @@ export interface paths {
         };
         /**
          * List notifications for current user
-         * @description Return notifications belonging to the authenticated user only, ordered by newest first. Supports limit/offset pagination for client polling.
+         * @description Return notifications belonging to the authenticated user only, ordered by newest first. Supports limit/offset pagination for client polling, an unread-only filter and a channel filter (in-app inboxes pass channel=in_app so SMS copies are not repeated).
          */
         get: operations["list_current_user_notifications_notifications_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/unread-count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Count unread in-app notifications */
+        get: operations["get_unread_count_notifications_unread_count_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark all my notifications as read */
+        post: operations["mark_all_read_notifications_read_all_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/{notification_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark one notification as read
+         * @description Idempotent: a notification already read keeps its first read_at.
+         */
+        post: operations["mark_one_read_notifications__notification_id__read_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1322,7 +1420,7 @@ export interface components {
              * @description active: open for payment. awaiting_payment: a buyer started paying. sold: paid and not refunded; new transactions are refused.
              * @enum {string}
              */
-            status: "active" | "awaiting_payment" | "sold";
+            status: "active" | "awaiting_payment" | "sold" | "archived";
             /**
              * Photos
              * @description Ordered; the first is the cover.
@@ -1369,6 +1467,8 @@ export interface components {
             awaiting_payment: number;
             /** Sold */
             sold: number;
+            /** Archived */
+            archived: number;
         };
         /**
          * LoginRequest
@@ -1455,6 +1555,16 @@ export interface components {
              * @description Human-readable processing summary.
              */
             detail: string;
+        };
+        /**
+         * MarkAllReadResponse
+         * @description How many notifications were marked read, and what is still unread (always 0).
+         */
+        MarkAllReadResponse: {
+            /** Updated */
+            updated: number;
+            /** Unread Count */
+            unread_count: number;
         };
         /** MoneyAuditEventListResponse */
         MoneyAuditEventListResponse: {
@@ -2241,6 +2351,38 @@ export interface components {
             updated_at: string;
         };
         /**
+         * UnreadCountResponse
+         * @description Unread in-app notifications, for the bell badge.
+         */
+        UnreadCountResponse: {
+            /** Unread Count */
+            unread_count: number;
+        };
+        /**
+         * UpdateListingRequest
+         * @description Fields to change; anything left out keeps its value. The result must pass create rules.
+         */
+        UpdateListingRequest: {
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Category */
+            category?: string | null;
+            /** Buyer Name */
+            buyer_name?: string | null;
+            /** Price */
+            price?: number | string | null;
+            /** Is Serialized */
+            is_serialized?: boolean | null;
+            /** Unique Id */
+            unique_id?: string | null;
+            /** Dispute Policy */
+            dispute_policy?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /**
          * UserRole
          * @enum {string}
          */
@@ -2434,7 +2576,7 @@ export interface operations {
     list_my_listings_listings_get: {
         parameters: {
             query?: {
-                status?: ("active" | "awaiting_payment" | "sold") | null;
+                status?: ("active" | "awaiting_payment" | "sold" | "archived") | null;
                 /** @description Title contains. */
                 q?: string | null;
                 page?: number;
@@ -2563,6 +2705,67 @@ export interface operations {
             };
         };
     };
+    update_seller_listing_listings__listing_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listing_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateListingRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Caller is not the listing's seller. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Listing not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The listing can't change in its current status. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The updated listing is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     upload_listing_photo_listings__listing_id__photos_post: {
         parameters: {
             query?: never;
@@ -2683,11 +2886,133 @@ export interface operations {
             };
         };
     };
+    archive_seller_listing_listings__listing_id__archive_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listing_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Caller is not the listing's seller. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Listing not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The listing can't change in its current status. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restore_seller_listing_listings__listing_id__restore_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listing_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Caller is not the listing's seller. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Listing not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The listing can't change in its current status. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_current_user_notifications_notifications_get: {
         parameters: {
             query?: {
                 limit?: number;
                 offset?: number;
+                /** @description Only unread notifications. */
+                unread?: boolean;
+                /** @description Only this channel. */
+                channel?: components["schemas"]["NotificationChannel"] | null;
             };
             header?: never;
             path?: never;
@@ -2717,6 +3042,105 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    get_unread_count_notifications_unread_count_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnreadCountResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    mark_all_read_notifications_read_all_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarkAllReadResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    mark_one_read_notifications__notification_id__read_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notification_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not found, or not the caller's. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
