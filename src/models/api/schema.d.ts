@@ -1995,6 +1995,34 @@ export interface components {
             };
         };
         /**
+         * SellerPayoutResponse
+         * @description Where the seller's money is for this order.
+         */
+        SellerPayoutResponse: {
+            /** @description not_paid: the buyer hasn't paid. held: in escrow. in_progress: release queued or awaiting the provider. paid_out. delayed: the provider refused; retried or handled by support. refunded: the money went back to the buyer. */
+            status: components["schemas"]["SellerPayoutStatus"];
+            /**
+             * Amount
+             * @description Released to the seller (gross), once releasing.
+             */
+            amount: string | null;
+            /**
+             * Reference
+             * @description Provider reference of the succeeded release.
+             */
+            reference: string | null;
+            /**
+             * Paid At
+             * @description When the release succeeded.
+             */
+            paid_at: string | null;
+        };
+        /**
+         * SellerPayoutStatus
+         * @enum {string}
+         */
+        SellerPayoutStatus: "not_paid" | "held" | "in_progress" | "paid_out" | "delayed" | "refunded";
+        /**
          * SellerResolutionActionRequest
          * @description Seller-selected resolution action in dispute flow.
          */
@@ -2179,6 +2207,8 @@ export interface components {
             door_rejection?: components["schemas"]["DoorRejection"] | null;
             /** @description The latest payment prompt. Shown to the buyer and admins only. */
             payment?: components["schemas"]["PaymentInstructionResponse"] | null;
+            /** @description The seller's payout. Shown to the seller and admins only. */
+            payout?: components["schemas"]["SellerPayoutResponse"] | null;
         };
         /**
          * TransactionListResponse

@@ -32,6 +32,16 @@ export interface OrderDeadlines {
   returnConfirmBy: string | null
 }
 
+/** Where the seller's money is for one order (seller and admins only). */
+export interface SellerPayout {
+  status: 'not_paid' | 'held' | 'in_progress' | 'paid_out' | 'delayed' | 'refunded'
+  /** Released to the seller, gross (the seller's share on a split). */
+  amount: number | null
+  /** M-Pesa reference of the payout, once paid. */
+  reference: string | null
+  paidAt: string | null
+}
+
 /** One transaction as its buyer, seller or an admin sees it. */
 export interface Order {
   id: string
@@ -57,6 +67,8 @@ export interface Order {
   serverOffsetMs: number
   /** Only for the buyer and admins. */
   payment: PaymentInstruction | null
+  /** Only for the seller and admins. */
+  payout: SellerPayout | null
   /** Why the buyer rejected at the door, when they said. */
   doorRejection: { reason: string | null; note: string | null } | null
   createdAt: string

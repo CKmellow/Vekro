@@ -1,5 +1,5 @@
 /** Shared timeline vocabulary: controllers build entries, the Timeline view renders them. */
-export type TimelineActor = 'you' | 'seller' | 'vekro' | 'support'
+export type TimelineActor = 'you' | 'buyer' | 'seller' | 'vekro' | 'support'
 
 export interface TimelineEntry {
   id: string
