@@ -32,9 +32,9 @@ Every Stitch screen for Vekro, its exports and its review status.
 | S4 | Dashboard | `S4-dashboard/` | mobile, desktop | M8 | none (code-ready spec) | Specced (2026-10-24) |
 | S5 | Orders list | `S5-orders/` | mobile, desktop | M8 | none (code-ready spec) | Specced (2026-10-24) |
 | S6 | Order detail | `S6-order-detail/` | mobile, desktop | M8 | none (code-ready spec) | Specced (2026-10-24) |
-| S14 | Notifications | `S14-notifications/` | mobile, desktop | M8 | | Not started |
-| S10 | Returns inbox | `S10-returns/` | mobile, desktop | M8 | | Not started |
-| S11 | Return case | `S11-return-case/` | mobile, desktop | M8 | | Not started |
+| S14 | Notifications | `S14-notifications/` | mobile, desktop | M8 | none (code-ready spec) | Specced (2026-10-24) |
+| S10 | Returns inbox | `S10-returns/` | mobile, desktop | M8 | none (code-ready spec) | Specced (2026-10-24) |
+| S11 | Return case | `S11-return-case/` | mobile, desktop | M8 | none (code-ready spec) | Specced (2026-10-24) |
 | S12 | Analytics | `S12-analytics/` | mobile, desktop | M8 | | Not started |
 | S13 | Settings | `S13-settings/` | mobile, desktop | M8 | | Not started |
 | A1 | Admin log in | `A1-admin-login/` | desktop | M13 | | Not started |
