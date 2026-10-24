@@ -125,3 +125,32 @@ export async function orderAtTheDoor(
   }
   return { orderId, code: await deliveryCode(buyerContext, orderId) }
 }
+
+/**
+ * A serial-numbered order whose buyer accepted, reported a fault and sent the item back: the return is on its
+ * way to the seller (return_in_transit). The buyer's steps go through the API.
+ */
+export async function returnOnItsWay(
+  sellerContext: BrowserContext,
+  buyerContext: BrowserContext,
+  baseURL: string,
+): Promise<{ orderId: string }> {
+  const { orderId, code } = await orderAtTheDoor(sellerContext, buyerContext, baseURL, true)
+  const buyer = await csrfHeader(buyerContext)
+  const steps: [string, object | undefined][] = [
+    ['otp-give', { otp_code: code }],
+    [
+      'report-functional-issue',
+      { category: 'not_working', description: 'The screen flickers and goes black.' },
+    ],
+    ['buyer-sent-back', undefined],
+  ]
+  for (const [path, data] of steps) {
+    const response = await buyerContext.request.post(`/api/transactions/${orderId}/${path}`, {
+      headers: buyer,
+      data,
+    })
+    if (!response.ok()) throw new Error(`${path} ${response.status()}: ${await response.text()}`)
+  }
+  return { orderId }
+}
