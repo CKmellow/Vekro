@@ -40,7 +40,7 @@ Every Stitch screen for Vekro, its exports and its review status.
 | A1 | Admin log in | `A1-admin-login/` | desktop | M13 | none (code-ready spec) | Specced (2026-10-24) |
 | A2 | Escalation queue | `A2-queue/` | desktop | M13 | none (code-ready spec) | Specced (2026-10-24) |
 | A3 | Case detail and decision | `A3-case/` | desktop | M13 | none (code-ready spec) | Specced (2026-10-24) |
-| A4 | Transactions explorer | `A4-transactions/` | desktop | M13 | | Not started |
-| X1 | Landing | `X1-landing/` | mobile, desktop | M13 | | Not started |
-| X2 | Not found and offline | `X2-not-found/` | mobile, desktop | M13 | | Not started |
+| A4 | Transactions explorer | `A4-transactions/` | desktop | M13 | none (code-ready spec) | Specced (2026-10-24) |
+| X1 | Landing | `X1-landing/` | mobile, desktop | M13 | none (code-ready spec) | Specced (2026-10-24) |
+| X2 | Not found and offline | `X2-not-found/` | mobile, desktop | M13 | none (code-ready spec) | Specced (2026-10-24) |
 | X3 | Help and support | `X3-help/` | mobile | M10 | none (code-ready spec) | Specced (2026-10-24) |
