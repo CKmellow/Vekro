@@ -150,9 +150,19 @@ export function ListingDetailPage() {
           tone="warning"
           title="This listing is archived. Its link no longer accepts payments."
           action={
-            <Button className="h-10" onClick={d.duplicate}>
-              Duplicate as new listing
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="secondary"
+                className="h-10"
+                loading={d.restorePending}
+                onClick={() => void d.restore()}
+              >
+                Restore listing
+              </Button>
+              <Button className="h-10" onClick={d.duplicate}>
+                Duplicate as new listing
+              </Button>
+            </div>
           }
         />
       )}

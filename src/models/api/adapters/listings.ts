@@ -6,34 +6,20 @@ import {
   type ListingStatus,
 } from '@/models/domain/listing'
 import type { ListingDraft } from '@/models/schemas/listing'
-import { api, API_BASE, gapRequest, type Schemas } from '../client'
-import { isMocked, type Gap } from './gaps'
+import { api, API_BASE, type Schemas } from '../client'
 
 type ListingResponse = Schemas['ListingResponse']
-
-/** Fields only the gap mocks provide: `archived` (#140) and view counts (none yet). */
-export interface ListingExtras {
-  status?: ListingStatus
-  views?: number | null
-}
-
-/** A row from the #7 and #140 gap mocks. */
-interface GapRow {
-  listing: ListingResponse
-  extras: ListingExtras
-}
 
 export interface ListingFilter {
   status?: ListingStatus
   q?: string
 }
 
-/** A screen asked for something only a backend gap can provide, and its mock is off. */
-export class GapUnavailableError extends Error {
-  constructor(readonly gap: Gap) {
-    super(`Not available yet (backend gap ${gap}).`)
-    this.name = 'GapUnavailableError'
-  }
+/** The seller's listings for one filter, with counts per status across all of them. */
+export interface ListingPage {
+  listings: Listing[]
+  total: number
+  counts: Record<ListingStatus, number>
 }
 
 export function toPolicy(raw: Record<string, unknown>): DisputePolicy {
@@ -63,7 +49,7 @@ export function toDisputePolicy(draft: ListingDraft['policy']): Record<string, u
 /** API photo paths are relative to the API root. */
 export const photoUrl = (path: string) => `${API_BASE}${path}`
 
-export function toListing(response: ListingResponse, extras: ListingExtras = {}): Listing {
+export function toListing(response: ListingResponse): Listing {
   return {
     id: response.id,
     sellerId: response.seller_id,
@@ -78,8 +64,8 @@ export function toListing(response: ListingResponse, extras: ListingExtras = {})
     category: response.category,
     photoUrls: response.photos.map((photo) => photoUrl(photo.url)),
     buyerName: response.buyer_name,
-    status: extras.status ?? response.status,
-    views: extras.views ?? null,
+    status: response.status,
+    views: null,
     seller: {
       name: response.seller.name,
       memberSince: response.seller.member_since,
@@ -129,41 +115,41 @@ export async function createListing(
   return { listing: toListing({ ...response, photos: uploaded }), photosFailed }
 }
 
-/** The seller's listings (backend-gap #7). */
-export async function listListings(filter: ListingFilter = {}): Promise<Listing[]> {
-  if (!isMocked('SELLER_LISTS')) throw new GapUnavailableError('SELLER_LISTS')
-  // backend-gap #7
-  const rows = await gapRequest<GapRow[]>('get', '/__gaps__/seller/listings', {
-    query: { status: filter.status, q: filter.q },
+/** GET /listings: the seller's own listings, newest first (up to 100 per filter). */
+export async function listListings(filter: ListingFilter = {}): Promise<ListingPage> {
+  const raw = await api.get('/listings', {
+    query: { status: filter.status, q: filter.q?.trim() || undefined, page_size: 100 },
   })
-  return rows.map((row) => toListing(row.listing, row.extras))
+  return { listings: raw.items.map(toListing), total: raw.total, counts: raw.counts }
 }
 
-/** Edit an unpaid listing (backend-gap #140). */
+/** PATCH /listings/{id}: edit a listing with no paid or pending order (409 otherwise). */
 export async function updateListing(id: string, draft: ListingDraft): Promise<Listing> {
-  if (!isMocked('LISTING_UPDATE')) throw new GapUnavailableError('LISTING_UPDATE')
-  // backend-gap #140
-  const row = await gapRequest<GapRow>('patch', `/__gaps__/listings/${encodeURIComponent(id)}`, {
-    body: {
-      title: draft.item.title,
-      price: String(draft.item.price),
-      is_serialized: draft.type.isSerialized,
-      unique_id: draft.type.isSerialized ? (draft.type.uniqueId ?? null) : null,
-      dispute_policy: toDisputePolicy(draft.policy),
-      description: draft.item.description,
-      category: draft.item.category,
-      buyer_name: draft.item.buyerName || null,
-    },
-  })
-  return toListing(row.listing, row.extras)
+  return toListing(
+    await api.patch('/listings/{listing_id}', {
+      path: { listing_id: id },
+      body: {
+        title: draft.item.title,
+        price: String(draft.item.price),
+        is_serialized: draft.type.isSerialized,
+        unique_id: draft.type.isSerialized ? (draft.type.uniqueId ?? null) : null,
+        dispute_policy: toDisputePolicy(draft.policy),
+        description: draft.item.description,
+        category: draft.item.category,
+        buyer_name: draft.item.buyerName || null,
+      },
+    }),
+  )
 }
 
-/** Archive: the link stops taking payments (backend-gap #140). */
+/** Archive: the Trust Link stops taking payments (409 once paid). */
 export async function archiveListing(id: string): Promise<Listing> {
-  if (!isMocked('LISTING_UPDATE')) throw new GapUnavailableError('LISTING_UPDATE')
-  // backend-gap #140
-  const row = await gapRequest<GapRow>('post', `/__gaps__/listings/${encodeURIComponent(id)}/archive`)
-  return toListing(row.listing, row.extras)
+  return toListing(await api.post('/listings/{listing_id}/archive', { path: { listing_id: id } }))
+}
+
+/** Restore an archived listing: its link takes payments again. */
+export async function restoreListing(id: string): Promise<Listing> {
+  return toListing(await api.post('/listings/{listing_id}/restore', { path: { listing_id: id } }))
 }
 
 /**

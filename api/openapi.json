@@ -215,7 +215,8 @@
                   "enum": [
                     "active",
                     "awaiting_payment",
-                    "sold"
+                    "sold",
+                    "archived"
                   ],
                   "type": "string"
                 },
@@ -343,6 +344,63 @@
                 }
               }
             }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Listings"
+        ],
+        "summary": "Update a listing (owner only)",
+        "description": "Change any of the create fields; the result must pass the create rules. Refused (409) once the listing has a paid or pending order, or while it is archived.",
+        "operationId": "update_seller_listing_listings__listing_id__patch",
+        "parameters": [
+          {
+            "name": "listing_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Listing Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateListingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Caller is not the listing's seller."
+          },
+          "404": {
+            "description": "Listing not found."
+          },
+          "409": {
+            "description": "The listing can't change in its current status."
+          },
+          "422": {
+            "description": "The updated listing is invalid."
           }
         }
       }
@@ -485,13 +543,125 @@
         }
       }
     },
+    "/listings/{listing_id}/archive": {
+      "post": {
+        "tags": [
+          "Listings"
+        ],
+        "summary": "Archive a listing (owner only)",
+        "description": "The Trust Link stops taking payments. Idempotent. Refused (409) once the listing has a paid or pending order.",
+        "operationId": "archive_seller_listing_listings__listing_id__archive_post",
+        "parameters": [
+          {
+            "name": "listing_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Listing Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Caller is not the listing's seller."
+          },
+          "404": {
+            "description": "Listing not found."
+          },
+          "409": {
+            "description": "The listing can't change in its current status."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/listings/{listing_id}/restore": {
+      "post": {
+        "tags": [
+          "Listings"
+        ],
+        "summary": "Restore an archived listing (owner only)",
+        "description": "The Trust Link takes payments again. Idempotent.",
+        "operationId": "restore_seller_listing_listings__listing_id__restore_post",
+        "parameters": [
+          {
+            "name": "listing_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Listing Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Caller is not the listing's seller."
+          },
+          "404": {
+            "description": "Listing not found."
+          },
+          "409": {
+            "description": "The listing can't change in its current status."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/notifications": {
       "get": {
         "tags": [
           "Notifications"
         ],
         "summary": "List notifications for current user",
-        "description": "Return notifications belonging to the authenticated user only, ordered by newest first. Supports limit/offset pagination for client polling.",
+        "description": "Return notifications belonging to the authenticated user only, ordered by newest first. Supports limit/offset pagination for client polling, an unread-only filter and a channel filter (in-app inboxes pass channel=in_app so SMS copies are not repeated).",
         "operationId": "list_current_user_notifications_notifications_get",
         "parameters": [
           {
@@ -516,6 +686,36 @@
               "default": 0,
               "title": "Offset"
             }
+          },
+          {
+            "name": "unread",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Only unread notifications.",
+              "default": false,
+              "title": "Unread"
+            },
+            "description": "Only unread notifications."
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/NotificationChannel"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only this channel.",
+              "title": "Channel"
+            },
+            "description": "Only this channel."
           }
         ],
         "responses": {
@@ -538,6 +738,104 @@
           },
           "422": {
             "description": "Pagination query parameters are invalid."
+          }
+        }
+      }
+    },
+    "/notifications/unread-count": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Count unread in-app notifications",
+        "operationId": "get_unread_count_notifications_unread_count_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnreadCountResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          }
+        }
+      }
+    },
+    "/notifications/read-all": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Mark all my notifications as read",
+        "operationId": "mark_all_read_notifications_read_all_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarkAllReadResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          }
+        }
+      }
+    },
+    "/notifications/{notification_id}/read": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Mark one notification as read",
+        "description": "Idempotent: a notification already read keeps its first read_at.",
+        "operationId": "mark_one_read_notifications__notification_id__read_post",
+        "parameters": [
+          {
+            "name": "notification_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Notification Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "404": {
+            "description": "Not found, or not the caller's."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
         }
       }
@@ -3190,7 +3488,8 @@
             "enum": [
               "active",
               "awaiting_payment",
-              "sold"
+              "sold",
+              "archived"
             ],
             "title": "Status",
             "description": "active: open for payment. awaiting_payment: a buyer started paying. sold: paid and not refunded; new transactions are refused."
@@ -3277,13 +3576,18 @@
           "sold": {
             "type": "integer",
             "title": "Sold"
+          },
+          "archived": {
+            "type": "integer",
+            "title": "Archived"
           }
         },
         "type": "object",
         "required": [
           "active",
           "awaiting_payment",
-          "sold"
+          "sold",
+          "archived"
         ],
         "title": "ListingStatusCounts",
         "description": "How many of the seller's listings are in each status."
@@ -3446,6 +3750,25 @@
         ],
         "title": "LoopCollectionWebhookResponse",
         "description": "Acknowledgement payload for LOOP collection callbacks."
+      },
+      "MarkAllReadResponse": {
+        "properties": {
+          "updated": {
+            "type": "integer",
+            "title": "Updated"
+          },
+          "unread_count": {
+            "type": "integer",
+            "title": "Unread Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "updated",
+          "unread_count"
+        ],
+        "title": "MarkAllReadResponse",
+        "description": "How many notifications were marked read, and what is still unread (always 0)."
       },
       "MoneyAuditEventListResponse": {
         "properties": {
@@ -4923,6 +5246,127 @@
         ],
         "title": "TransactionSummaryResponse",
         "description": "One row of the caller's order list."
+      },
+      "UnreadCountResponse": {
+        "properties": {
+          "unread_count": {
+            "type": "integer",
+            "title": "Unread Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "unread_count"
+        ],
+        "title": "UnreadCountResponse",
+        "description": "Unread in-app notifications, for the bell badge."
+      },
+      "UpdateListingRequest": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "buyer_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Buyer Name"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,10}|(?=[\\d.]{1,13}0*$)\\d{0,10}\\.\\d{0,2}0*$)"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price"
+          },
+          "is_serialized": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Serialized"
+          },
+          "unique_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unique Id"
+          },
+          "dispute_policy": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dispute Policy"
+          }
+        },
+        "type": "object",
+        "title": "UpdateListingRequest",
+        "description": "Fields to change; anything left out keeps its value. The result must pass create rules."
       },
       "UserRole": {
         "type": "string",

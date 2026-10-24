@@ -1,25 +1,18 @@
 import { http, HttpResponse } from 'msw'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { gapHandlers } from '@/mocks/registry'
-import '@/mocks/gaps'
-import { listingResponse } from '@/test/fixtures'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { listingListResponse, listingResponse } from '@/test/fixtures'
 import { server } from '@/test/server'
 import type { ListingDraft } from '@/models/schemas/listing'
 import {
   archiveListing,
   createListing,
   draftFromListing,
-  GapUnavailableError,
   getListing,
   listListings,
+  restoreListing,
+  updateListing,
   toDisputePolicy,
 } from './listings'
-
-const mocked = new Set<string>()
-vi.mock('./gaps', async (original) => ({
-  ...(await original<object>()),
-  isMocked: (gap: string) => mocked.has(gap),
-}))
 
 const draft: ListingDraft = {
   item: {
@@ -40,7 +33,6 @@ const draft: ListingDraft = {
 let posted: Record<string, unknown> | undefined
 let uploads: string[]
 beforeEach(() => {
-  mocked.clear()
   posted = undefined
   uploads = []
   server.use(
@@ -122,26 +114,56 @@ describe('listing adapter', () => {
     })
   })
 
-  it('needs the list and archive gaps, and uses their mocks when on', async () => {
-    await expect(listListings()).rejects.toBeInstanceOf(GapUnavailableError)
-    await expect(archiveListing('x')).rejects.toBeInstanceOf(GapUnavailableError)
-    mocked.add('SELLER_LISTS')
-    mocked.add('LISTING_UPDATE')
-    server.use(...(gapHandlers.SELLER_LISTS ?? []), ...(gapHandlers.LISTING_UPDATE ?? []))
-    const active = await listListings({ status: 'active' })
-    expect(active.length).toBeGreaterThan(0)
-    expect(active.every((l) => l.status === 'active')).toBe(true)
-    const archived = await archiveListing(active[0]?.id ?? '')
-    expect(archived.status).toBe('archived')
-    await expect(archiveListing('7f3c2a10-0001-4b6e-9a1d-000000000001')).rejects.toMatchObject({
-      kind: 'conflict',
-    })
+  it('lists the seller listings with the filter and the server counts', async () => {
+    let url = new URL('http://x')
+    server.use(
+      http.get('/api/listings', ({ request }) => {
+        url = new URL(request.url)
+        return HttpResponse.json(listingListResponse([listingResponse({ id: 'l1' })]))
+      }),
+    )
+    const page = await listListings({ status: 'active', q: ' iphone ' })
+    expect(Object.fromEntries(url.searchParams)).toEqual({ status: 'active', q: 'iphone', page_size: '100' })
+    expect(page).toMatchObject({ total: 1, counts: { active: 1, sold: 0, archived: 0 } })
+    expect(page.listings[0]?.id).toBe('l1')
+  })
+
+  it('updates, archives and restores on the real endpoints', async () => {
+    let patched: Record<string, unknown> | undefined
+    server.use(
+      http.patch('/api/listings/l1', async ({ request }) => {
+        patched = (await request.json()) as Record<string, unknown>
+        return HttpResponse.json(listingResponse({ id: 'l1', title: String(patched.title) }))
+      }),
+      http.post('/api/listings/l1/archive', () =>
+        HttpResponse.json(listingResponse({ id: 'l1', status: 'archived' })),
+      ),
+      http.post('/api/listings/l1/restore', () => HttpResponse.json(listingResponse({ id: 'l1' }))),
+      http.post('/api/listings/sold/archive', () =>
+        HttpResponse.json({ detail: 'This listing has a paid order.' }, { status: 409 }),
+      ),
+    )
+    expect((await updateListing('l1', draft)).title).toBe('iPhone 13, 128GB, Midnight')
+    expect(patched).toMatchObject({ price: '52000', unique_id: '352098114371234', buyer_name: null })
+    expect((await archiveListing('l1')).status).toBe('archived')
+    expect((await restoreListing('l1')).status).toBe('active')
+    await expect(archiveListing('sold')).rejects.toMatchObject({ kind: 'conflict' })
   })
 
   it('pre-fills a duplicate without the serial number', async () => {
-    mocked.add('SELLER_LISTS')
-    server.use(...(gapHandlers.SELLER_LISTS ?? []))
-    const source = await getListing('7f3c2a10-0004-4b6e-9a1d-000000000004')
+    server.use(
+      http.get('/api/listings/hp', () =>
+        HttpResponse.json(
+          listingResponse({
+            id: 'hp',
+            title: 'HP Pavilion 15 laptop',
+            category: 'Laptops and computers',
+            price: '68500.00',
+          }),
+        ),
+      ),
+    )
+    const source = await getListing('hp')
     const copy = draftFromListing(source)
     expect(copy.item).toMatchObject({
       title: 'HP Pavilion 15 laptop',

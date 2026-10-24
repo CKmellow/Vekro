@@ -3,7 +3,7 @@ import { payoutBreakdown } from '@/lib/fees'
 import { ApiError } from '@/models/api/errors'
 import { toast } from '@/lib/toast'
 import { LISTING_STATUS_VIEW, policySummary } from '@/models/domain/listing'
-import { useArchiveListing, useListing } from '@/models/queries/listings'
+import { useArchiveListing, useListing, useRestoreListing } from '@/models/queries/listings'
 import { listingLink } from './useListingsPage'
 
 async function copy(text: string, done: string) {
@@ -22,6 +22,7 @@ export function useListingDetail() {
   const navigate = useNavigate()
   const query = useListing(id)
   const archive = useArchiveListing()
+  const restore = useRestoreListing()
   const listing = query.data
   const link = listingLink(id)
 
@@ -76,5 +77,14 @@ export function useListingDetail() {
       }
     },
     archivePending: archive.isPending,
+    restore: async () => {
+      try {
+        await restore.mutateAsync(id)
+        toast.show('Restored. The link takes payments again.')
+      } catch {
+        toast.show("Couldn't restore this listing", 'danger')
+      }
+    },
+    restorePending: restore.isPending,
   }
 }

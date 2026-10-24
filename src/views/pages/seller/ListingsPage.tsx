@@ -35,7 +35,7 @@ export function ListingsPage() {
         {newListing}
       </div>
 
-      {p.state !== 'unavailable' && p.state !== 'empty' && (
+      {p.state !== 'empty' && (
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           <div className="min-w-0 lg:flex-1">
             <SegmentedControl
@@ -109,16 +109,12 @@ export function ListingsPage() {
         />
       )}
 
-      {(p.state === 'empty' || p.state === 'unavailable') && (
+      {p.state === 'empty' && (
         <div className="rounded-lg bg-surface shadow-1">
           <EmptyState
             illustration="vault"
-            title={p.state === 'empty' ? 'Create your first listing' : 'Your listings will show here'}
-            body={
-              p.state === 'empty'
-                ? 'Make a Trust Link and share it on WhatsApp or Instagram. Buyers pay into escrow, so you ship with confidence.'
-                : "Vekro can't list your listings here yet. Open a listing from its link, or create a new one."
-            }
+            title="Create your first listing"
+            body="Make a Trust Link and share it on WhatsApp or Instagram. Buyers pay into escrow, so you ship with confidence."
             action={newListing}
           />
         </div>

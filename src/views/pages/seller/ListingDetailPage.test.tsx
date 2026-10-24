@@ -3,17 +3,13 @@ import { http, HttpResponse } from 'msw'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { toast } from '@/lib/toast'
-import { gapHandlers } from '@/mocks/registry'
-import '@/mocks/gaps'
+import { listingResponse } from '@/test/fixtures'
 import { renderWithProviders } from '@/test/render'
 import { server } from '@/test/server'
 import { ListingDetailPage } from './ListingDetailPage'
 
-const mocked = new Set<string>()
-vi.mock('@/models/api/adapters/gaps', async (original) => ({
-  ...(await original<object>()),
-  isMocked: (gap: string) => mocked.has(gap),
-}))
+const SHOES = 'l-shoes'
+const shoes = listingResponse({ id: SHOES, title: 'Nike Air Force 1, size 42', is_serialized: false })
 
 function renderAt(url: string) {
   const router = createMemoryRouter(
@@ -27,20 +23,29 @@ function renderAt(url: string) {
 }
 
 beforeEach(() => {
-  mocked.clear()
-  // The seeded listings come from the #7 list mock; archive comes from the #140 mock.
-  mocked.add('SELLER_LISTS').add('LISTING_UPDATE')
-  server.use(...(gapHandlers.SELLER_LISTS ?? []), ...(gapHandlers.LISTING_UPDATE ?? []))
+  let current = shoes
+  server.use(
+    http.get(`/api/listings/${SHOES}`, () => HttpResponse.json(current)),
+    http.get('/api/listings/sold', () => HttpResponse.json(listingResponse({ id: 'sold', status: 'sold' }))),
+    http.post(`/api/listings/${SHOES}/archive`, () => {
+      current = { ...shoes, status: 'archived' }
+      return HttpResponse.json(current)
+    }),
+    http.post(`/api/listings/${SHOES}/restore`, () => {
+      current = shoes
+      return HttpResponse.json(current)
+    }),
+  )
   act(() => toast.current().forEach((t) => toast.dismiss(t.id)))
 })
 
 describe('S9 listing detail', () => {
   it('celebrates a new listing and shares its Trust Link', async () => {
-    const { user } = renderAt('/seller/listings/7f3c2a10-0002-4b6e-9a1d-000000000002?published=1')
+    const { user } = renderAt(`/seller/listings/${SHOES}?published=1`)
     expect(
       await screen.findByText('Your listing is live. Share the link so buyers can pay safely.'),
     ).toBeInTheDocument()
-    const link = `${window.location.origin}/pay/7f3c2a10-0002-4b6e-9a1d-000000000002`
+    const link = `${window.location.origin}/pay/${SHOES}`
     expect(screen.getByRole('link', { name: 'Share on WhatsApp' })).toHaveAttribute(
       'href',
       expect.stringContaining(encodeURIComponent(link)),
@@ -53,20 +58,24 @@ describe('S9 listing detail', () => {
   })
 
   it('locks a listing with a paid order', async () => {
-    renderAt('/seller/listings/7f3c2a10-0001-4b6e-9a1d-000000000001')
+    renderAt('/seller/listings/sold')
     expect(await screen.findByText('This listing has a paid order')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Edit' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Archive' })).toBeDisabled()
     expect(screen.queryByRole('heading', { name: 'Your Trust Link is ready' })).not.toBeInTheDocument()
   })
 
-  it('offers Duplicate when archived', async () => {
-    const { user, router } = renderAt('/seller/listings/7f3c2a10-0003-4b6e-9a1d-000000000003')
+  it('offers Restore and Duplicate when archived', async () => {
+    const { user, router } = renderAt(`/seller/listings/${SHOES}`)
+    await user.click(await screen.findByRole('button', { name: 'Archive' }))
+    await user.click(await screen.findByRole('button', { name: 'Archive listing' }))
+    await user.click(await screen.findByRole('button', { name: 'Restore listing' }))
+    expect(await screen.findByRole('heading', { name: 'Your Trust Link is ready' })).toBeInTheDocument()
     await user.click(await screen.findByRole('button', { name: 'Archive' }))
     await user.click(await screen.findByRole('button', { name: 'Archive listing' }))
     await user.click(await screen.findByRole('button', { name: 'Duplicate as new listing' }))
     expect(`${router.state.location.pathname}${router.state.location.search}`).toBe(
-      '/seller/listings/new?from=7f3c2a10-0003-4b6e-9a1d-000000000003',
+      `/seller/listings/new?from=${SHOES}`,
     )
   })
 
