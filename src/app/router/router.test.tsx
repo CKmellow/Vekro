@@ -70,6 +70,8 @@ describe('router', () => {
     signedInAs('seller')
     const { router } = renderAt('/')
     await waitFor(() => expect(router.state.location.pathname).toBe('/seller'))
+    // Let the dashboard finish loading so its requests don't land in the next test.
+    expect(await screen.findByRole('heading', { name: 'Needs your action' })).toBeInTheDocument()
   })
 
   it('sends unbuilt public pages to built pages only', async () => {

@@ -174,3 +174,24 @@ export const notificationResponse = (
   created_at: '2026-10-24T09:00:00Z',
   ...overrides,
 })
+
+/** The dispute behind VK-7K3P9Q: "not working", reported 21 Oct 11:02 UTC. */
+export const disputeResponse = (
+  overrides: Partial<NonNullable<Schemas['TransactionDetailResponse']['dispute']>> = {},
+): NonNullable<Schemas['TransactionDetailResponse']['dispute']> => ({
+  id: 'd-1',
+  status: 'open',
+  category: 'not_working',
+  description: 'The screen flickers and goes black after a few minutes.',
+  opened_at: '2026-10-21T11:02:00Z',
+  escalated_at: null,
+  resolved_at: null,
+  seller_action: null,
+  seller_notes: null,
+  buyer_notes: null,
+  reconfirm_rejections: 0,
+  buyer_confirmed_resolved: false,
+  seller_confirmed_resolved: false,
+  admin_decision: null,
+  ...overrides,
+})
