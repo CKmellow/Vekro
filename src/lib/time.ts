@@ -46,3 +46,31 @@ export function formatCountdown(ms: number): { lines: string[]; spoken: string }
     return { lines: [`${h}h`, `${pad(m)}m`], spoken: `${plural(h, 'hour')} ${plural(m, 'minute')} left` }
   return { lines: [`${pad(m)}:${pad(s)}`], spoken: `${plural(m, 'minute')} ${plural(s, 'second')} left` }
 }
+
+const fullDate = new Intl.DateTimeFormat('en-GB', {
+  timeZone: TZ,
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+})
+
+/** "24 Oct 2026, 14:36" in EAT, for `title` tooltips next to relative times. */
+export function formatEatFull(iso: string): string {
+  return fullDate.format(new Date(iso))
+}
+
+/** "Just now", "12 min ago", "3 hours ago", "Yesterday", "5 days ago", then the EAT date ("12 Oct"). */
+export function formatRelative(iso: string, now: Date = new Date()): string {
+  const minutes = Math.floor((now.getTime() - new Date(iso).getTime()) / 60_000)
+  if (minutes < 1) return 'Just now'
+  if (minutes < 60) return `${minutes} min ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`
+  const days = Math.floor(hours / 24)
+  if (days === 1) return 'Yesterday'
+  if (days < 7) return `${days} days ago`
+  return day.format(new Date(iso))
+}

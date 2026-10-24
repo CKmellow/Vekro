@@ -87,13 +87,13 @@ describe('router', () => {
 
   it('says the session expired when it ends under a signed-in seller', async () => {
     signedInAs('seller')
-    const { router, client } = renderAt('/seller/orders')
-    await screen.findByText(/building the Orders page/)
+    const { router, client } = renderAt('/seller/analytics')
+    await screen.findByText(/building the Analytics page/)
     signedInAs(null)
     await act(() => client.invalidateQueries({ queryKey: ['session', 'me'] }))
     await screen.findByRole('heading', { name: 'Log in to Vekro' })
     expect(new URLSearchParams(router.state.location.search).get('reason')).toBe('expired')
-    expect(new URLSearchParams(router.state.location.search).get('returnTo')).toBe('/seller/orders')
+    expect(new URLSearchParams(router.state.location.search).get('returnTo')).toBe('/seller/analytics')
   })
 
   it('sends anonymous users to the admin login for console routes', async () => {

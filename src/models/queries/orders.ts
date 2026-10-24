@@ -1,10 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createOrder,
+  dispatchOrder,
   getOrder,
   getTimeline,
   giveDeliveryCode,
   listOrders,
+  markArrived,
   rejectAtDoor,
   resendPayment,
 } from '@/models/api/transactions'
@@ -94,3 +96,15 @@ export const useRejectAtDoor = (orderId: string) =>
   useDoorDecision(orderId, ({ reason, note }: { reason: string | null; note: string | null }) =>
     rejectAtDoor(orderId, reason, note),
   )
+
+export type SellerTransition = 'dispatch' | 'mark_arrived'
+
+/** Dispatch or arrival for any of the seller's orders; every order query refetches when it settles. */
+export function useSellerTransition() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: ({ orderId, transition }: { orderId: string; transition: SellerTransition }) =>
+      transition === 'dispatch' ? dispatchOrder(orderId) : markArrived(orderId),
+    onSettled: () => client.invalidateQueries({ queryKey: orderKeys.all }),
+  })
+}

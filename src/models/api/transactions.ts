@@ -163,6 +163,16 @@ export async function rejectAtDoor(
   })
 }
 
+/** S6: the courier has the item (locked to out_for_delivery). Seller only; 409 if the state moved on. */
+export async function dispatchOrder(orderId: string): Promise<void> {
+  await api.post('/transactions/{transaction_id}/dispatch', { path: { transaction_id: orderId } })
+}
+
+/** S6: the courier is at the buyer's door (out_for_delivery to at_door_pending_inspection). Seller only. */
+export async function markArrived(orderId: string): Promise<void> {
+  await api.post('/transactions/{transaction_id}/arrival', { path: { transaction_id: orderId } })
+}
+
 export interface TimelineEvent {
   kind: string
   at: string
