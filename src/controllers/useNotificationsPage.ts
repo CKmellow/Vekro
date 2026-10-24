@@ -24,6 +24,7 @@ export interface NotificationRow {
   id: string
   kind: NotificationKind
   title: string
+  reference: string | null
   detail: string
   time: string
   timeFull: string
@@ -67,6 +68,7 @@ export function groupByDay(items: AppNotification[], now = new Date()): Notifica
       id: n.id,
       kind: KIND[n.event] ?? 'other',
       title: n.title,
+      reference: n.reference,
       detail: n.message,
       time: formatRelative(n.createdAt, now),
       timeFull: formatEatFull(n.createdAt),

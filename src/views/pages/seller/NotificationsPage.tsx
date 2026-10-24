@@ -46,7 +46,7 @@ function Row({ row, onOpen }: { row: NotificationRow; onOpen: () => void }) {
       <Link
         to={row.to}
         onClick={onOpen}
-        className="flex min-h-16 w-full items-center gap-4 rounded-md px-3 py-3 text-left transition-colors hover:bg-sand-50"
+        className="flex min-h-16 w-full items-center gap-3 rounded-md px-2 py-3 sm:gap-4 sm:px-3 text-left transition-colors hover:bg-sand-50"
       >
         <span className={cn('grid size-10 shrink-0 place-items-center rounded-full', tint)}>
           <Icon aria-hidden="true" className="size-5" />
@@ -61,9 +61,16 @@ function Row({ row, onOpen }: { row: NotificationRow; onOpen: () => void }) {
           >
             {row.title}
           </span>
-          <span className="type-body-sm block truncate text-text-muted">{row.detail}</span>
+          <span className="type-body-sm block truncate text-text-muted">
+            {row.reference && <span className="type-mono text-ink-600">{row.reference} · </span>}
+            {row.detail}
+          </span>
         </span>
-        <time dateTime={row.at} title={row.timeFull} className="type-mono shrink-0 text-text-muted">
+        <time
+          dateTime={row.at}
+          title={row.timeFull}
+          className="type-body-sm shrink-0 whitespace-nowrap text-text-muted"
+        >
           {row.time}
         </time>
         <span
@@ -73,7 +80,7 @@ function Row({ row, onOpen }: { row: NotificationRow; onOpen: () => void }) {
             row.unread ? 'opacity-100' : 'opacity-0',
           )}
         />
-        <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-ink-400" />
+        <ChevronRight aria-hidden="true" className="hidden size-4 shrink-0 text-ink-400 sm:block" />
       </Link>
     </motion.li>
   )
@@ -84,9 +91,14 @@ export function NotificationsPage() {
   const p = useNotificationsPage()
   return (
     <div className="mx-auto flex w-full max-w-180 flex-col gap-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <h1 className="type-display-lg text-text">Notifications</h1>
-        <Button variant="ghost" disabled={!p.canMarkAll} onClick={() => void p.markAll()}>
+        <Button
+          variant="ghost"
+          className="whitespace-nowrap"
+          disabled={!p.canMarkAll}
+          onClick={() => void p.markAll()}
+        >
           <CheckCheck aria-hidden="true" className="size-5" />
           Mark all as read
         </Button>

@@ -63,7 +63,7 @@ describe('S14 notifications', () => {
     renderPage()
     expect(await screen.findByRole('heading', { name: 'Today' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Earlier' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Unread: Payment received for VK-7K3P9Q/ })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Unread: Buyer payment confirmed VK-7K3P9Q/ })).toHaveAttribute(
       'href',
       `/seller/orders/${unread.transaction_id}`,
     )
@@ -77,7 +77,7 @@ describe('S14 notifications', () => {
   it('marks a notification read when it is opened', async () => {
     serve()
     const { user } = renderPage()
-    await user.click(await screen.findByRole('link', { name: /Unread: Payment received/ }))
+    await user.click(await screen.findByRole('link', { name: /Unread: Buyer payment confirmed/ }))
     expect(await screen.findByRole('heading', { name: 'Order' })).toBeInTheDocument()
     await waitFor(() => expect(marked).toEqual(['n-1']))
   })

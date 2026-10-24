@@ -5,6 +5,7 @@ import { groupByDay, linkFor } from './useNotificationsPage'
 const n = (id: string, createdAt: string, extra: Partial<AppNotification> = {}): AppNotification => ({
   id,
   orderId: 'o1',
+  reference: 'VK-7K3P9Q',
   event: 'transaction_locked',
   title: id,
   message: '',

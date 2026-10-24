@@ -1721,6 +1721,11 @@ export interface components {
              * Format: uuid
              */
             transaction_id: string;
+            /**
+             * Transaction Reference
+             * @description The order's human reference, for example VK-7K3P9Q.
+             */
+            transaction_reference?: string | null;
             event_type: components["schemas"]["NotificationEventType"];
             channel: components["schemas"]["NotificationChannel"];
             /** Title */
