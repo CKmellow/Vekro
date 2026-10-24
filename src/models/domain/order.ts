@@ -122,3 +122,13 @@ export interface OrderList {
   statusCounts: Partial<Record<TransactionStatus, number>>
   serverOffsetMs: number
 }
+
+/** Money totals for the seller dashboard; months are calendar months in EAT. */
+export interface SellerSummary {
+  inEscrow: { amount: number; orders: number }
+  releasedThisMonth: { amount: number; orders: number }
+  releasedLastMonth: { amount: number; orders: number }
+  awaitingDispatch: number
+  openIssues: number
+  nextRelease: { id: string; reference: string } | null
+}

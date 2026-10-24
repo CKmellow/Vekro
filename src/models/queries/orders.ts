@@ -3,6 +3,7 @@ import {
   createOrder,
   dispatchOrder,
   getOrder,
+  getSellerSummary,
   getTimeline,
   giveDeliveryCode,
   listOrders,
@@ -15,6 +16,7 @@ import type { Order, OrderListFilter } from '@/models/domain/order'
 export const orderKeys = {
   all: ['orders'] as const,
   list: (filter: OrderListFilter) => ['orders', 'list', filter] as const,
+  summary: ['orders', 'summary'] as const,
   detail: (id: string) => ['orders', 'detail', id] as const,
   timeline: (id: string) => ['orders', 'timeline', id] as const,
 }
@@ -41,6 +43,10 @@ export const useOrders = (
     refetchIntervalInBackground: false,
     placeholderData: (previous) => previous,
   })
+
+/** The seller dashboard totals; refetches with every order change (it shares the orders key). */
+export const useSellerSummary = () =>
+  useQuery({ queryKey: orderKeys.summary, queryFn: ({ signal }) => getSellerSummary(signal) })
 
 interface OrderOptions {
   enabled?: boolean

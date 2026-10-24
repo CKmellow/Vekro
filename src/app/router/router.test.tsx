@@ -1,8 +1,8 @@
 import { act, screen, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { createMemoryRouter, RouterProvider } from 'react-router'
-import { describe, expect, it, vi } from 'vitest'
-import { listingListResponse } from '@/test/fixtures'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { listingListResponse, orderListResponse, sellerSummaryResponse } from '@/test/fixtures'
 import { renderWithProviders } from '@/test/render'
 import { server } from '@/test/server'
 import { RouteError } from './RouteError'
@@ -36,6 +36,15 @@ function renderAt(path: string) {
 }
 
 describe('router', () => {
+  // The seller shell asks for badge counts, and the dashboard for its totals.
+  beforeEach(() => {
+    server.use(
+      http.get('/api/listings', () => HttpResponse.json(listingListResponse([]))),
+      http.get('/api/transactions', () => HttpResponse.json(orderListResponse([]))),
+      http.get('/api/transactions/summary', () => HttpResponse.json(sellerSummaryResponse())),
+    )
+  })
+
   it('serves the component gallery in dev builds', async () => {
     renderAt('/dev/ui')
     expect(
@@ -56,11 +65,10 @@ describe('router', () => {
     expect(router.state.location.pathname).toBe('/login')
   })
 
-  it('sends a signed-in seller from / to their listings', async () => {
+  it('sends a signed-in seller from / to their dashboard', async () => {
     signedInAs('seller')
-    server.use(http.get('/api/listings', () => HttpResponse.json(listingListResponse([]))))
     const { router } = renderAt('/')
-    await waitFor(() => expect(router.state.location.pathname).toBe('/seller/listings'))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/seller'))
   })
 
   it('sends unbuilt public pages to built pages only', async () => {
@@ -107,10 +115,10 @@ describe('router', () => {
 
   it('lets a seller into seller routes', async () => {
     signedInAs('seller')
-    renderAt('/seller')
+    renderAt('/seller/settings')
     expect(await screen.findByRole('heading', { name: 'Still under construction' })).toBeInTheDocument()
-    expect(screen.getByText(/building the Dashboard page/)).toBeInTheDocument()
-    expect(document.title).toBe('Dashboard · Vekro')
+    expect(screen.getByText(/building the Settings page/)).toBeInTheDocument()
+    expect(document.title).toBe('Settings · Vekro')
   })
 
   it('keeps the seller nav on unbuilt seller pages and points back to listings', async () => {

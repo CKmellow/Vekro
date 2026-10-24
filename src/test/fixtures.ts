@@ -139,3 +139,17 @@ export const sellerOrderResponse = (
     payout: { status: 'held', amount: null, reference: null, paid_at: null },
     ...overrides,
   })
+
+/** Amina's dashboard totals. */
+export const sellerSummaryResponse = (
+  overrides: Partial<Schemas['SellerSummaryResponse']> = {},
+): Schemas['SellerSummaryResponse'] => ({
+  in_escrow: { amount: '143500.00', orders: 5 },
+  released_this_month: { amount: '428000.00', orders: 31 },
+  released_last_month: { amount: '382000.00', orders: 27 },
+  awaiting_dispatch: 3,
+  open_issues: 1,
+  next_release: { id: orderResponse().id, reference: 'VK-7K3P9Q' },
+  server_time: '2026-10-24T09:00:00Z',
+  ...overrides,
+})
