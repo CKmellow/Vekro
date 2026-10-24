@@ -12,7 +12,6 @@ Reconciled against `api/openapi.json` on 2026-10-24 (resynced from CKmellow/Vekr
 | P1-2 Phone-verified guest session | #11 | M15 | Open | `VITE_MOCK_PHONE_AUTH` | not yet |
 | P1-3 Buyer order history | #12 | M15 | Open | `VITE_MOCK_BUYER_ORDERS` | not yet |
 | P1-7 Seller profile and payout settings update | #144 | M4 | Open (mocked) | `VITE_MOCK_SELLER_PROFILE` | `src/mocks/gaps/sellerProfile.ts` |
-| P1-8 Notifications mark as read | #145 | M9 | Open | `VITE_MOCK_NOTIFICATION_READ` | not yet |
 | P1-9 Seller disagree-and-escalate | #146 | M12 | Open | `VITE_MOCK_ESCALATE` | not yet |
 | P1-10 Admin transaction search | #147 | M14 | Open | `VITE_MOCK_ADMIN_SEARCH` | not yet |
 | P2-1 Courier/seller code verify | #14 | M16 | Open (only if needed) | none | n/a |
@@ -35,3 +34,4 @@ Reconciled against `api/openapi.json` on 2026-10-24 (resynced from CKmellow/Vekr
 | P1-5 Order timeline for buyer and seller | #142 | 2026-10-20 | Backend PR CKmellow/Vekro-backend#172 (issue #171). `GET /transactions/{id}/timeline` returns `{ kind, at, title, description }` oldest first, in words for the caller's role; notification messages and payloads (which hold the delivery code) are never returned. Used by B3 and B7. |
 | P0-2 Seller order and listing lists | #7 | 2026-10-24 | Backend PR CKmellow/Vekro-backend#176 (issue #175). `GET /transactions` lists the caller's orders (bought or sold) with `segment`, repeatable `status`, `q`, `sort`, page numbers, per-segment and per-status counts and `server_time`. `GET /listings` lists the seller's listings with status counts. Used by S5 (`listOrders`) and S8 (`listListings`); the `VITE_MOCK_SELLER_LISTS` mock is deleted. Page numbers instead of the cursor first requested. |
 | P0-6 Listing update, archive and duplicate | #140 | 2026-10-24 | Backend PR CKmellow/Vekro-backend#180 (issue #179). `PATCH /listings/{id}` (409 once paid or while archived), `POST /listings/{id}/archive` and `/restore`, status `archived`; archived listings refuse new transactions. Duplicate stays client-side. The `VITE_MOCK_LISTING_UPDATE` mock and `src/mocks/gaps/listings.ts` are deleted. |
+| P1-8 Notifications mark as read | #145 | 2026-10-24 | Backend PR CKmellow/Vekro-backend#178 (issue #177). `POST /notifications/{id}/read` (idempotent), `POST /notifications/read-all`, `GET /notifications/unread-count` (in-app), and `unread`/`channel` filters on the list. Used by S14 and the seller bell; the `VITE_MOCK_NOTIFICATION_READ` flag is removed. |

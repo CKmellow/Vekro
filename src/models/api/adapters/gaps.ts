@@ -9,7 +9,6 @@ export const GAPS = {
   BUYER_ORDERS: { id: 'P1-3', issue: 12 },
   TIMELINE: { id: 'P1-5', issue: 142 },
   SELLER_PROFILE: { id: 'P1-7', issue: 144 },
-  NOTIFICATION_READ: { id: 'P1-8', issue: 145 },
   ESCALATE: { id: 'P1-9', issue: 146 },
   ADMIN_SEARCH: { id: 'P1-10', issue: 147 },
   ANALYTICS: { id: 'P2-3', issue: 148 },

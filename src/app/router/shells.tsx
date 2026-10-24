@@ -19,6 +19,7 @@ export function SellerShell() {
       name={shell.name}
       ordersNeedingAction={shell.ordersNeedingAction}
       openReturns={shell.openReturns}
+      hasUnreadNotifications={shell.hasUnreadNotifications}
       onSearch={shell.onSellerSearch}
     >
       <Outlet />

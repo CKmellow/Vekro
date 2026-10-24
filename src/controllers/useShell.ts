@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router'
+import { useUnreadCount } from '@/models/queries/notifications'
 import { useOrders } from '@/models/queries/orders'
 import { useSession } from './useSession'
 
@@ -9,10 +10,12 @@ export function useShell() {
   const seller = session.status === 'authenticated' && session.role === 'seller'
   // One small request; it shares the orders cache, so badges update with every order change.
   const orders = useOrders({ pageSize: 1 }, { enabled: seller, refetchInterval: 60_000 })
+  const unread = useUnreadCount({ enabled: seller })
   const status = orders.data?.statusCounts
   const name = session.status === 'authenticated' ? session.user.name : ''
   return {
     name,
+    hasUnreadNotifications: (unread.data ?? 0) > 0,
     ordersNeedingAction: orders.data?.segmentCounts.needs_action,
     openReturns: status ? (status.return_in_transit ?? 0) + (status.return_received ?? 0) : undefined,
     onSellerSearch: (q: string) => navigate(`/seller/orders?q=${encodeURIComponent(q.trim())}`),
