@@ -1,9 +1,27 @@
-import type { CreatedOrder, Order, PaymentInstruction } from '@/models/domain/order'
-import { toPolicy } from './adapters/listings'
+import type {
+  CreatedOrder,
+  Order,
+  OrderDeadlines,
+  OrderList,
+  OrderListFilter,
+  OrderSummary,
+  PaymentInstruction,
+} from '@/models/domain/order'
+import type { TransactionStatus } from '@/models/domain/stateMeta'
+import { photoUrl, toPolicy } from './adapters/listings'
 import { api, type Schemas } from './client'
 
 type PaymentResponse = Schemas['PaymentInstructionResponse']
 type DetailResponse = Schemas['TransactionDetailResponse']
+type SummaryResponse = Schemas['TransactionSummaryResponse']
+
+const toDeadlines = (raw: Schemas['TransactionDeadlinesResponse']): OrderDeadlines => ({
+  dispatchBy: raw.dispatch_by ?? null,
+  inspectBy: raw.inspect_by ?? null,
+  holdUntil: raw.hold_until ?? null,
+  returnSendBy: raw.return_send_by ?? null,
+  returnConfirmBy: raw.return_confirm_by ?? null,
+})
 
 /**
  * The payment instruction as screens use it (FRONTEND_CONTRACT B). The kind is explicit in the contract;
@@ -41,13 +59,7 @@ export function toOrder(raw: DetailResponse, receivedAt = Date.now()): Order {
     },
     buyer: { name: raw.buyer.name, phoneMasked: raw.buyer.phone_masked },
     seller: { name: raw.seller.name, phoneMasked: raw.seller.phone_masked },
-    deadlines: {
-      dispatchBy: raw.deadlines.dispatch_by ?? null,
-      inspectBy: raw.deadlines.inspect_by ?? null,
-      holdUntil: raw.deadlines.hold_until ?? null,
-      returnSendBy: raw.deadlines.return_send_by ?? null,
-      returnConfirmBy: raw.deadlines.return_confirm_by ?? null,
-    },
+    deadlines: toDeadlines(raw.deadlines),
     serverOffsetMs: new Date(raw.server_time).getTime() - receivedAt,
     payment: raw.payment ? toPaymentInstruction(raw.payment) : null,
     doorRejection: raw.door_rejection
@@ -55,6 +67,51 @@ export function toOrder(raw: DetailResponse, receivedAt = Date.now()): Order {
       : null,
     createdAt: raw.created_at,
     updatedAt: raw.updated_at,
+  }
+}
+
+export function toOrderSummary(raw: SummaryResponse): OrderSummary {
+  return {
+    id: raw.id,
+    reference: raw.reference,
+    status: raw.status,
+    amount: Number(raw.amount),
+    viewerRole: raw.viewer_role,
+    listing: {
+      id: raw.listing.id,
+      title: raw.listing.title,
+      isSerialized: raw.listing.is_serialized,
+      photoUrl: raw.listing.photo_url ? photoUrl(raw.listing.photo_url) : null,
+    },
+    counterpart: { name: raw.counterpart.name, phoneMasked: raw.counterpart.phone_masked },
+    deadlines: toDeadlines(raw.deadlines),
+    createdAt: raw.created_at,
+    updatedAt: raw.updated_at,
+  }
+}
+
+/** GET /transactions: the caller's own orders (bought or sold). Counts cover all of them, before filters. */
+export async function listOrders(filter: OrderListFilter = {}, signal?: AbortSignal): Promise<OrderList> {
+  const raw = await api.get('/transactions', {
+    query: {
+      segment: filter.segment,
+      status: filter.statuses,
+      q: filter.q?.trim() || undefined,
+      sort: filter.sort,
+      page: filter.page,
+      page_size: filter.pageSize,
+    },
+    signal,
+  })
+  const receivedAt = Date.now()
+  return {
+    items: raw.items.map(toOrderSummary),
+    total: raw.total,
+    page: raw.page,
+    pageSize: raw.page_size,
+    segmentCounts: raw.counts,
+    statusCounts: raw.status_counts as Partial<Record<TransactionStatus, number>>,
+    serverOffsetMs: new Date(raw.server_time).getTime() - receivedAt,
   }
 }
 

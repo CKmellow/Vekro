@@ -77,3 +77,40 @@ export const orderResponse = (
   payment: paymentResponse(),
   ...overrides,
 })
+
+/** A seller's order-list row: VK-7K3P9Q paid and waiting to be dispatched by 26 Oct 09:10 UTC. */
+export const orderSummaryResponse = (
+  overrides: Partial<Schemas['TransactionSummaryResponse']> = {},
+): Schemas['TransactionSummaryResponse'] => ({
+  id: orderResponse().id,
+  reference: 'VK-7K3P9Q',
+  status: 'locked',
+  amount: '52000.00',
+  viewer_role: 'seller',
+  listing: {
+    id: listingResponse().id,
+    title: 'iPhone 13, 128GB, Midnight',
+    is_serialized: true,
+    photo_url: null,
+  },
+  counterpart: { name: 'Brian Otieno', phone_masked: '+254 712 *** 678' },
+  deadlines: { dispatch_by: '2026-10-26T09:10:00Z' },
+  created_at: '2026-10-24T09:10:00Z',
+  updated_at: '2026-10-24T09:10:00Z',
+  ...overrides,
+})
+
+/** One page of the seller's orders, with counts; `server_time` defaults to 24 Oct 09:00 UTC. */
+export const orderListResponse = (
+  items: Schemas['TransactionSummaryResponse'][] = [orderSummaryResponse()],
+  overrides: Partial<Schemas['TransactionListResponse']> = {},
+): Schemas['TransactionListResponse'] => ({
+  items,
+  total: items.length,
+  page: 1,
+  page_size: 20,
+  counts: { needs_action: 1, in_transit: 0, held: 0, completed: 0, issues: 0 },
+  status_counts: { locked: 1 },
+  server_time: '2026-10-24T09:00:00Z',
+  ...overrides,
+})

@@ -111,7 +111,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * List my listings (seller only)
+         * @description The authenticated seller's own listings, newest first. Filter by status and title; `counts` cover all their listings, before filters.
+         */
+        get: operations["list_my_listings_listings_get"];
         put?: never;
         /**
          * Create listing (seller only)
@@ -271,7 +275,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * List my orders (buyer or seller)
+         * @description The caller's own orders: orders they bought (buyers) or sold (sellers). Filter by list segment, by status (repeatable) and by reference or listing title; sort and page. `counts` and `status_counts` cover all the caller's orders, before filters.
+         */
+        get: operations["list_my_transactions_transactions_get"];
         put?: never;
         /**
          * Create transaction (buyer only)
@@ -1245,6 +1253,25 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
+         * ListingListResponse
+         * @description One page of the seller's own listings, newest first.
+         */
+        ListingListResponse: {
+            /** Items */
+            items: components["schemas"]["ListingResponse"][];
+            /**
+             * Total
+             * @description Listings matching the filters.
+             */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** @description Per status, before filters. */
+            counts: components["schemas"]["ListingStatusCounts"];
+        };
+        /**
          * ListingPhotoResponse
          * @description A listing photo. `url` is relative to the API root.
          */
@@ -1330,6 +1357,18 @@ export interface components {
              * @description Transactions released to this seller.
              */
             completed_sales: number;
+        };
+        /**
+         * ListingStatusCounts
+         * @description How many of the seller's listings are in each status.
+         */
+        ListingStatusCounts: {
+            /** Active */
+            active: number;
+            /** Awaiting Payment */
+            awaiting_payment: number;
+            /** Sold */
+            sold: number;
         };
         /**
          * LoginRequest
@@ -1569,6 +1608,32 @@ export interface components {
              */
             created_at: string;
         };
+        /**
+         * OrderSegment
+         * @enum {string}
+         */
+        OrderSegment: "needs_action" | "in_transit" | "held" | "completed" | "issues";
+        /**
+         * OrderSegmentCounts
+         * @description How many of the caller's orders are in each list segment.
+         */
+        OrderSegmentCounts: {
+            /** Needs Action */
+            needs_action: number;
+            /** In Transit */
+            in_transit: number;
+            /** Held */
+            held: number;
+            /** Completed */
+            completed: number;
+            /** Issues */
+            issues: number;
+        };
+        /**
+         * OrderSort
+         * @enum {string}
+         */
+        OrderSort: "newest" | "oldest" | "amount_desc" | "amount_asc";
         /**
          * OtpGiveRequest
          * @description Buyer OTP payload for confirming delivery handoff.
@@ -2006,6 +2071,38 @@ export interface components {
             payment?: components["schemas"]["PaymentInstructionResponse"] | null;
         };
         /**
+         * TransactionListResponse
+         * @description One page of the caller's orders, with counts across all of them.
+         */
+        TransactionListResponse: {
+            /** Items */
+            items: components["schemas"]["TransactionSummaryResponse"][];
+            /**
+             * Total
+             * @description Orders matching the filters.
+             */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** @description Per segment, before filters. */
+            counts: components["schemas"]["OrderSegmentCounts"];
+            /**
+             * Status Counts
+             * @description Per transaction status, before filters. Missing statuses are 0.
+             */
+            status_counts: {
+                [key: string]: number;
+            };
+            /**
+             * Server Time
+             * Format: date-time
+             * @description Server clock; offset countdowns with it.
+             */
+            server_time: string;
+        };
+        /**
          * TransactionListingSummary
          * @description The listing the transaction was created from.
          */
@@ -2095,6 +2192,54 @@ export interface components {
          * @enum {string}
          */
         TransactionStatus: "initiated" | "awaiting_payment" | "locked" | "out_for_delivery" | "dispatched" | "at_door_pending_inspection" | "hold_24h" | "disputed_functional" | "return_in_transit" | "return_received" | "awaiting_buyer_reconfirmation" | "escalated_admin_review" | "returned_to_seller" | "released" | "refunded_buyer" | "resolved_release" | "resolved_refund" | "resolved_split";
+        /** TransactionSummaryListing */
+        TransactionSummaryListing: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Is Serialized */
+            is_serialized: boolean;
+            /**
+             * Photo Url
+             * @description The listing's cover photo, when it has one.
+             */
+            photo_url: string | null;
+        };
+        /**
+         * TransactionSummaryResponse
+         * @description One row of the caller's order list.
+         */
+        TransactionSummaryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Reference */
+            reference: string;
+            status: components["schemas"]["TransactionStatus"];
+            /** Amount */
+            amount: string;
+            viewer_role: components["schemas"]["UserRole"];
+            listing: components["schemas"]["TransactionSummaryListing"];
+            /** @description The other party: the buyer for a seller, the seller for a buyer. */
+            counterpart: components["schemas"]["TransactionParty"];
+            deadlines: components["schemas"]["TransactionDeadlinesResponse"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
         /**
          * UserRole
          * @enum {string}
@@ -2282,6 +2427,55 @@ export interface operations {
                     "application/json": {
                         [key: string]: string;
                     };
+                };
+            };
+        };
+    };
+    list_my_listings_listings_get: {
+        parameters: {
+            query?: {
+                status?: ("active" | "awaiting_payment" | "sold") | null;
+                /** @description Title contains. */
+                q?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingListResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated user is not a seller. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -2631,6 +2825,59 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    list_my_transactions_transactions_get: {
+        parameters: {
+            query?: {
+                /** @description List segment. */
+                segment?: components["schemas"]["OrderSegment"] | null;
+                /** @description Only these statuses (repeat the parameter). */
+                status?: components["schemas"]["TransactionStatus"][] | null;
+                /** @description Reference or listing title contains. */
+                q?: string | null;
+                sort?: components["schemas"]["OrderSort"];
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransactionListResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Only buyers and sellers have orders. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };

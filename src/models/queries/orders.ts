@@ -4,13 +4,15 @@ import {
   getOrder,
   getTimeline,
   giveDeliveryCode,
+  listOrders,
   rejectAtDoor,
   resendPayment,
 } from '@/models/api/transactions'
-import type { Order } from '@/models/domain/order'
+import type { Order, OrderListFilter } from '@/models/domain/order'
 
 export const orderKeys = {
   all: ['orders'] as const,
+  list: (filter: OrderListFilter) => ['orders', 'list', filter] as const,
   detail: (id: string) => ['orders', 'detail', id] as const,
   timeline: (id: string) => ['orders', 'timeline', id] as const,
 }
@@ -21,6 +23,20 @@ export const useOrderTimeline = (id: string, options: { enabled?: boolean; updat
     queryKey: [...orderKeys.timeline(id), options.updatedAt ?? ''],
     queryFn: ({ signal }) => getTimeline(id, signal),
     enabled: options.enabled ?? true,
+    placeholderData: (previous) => previous,
+  })
+
+/** The caller's order list (GET /transactions). Keeps the previous page on screen while the next loads. */
+export const useOrders = (
+  filter: OrderListFilter = {},
+  options: { enabled?: boolean; refetchInterval?: number | false } = {},
+) =>
+  useQuery({
+    queryKey: orderKeys.list(filter),
+    queryFn: ({ signal }) => listOrders(filter, signal),
+    enabled: options.enabled ?? true,
+    refetchInterval: options.refetchInterval ?? false,
+    refetchIntervalInBackground: false,
     placeholderData: (previous) => previous,
   })
 
