@@ -21,8 +21,8 @@ Every Stitch screen for Vekro, its exports and its review status.
 | B5 | Report an issue | `B5-report-issue/` | mobile | M10 | none (code-ready spec) | Specced (2026-10-24) |
 | B6 | Return flow | `B6-return-flow/` | mobile | M10 | none (code-ready spec) | Specced (2026-10-24) |
 | B7 | Transaction timeline | `B7-timeline/` | mobile | M10 | none (code-ready spec) | Specced (2026-10-24) |
-| B8 | Buyer sign-in | `B8-buyer-sign-in/` | mobile | M10 | | Not started |
-| B9 | My orders | `B9-my-orders/` | mobile | M10 | | Not started |
+| B8 | Buyer sign-in | `B8-buyer-sign-in/` | mobile | M10 | none (code-ready spec) | Specced (2026-10-24) |
+| B9 | My orders | `B9-my-orders/` | mobile | M10 | none (code-ready spec) | Specced (2026-10-24) |
 | S1 | Sign up | `S1-sign-up/` | mobile, desktop | M3 | Desktop [`2830a77a…`](https://stitch.withgoogle.com/projects/4950346905124660155), mobile [`80b6474e…`](https://stitch.withgoogle.com/projects/4950346905124660155), states [`3a116cfb…`](https://stitch.withgoogle.com/projects/4950346905124660155) | Approved (2026-10-15) |
 | S2 | Log in | `S2-log-in/` | mobile, desktop | M3 | Desktop [`ddfe1052…`](https://stitch.withgoogle.com/projects/4950346905124660155), mobile [`23e6bdc1…`](https://stitch.withgoogle.com/projects/4950346905124660155), states [`ac53f146…`](https://stitch.withgoogle.com/projects/4950346905124660155) | Approved (2026-10-15) |
 | S3 | Payout setup | `S3-payout-setup/` | mobile, desktop | M3 | Step 1 [`a985f406…`](https://stitch.withgoogle.com/projects/4950346905124660155), step 2 [`944e795c…`](https://stitch.withgoogle.com/projects/4950346905124660155), step 2 mobile [`a4aeabc2…`](https://stitch.withgoogle.com/projects/4950346905124660155), saved [`10d92714…`](https://stitch.withgoogle.com/projects/4950346905124660155) | Approved (2026-10-15) |
@@ -43,4 +43,4 @@ Every Stitch screen for Vekro, its exports and its review status.
 | A4 | Transactions explorer | `A4-transactions/` | desktop | M13 | | Not started |
 | X1 | Landing | `X1-landing/` | mobile, desktop | M13 | | Not started |
 | X2 | Not found and offline | `X2-not-found/` | mobile, desktop | M13 | | Not started |
-| X3 | Help and support | `X3-help/` | mobile | M10 | | Not started |
+| X3 | Help and support | `X3-help/` | mobile | M10 | none (code-ready spec) | Specced (2026-10-24) |
