@@ -2,6 +2,7 @@ import { act, screen, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
+import { listingListResponse } from '@/test/fixtures'
 import { renderWithProviders } from '@/test/render'
 import { server } from '@/test/server'
 import { RouteError } from './RouteError'
@@ -57,6 +58,7 @@ describe('router', () => {
 
   it('sends a signed-in seller from / to their listings', async () => {
     signedInAs('seller')
+    server.use(http.get('/api/listings', () => HttpResponse.json(listingListResponse([]))))
     const { router } = renderAt('/')
     await waitFor(() => expect(router.state.location.pathname).toBe('/seller/listings'))
   })
