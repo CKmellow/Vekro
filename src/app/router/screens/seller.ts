@@ -8,10 +8,10 @@ export { NotificationsPage as S14 } from '@/views/pages/seller/NotificationsPage
 export { OrderDetailPage as S6 } from '@/views/pages/seller/OrderDetailPage'
 export { OrdersPage as S5 } from '@/views/pages/seller/OrdersPage'
 export { PayoutSetupPage as S3 } from '@/views/pages/seller/PayoutSetupPage'
+export { ReturnsPage as S10 } from '@/views/pages/seller/ReturnsPage'
 export { SignUpPage as S1 } from '@/views/pages/seller/SignUpPage'
 
 // Seller screens (PAGES.md S1 to S14).
-export const S10 = notReady('seller', 'Returns')
 export const S11 = notReady('seller', 'Return case')
 export const S12 = notReady('seller', 'Analytics')
 export const S13 = notReady('seller', 'Settings')
