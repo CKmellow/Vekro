@@ -65,3 +65,27 @@ describe('B7 upcoming steps', () => {
     expect(upcomingSteps(toOrder(orderResponse({ status: 'released' })), NOW)).toEqual([])
   })
 })
+
+describe('seller timeline', () => {
+  it('names the seller "You" and the buyer "Buyer"', () => {
+    const entries = toEntries(
+      [
+        {
+          kind: 'transaction_dispatched',
+          at: '2026-10-20T06:00:00Z',
+          title: 'You sent the item.',
+          description: '',
+        },
+        { kind: 'otp_given', at: '2026-10-20T07:00:00Z', title: 'The buyer accepted.', description: '' },
+      ],
+      NOW,
+      'seller',
+    )
+    expect(entries.map((e) => e.actor)).toEqual(['buyer', 'you'])
+  })
+
+  it('words the next step for the seller', () => {
+    const order = toOrder(orderResponse({ status: 'locked', viewer_role: 'seller' }))
+    expect(upcomingSteps(order, NOW)[0]?.text).toBe('Dispatch the order, or the buyer is refunded')
+  })
+})

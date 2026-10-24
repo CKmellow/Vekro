@@ -6,6 +6,7 @@ export type { TimelineActor, TimelineEntry }
 
 const actors: Record<TimelineActor, { name: string; node: string; chip: string }> = {
   you: { name: 'You', node: 'bg-emerald-600', chip: 'bg-emerald-50 text-emerald-700' },
+  buyer: { name: 'Buyer', node: 'bg-saffron-600', chip: 'bg-saffron-50 text-saffron-700' },
   seller: { name: 'Seller', node: 'bg-lake-500', chip: 'bg-lake-50 text-lake-600' },
   vekro: { name: 'Vekro', node: 'bg-ink-400', chip: 'bg-sand-100 text-ink-600' },
   support: { name: 'Vekro support', node: 'bg-plum-500', chip: 'bg-plum-50 text-plum-700' },

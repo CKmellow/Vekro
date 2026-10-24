@@ -126,3 +126,16 @@ export const listingListResponse = (
   page_size: 100,
   counts: { active: items.length, awaiting_payment: 0, sold: 0, archived: 0, ...counts },
 })
+
+/** The seller's view of VK-7K3P9Q: paid, held in escrow, dispatch due 22 Oct 09:00 UTC. */
+export const sellerOrderResponse = (
+  overrides: Partial<Schemas['TransactionDetailResponse']> = {},
+): Schemas['TransactionDetailResponse'] =>
+  orderResponse({
+    status: 'locked',
+    viewer_role: 'seller',
+    payment: null,
+    deadlines: { ...orderResponse().deadlines, dispatch_by: '2026-10-22T09:00:00Z' },
+    payout: { status: 'held', amount: null, reference: null, paid_at: null },
+    ...overrides,
+  })

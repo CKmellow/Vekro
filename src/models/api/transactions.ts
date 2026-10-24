@@ -62,6 +62,14 @@ export function toOrder(raw: DetailResponse, receivedAt = Date.now()): Order {
     deadlines: toDeadlines(raw.deadlines),
     serverOffsetMs: new Date(raw.server_time).getTime() - receivedAt,
     payment: raw.payment ? toPaymentInstruction(raw.payment) : null,
+    payout: raw.payout
+      ? {
+          status: raw.payout.status,
+          amount: raw.payout.amount == null ? null : Number(raw.payout.amount),
+          reference: raw.payout.reference ?? null,
+          paidAt: raw.payout.paid_at ?? null,
+        }
+      : null,
     doorRejection: raw.door_rejection
       ? { reason: raw.door_rejection.reason ?? null, note: raw.door_rejection.note ?? null }
       : null,

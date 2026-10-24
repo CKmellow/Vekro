@@ -22,7 +22,16 @@ const ACTORS: Record<string, TimelineActor> = {
   admin_decision: 'support',
 }
 
-/** What comes next, dashed, with its deadline (server time) when one runs. */
+/** The seller's side of the same events: they are "You" and the buyer is "Buyer". */
+const SELLER_VIEW: Record<TimelineActor, TimelineActor> = {
+  you: 'buyer',
+  buyer: 'buyer',
+  seller: 'you',
+  vekro: 'vekro',
+  support: 'support',
+}
+
+/** What comes next, dashed, with its deadline (server time) when one runs. Worded for the viewer. */
 export function upcomingSteps(order: Order, now = new Date()): TimelineEntry[] {
   const deadline = currentDeadline(order)
   const by = deadline ? `By ${formatEat(deadline.at, now)}` : undefined
@@ -32,6 +41,23 @@ export function upcomingSteps(order: Order, now = new Date()): TimelineEntry[] {
     time,
     upcoming: true,
   })
+  if (order.viewerRole !== 'buyer') {
+    switch (order.status) {
+      case 'initiated':
+      case 'awaiting_payment':
+        return [step('The buyer pays with M-Pesa')]
+      case 'locked':
+        return [step('Dispatch the order, or the buyer is refunded', by)]
+      case 'out_for_delivery':
+        return [step("Mark the item arrived when the courier reaches the buyer's door")]
+      case 'at_door_pending_inspection':
+        return [step('The buyer accepts with their code or rejects. If they do neither, it comes back', by)]
+      case 'hold_24h':
+        return [step("You're paid when the hold ends, unless the buyer reports a problem", by)]
+      default:
+        return []
+    }
+  }
   switch (order.status) {
     case 'initiated':
     case 'awaiting_payment':
@@ -55,12 +81,20 @@ export function upcomingSteps(order: Order, now = new Date()): TimelineEntry[] {
   }
 }
 
-export function toEntries(events: TimelineEvent[], now = new Date()): TimelineEntry[] {
+export function toEntries(
+  events: TimelineEvent[],
+  now = new Date(),
+  viewer: Order['viewerRole'] = 'buyer',
+): TimelineEntry[] {
   return events
-    .map((event, i) => ({
+    .map((event, i) => {
+      const actor = ACTORS[event.kind] ?? 'vekro'
+      return { event, i, actor: viewer === 'buyer' ? actor : SELLER_VIEW[actor] }
+    })
+    .map(({ event, i, actor }) => ({
       id: `${event.kind}-${i}`,
       time: formatEat(event.at, now),
-      actor: ACTORS[event.kind] ?? 'vekro',
+      actor,
       text: event.title,
       detail: event.description,
     }))
@@ -94,10 +128,13 @@ export function useOrderTimelineView(orderId: string) {
       ? {
           reference: order.data.reference,
           amount: order.data.amount,
-          status: statusView(order.data.status, 'buyer'),
+          status: statusView(order.data.status, order.data.viewerRole),
         }
       : null,
-    entries: order.data && timeline.data ? [...upcomingSteps(order.data), ...toEntries(timeline.data)] : [],
+    entries:
+      order.data && timeline.data
+        ? [...upcomingSteps(order.data), ...toEntries(timeline.data, new Date(), order.data.viewerRole)]
+        : [],
     back: () => navigate(`/order/${orderId}`),
     copyLink: async () => {
       try {
