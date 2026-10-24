@@ -70,3 +70,43 @@ export interface CreatedOrder {
   status: TransactionStatus
   payment: PaymentInstruction
 }
+
+/** The server's order-list groups (it owns the mapping, so tabs and counts agree). */
+export type OrderSegment = 'needs_action' | 'in_transit' | 'held' | 'completed' | 'issues'
+export type OrderSort = 'newest' | 'oldest' | 'amount_desc' | 'amount_asc'
+
+/** One row of the caller's order list. */
+export interface OrderSummary {
+  id: string
+  reference: string
+  status: TransactionStatus
+  amount: number
+  viewerRole: ViewerRole
+  listing: { id: string; title: string; isSerialized: boolean; photoUrl: string | null }
+  /** The buyer for a seller, the seller for a buyer. */
+  counterpart: OrderParty
+  deadlines: OrderDeadlines
+  createdAt: string
+  updatedAt: string
+}
+
+export interface OrderListFilter {
+  segment?: OrderSegment
+  statuses?: TransactionStatus[]
+  q?: string
+  sort?: OrderSort
+  page?: number
+  pageSize?: number
+}
+
+export interface OrderList {
+  items: OrderSummary[]
+  /** Orders matching the filter. */
+  total: number
+  page: number
+  pageSize: number
+  /** Across all the caller's orders, before filters. */
+  segmentCounts: Record<OrderSegment, number>
+  statusCounts: Partial<Record<TransactionStatus, number>>
+  serverOffsetMs: number
+}

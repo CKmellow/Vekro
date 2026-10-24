@@ -45,7 +45,10 @@ export function buildUrl(path: string, params?: Record<string, unknown>, query?:
   })
   const search = new URLSearchParams()
   for (const [key, value] of Object.entries(query ?? {})) {
-    if (value !== undefined && value !== null) search.set(key, String(value))
+    // Arrays repeat the key (?status=a&status=b), as FastAPI expects for list parameters.
+    for (const item of Array.isArray(value) ? value : [value]) {
+      if (item !== undefined && item !== null) search.append(key, String(item))
+    }
   }
   const qs = search.toString()
   return `${API_BASE}${filled}${qs ? `?${qs}` : ''}`

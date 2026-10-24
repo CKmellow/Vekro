@@ -1,9 +1,17 @@
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
-import { orderResponse, paymentResponse } from '@/test/fixtures'
+import { orderListResponse, orderResponse, orderSummaryResponse, paymentResponse } from '@/test/fixtures'
 import { server } from '@/test/server'
 import { ApiError } from './errors'
-import { createOrder, getOrder, resendPayment, toOrder, toPaymentInstruction } from './transactions'
+import {
+  createOrder,
+  getOrder,
+  listOrders,
+  resendPayment,
+  toOrder,
+  toOrderSummary,
+  toPaymentInstruction,
+} from './transactions'
 
 const ORDER_ID = orderResponse().id
 
@@ -133,5 +141,97 @@ describe('transactions API', () => {
       http.post(`/api/transactions/${ORDER_ID}/payment/resend`, () => HttpResponse.json(paymentResponse())),
     )
     expect(await resendPayment(ORDER_ID)).toMatchObject({ status: 'pending' })
+  })
+})
+
+describe('order list', () => {
+  it('maps a row with the counterpart, deadlines and an API-rooted cover photo', () => {
+    const row = toOrderSummary(
+      orderSummaryResponse({
+        listing: { ...orderSummaryResponse().listing, photo_url: '/listings/l1/photos/p1' },
+      }),
+    )
+    expect(row).toEqual({
+      id: ORDER_ID,
+      reference: 'VK-7K3P9Q',
+      status: 'locked',
+      amount: 52000,
+      viewerRole: 'seller',
+      listing: {
+        id: orderSummaryResponse().listing.id,
+        title: 'iPhone 13, 128GB, Midnight',
+        isSerialized: true,
+        photoUrl: '/api/listings/l1/photos/p1',
+      },
+      counterpart: { name: 'Brian Otieno', phoneMasked: '+254 712 *** 678' },
+      deadlines: {
+        dispatchBy: '2026-10-26T09:10:00Z',
+        inspectBy: null,
+        holdUntil: null,
+        returnSendBy: null,
+        returnConfirmBy: null,
+      },
+      createdAt: '2026-10-24T09:10:00Z',
+      updatedAt: '2026-10-24T09:10:00Z',
+    })
+  })
+
+  it('sends the filter as query parameters, repeating statuses and trimming the search', async () => {
+    let url = new URL('http://x')
+    server.use(
+      http.get('/api/transactions', ({ request }) => {
+        url = new URL(request.url)
+        return HttpResponse.json(orderListResponse())
+      }),
+    )
+    const list = await listOrders({
+      segment: 'needs_action',
+      statuses: ['locked', 'out_for_delivery'],
+      q: '  VK-7K ',
+      sort: 'amount_desc',
+      page: 2,
+      pageSize: 10,
+    })
+    expect(url.searchParams.getAll('status')).toEqual(['locked', 'out_for_delivery'])
+    expect(Object.fromEntries([...url.searchParams].filter(([k]) => k !== 'status'))).toEqual({
+      segment: 'needs_action',
+      q: 'VK-7K',
+      sort: 'amount_desc',
+      page: '2',
+      page_size: '10',
+    })
+    expect(list).toMatchObject({
+      total: 1,
+      page: 1,
+      pageSize: 20,
+      segmentCounts: { needs_action: 1, completed: 0 },
+      statusCounts: { locked: 1 },
+    })
+    expect(list.items[0]?.reference).toBe('VK-7K3P9Q')
+  })
+
+  it('leaves out an empty search and unset filters', async () => {
+    let search = 'unset'
+    server.use(
+      http.get('/api/transactions', ({ request }) => {
+        search = new URL(request.url).search
+        return HttpResponse.json(orderListResponse([]))
+      }),
+    )
+    await listOrders({ q: '   ' })
+    expect(search).toBe('')
+  })
+
+  it('measures the server clock offset', async () => {
+    server.use(
+      http.get('/api/transactions', () =>
+        HttpResponse.json(
+          orderListResponse([], { server_time: new Date(Date.now() + 60_000).toISOString() }),
+        ),
+      ),
+    )
+    const { serverOffsetMs } = await listOrders()
+    expect(serverOffsetMs).toBeGreaterThan(55_000)
+    expect(serverOffsetMs).toBeLessThan(65_000)
   })
 })

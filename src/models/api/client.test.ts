@@ -25,6 +25,12 @@ describe('buildUrl', () => {
   it('fills path params and encodes them, under the same-origin /api base', () => {
     expect(buildUrl('/listings/{listing_id}', { listing_id: 'a b' })).toBe('/api/listings/a%20b')
   })
+
+  it('repeats array query values and skips empty ones', () => {
+    expect(
+      buildUrl('/transactions', undefined, { status: ['locked', 'released'], q: undefined, page: 2 }),
+    ).toBe('/api/transactions?status=locked&status=released&page=2')
+  })
   it('adds defined query params only', () => {
     expect(buildUrl('/notifications', {}, { limit: 20, offset: undefined })).toBe(
       '/api/notifications?limit=20',
