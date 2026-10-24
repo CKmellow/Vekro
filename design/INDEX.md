@@ -35,8 +35,8 @@ Every Stitch screen for Vekro, its exports and its review status.
 | S14 | Notifications | `S14-notifications/` | mobile, desktop | M8 | none (code-ready spec) | Specced (2026-10-24) |
 | S10 | Returns inbox | `S10-returns/` | mobile, desktop | M8 | none (code-ready spec) | Specced (2026-10-24) |
 | S11 | Return case | `S11-return-case/` | mobile, desktop | M8 | none (code-ready spec) | Specced (2026-10-24) |
-| S12 | Analytics | `S12-analytics/` | mobile, desktop | M8 | | Not started |
-| S13 | Settings | `S13-settings/` | mobile, desktop | M8 | | Not started |
+| S12 | Analytics | `S12-analytics/` | mobile, desktop | M8 | none (code-ready spec) | Specced (2026-10-24) |
+| S13 | Settings | `S13-settings/` | mobile, desktop | M8 | none (code-ready spec) | Specced (2026-10-24) |
 | A1 | Admin log in | `A1-admin-login/` | desktop | M13 | | Not started |
 | A2 | Escalation queue | `A2-queue/` | desktop | M13 | | Not started |
 | A3 | Case detail and decision | `A3-case/` | desktop | M13 | | Not started |
