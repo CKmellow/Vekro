@@ -252,6 +252,31 @@ export async function confirmResolved(orderId: string, side: 'buyer' | 'seller')
     })
 }
 
+/** S11: the returned item reached the seller. */
+export async function sellerReceived(orderId: string): Promise<void> {
+  await api.post('/transactions/{transaction_id}/seller-received', { path: { transaction_id: orderId } })
+}
+
+/** S11: the seller's fix, limited by their declared policy (the backend refuses anything else). */
+export async function sellerResolution(
+  orderId: string,
+  action: 'refund_issued' | 'repair_shipped' | 'replacement_shipped',
+  notes: string | null,
+): Promise<void> {
+  await api.post('/transactions/{transaction_id}/seller-resolution-action', {
+    path: { transaction_id: orderId },
+    body: { action, notes },
+  })
+}
+
+/** Either party: send an open return case to Vekro support with a reason (20 to 1,000 characters). */
+export async function escalate(orderId: string, reason: string): Promise<void> {
+  await api.post('/transactions/{transaction_id}/escalate', {
+    path: { transaction_id: orderId },
+    body: { reason },
+  })
+}
+
 export interface TimelineEvent {
   kind: string
   at: string
