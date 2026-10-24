@@ -15,7 +15,12 @@ export function BuyerShell() {
 export function SellerShell() {
   const shell = useShell()
   return (
-    <SellerLayout name={shell.name} onSearch={shell.onSellerSearch}>
+    <SellerLayout
+      name={shell.name}
+      ordersNeedingAction={shell.ordersNeedingAction}
+      openReturns={shell.openReturns}
+      onSearch={shell.onSellerSearch}
+    >
       <Outlet />
     </SellerLayout>
   )

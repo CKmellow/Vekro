@@ -390,6 +390,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/transactions/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Seller dashboard totals
+         * @description Money in escrow, released this and last month (calendar months in EAT), orders awaiting dispatch, open issues and the next order due to be paid out. Sellers only.
+         */
+        get: operations["get_seller_summary_transactions_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/transactions/{transaction_id}": {
         parameters: {
             query?: never;
@@ -1659,6 +1679,13 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /** MoneyTotal */
+        MoneyTotal: {
+            /** Amount */
+            amount: string;
+            /** Orders */
+            orders: number;
+        };
         /**
          * NotificationChannel
          * @enum {string}
@@ -1717,6 +1744,16 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+        };
+        /** OrderRef */
+        OrderRef: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Reference */
+            reference: string;
         };
         /**
          * OrderSegment
@@ -2037,6 +2074,27 @@ export interface components {
              * @description Optional seller notes for the selected action.
              */
             notes?: string | null;
+        };
+        /**
+         * SellerSummaryResponse
+         * @description Money totals for the seller dashboard. Months are calendar months in EAT.
+         */
+        SellerSummaryResponse: {
+            /** @description Paid and not yet settled, including disputes. */
+            in_escrow: components["schemas"]["MoneyTotal"];
+            released_this_month: components["schemas"]["MoneyTotal"];
+            released_last_month: components["schemas"]["MoneyTotal"];
+            /** Awaiting Dispatch */
+            awaiting_dispatch: number;
+            /** Open Issues */
+            open_issues: number;
+            /** @description The held order whose 24-hour hold ends first, if any. */
+            next_release: components["schemas"]["OrderRef"] | null;
+            /**
+             * Server Time
+             * Format: date-time
+             */
+            server_time: string;
         };
         /**
          * TimelineEventResponse
@@ -3394,6 +3452,40 @@ export interface operations {
             };
             /** @description Payment initiation failed before a partial-success response could be returned. */
             503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_seller_summary_transactions_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SellerSummaryResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Only sellers have a dashboard. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -6,6 +6,7 @@ import type {
   OrderListFilter,
   OrderSummary,
   PaymentInstruction,
+  SellerSummary,
 } from '@/models/domain/order'
 import type { TransactionStatus } from '@/models/domain/stateMeta'
 import { photoUrl, toPolicy } from './adapters/listings'
@@ -120,6 +121,20 @@ export async function listOrders(filter: OrderListFilter = {}, signal?: AbortSig
     segmentCounts: raw.counts,
     statusCounts: raw.status_counts as Partial<Record<TransactionStatus, number>>,
     serverOffsetMs: new Date(raw.server_time).getTime() - receivedAt,
+  }
+}
+
+/** GET /transactions/summary: the seller dashboard totals. */
+export async function getSellerSummary(signal?: AbortSignal): Promise<SellerSummary> {
+  const raw = await api.get('/transactions/summary', { signal })
+  const total = (t: { amount: string; orders: number }) => ({ amount: Number(t.amount), orders: t.orders })
+  return {
+    inEscrow: total(raw.in_escrow),
+    releasedThisMonth: total(raw.released_this_month),
+    releasedLastMonth: total(raw.released_last_month),
+    awaitingDispatch: raw.awaiting_dispatch,
+    openIssues: raw.open_issues,
+    nextRelease: raw.next_release ?? null,
   }
 }
 
