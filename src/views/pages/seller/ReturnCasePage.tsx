@@ -80,30 +80,36 @@ export function ReturnCasePage() {
     )
   if (state === 'not_yours')
     return (
-      <div className="rounded-lg bg-surface shadow-1">
-        <EmptyState
-          illustration="vault"
-          title="This order isn't in your shop"
-          body="It may belong to another seller account."
-          action={
-            <Link to="/seller/returns" className="type-title text-primary">
-              Back to returns
-            </Link>
-          }
-        />
-      </div>
+      <>
+        <h1 className="sr-only">Return case</h1>
+        <div className="rounded-lg bg-surface shadow-1">
+          <EmptyState
+            illustration="vault"
+            title="This order isn't in your shop"
+            body="It may belong to another seller account."
+            action={
+              <Link to="/seller/returns" className="type-title text-primary">
+                Back to returns
+              </Link>
+            }
+          />
+        </div>
+      </>
     )
   if (state === 'error' || !p.order)
     return (
-      <Banner
-        tone="danger"
-        title="We couldn't load this case."
-        action={
-          <Button variant="secondary" className="h-10" onClick={p.retry}>
-            Try again
-          </Button>
-        }
-      />
+      <>
+        <h1 className="sr-only">Return case</h1>
+        <Banner
+          tone="danger"
+          title="We couldn't load this case."
+          action={
+            <Button variant="secondary" className="h-10" onClick={p.retry}>
+              Try again
+            </Button>
+          }
+        />
+      </>
     )
 
   const { order } = p

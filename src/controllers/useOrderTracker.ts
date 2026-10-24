@@ -142,6 +142,8 @@ export function dockAction(order: Order): DockAction | null {
     return { label: 'Inspect and confirm', variant: 'primary', to: `${base}/inspect` }
   if (action === 'report_problem')
     return { label: 'Report a problem', variant: 'danger', to: `${base}/report` }
+  if (action === 'confirm_resolved')
+    return { label: 'Close the case', variant: 'primary', to: `${base}/return` }
   if (DISPUTE.includes(order.status)) return { label: 'Continue', variant: 'primary', to: `${base}/return` }
   return null
 }

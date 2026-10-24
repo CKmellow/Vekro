@@ -66,7 +66,7 @@ export function ListingsPage() {
                   aria-label={v === 'grid' ? 'Grid view' : 'List view'}
                   onClick={() => p.setView(v)}
                   className={cn(
-                    'grid size-9 place-items-center rounded-sm',
+                    'grid size-11 place-items-center rounded-sm',
                     p.view === v ? 'bg-surface text-text shadow-1' : 'text-ink-600',
                   )}
                 >

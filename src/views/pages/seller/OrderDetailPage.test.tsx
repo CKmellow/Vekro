@@ -111,6 +111,7 @@ describe('S6 order detail', () => {
     )
     renderPage()
     expect(await screen.findByRole('heading', { name: "This order isn't in your shop" })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Order detail' })).toBeInTheDocument()
   })
 
   it('offers a retry when loading fails', async () => {
