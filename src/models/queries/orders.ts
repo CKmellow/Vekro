@@ -3,6 +3,7 @@ import {
   confirmResolved,
   createOrder,
   dispatchOrder,
+  escalate,
   getOrder,
   getSellerSummary,
   getTimeline,
@@ -12,6 +13,8 @@ import {
   markSentBack,
   reconfirm,
   reportIssue,
+  sellerReceived,
+  sellerResolution,
   rejectAtDoor,
   resendPayment,
 } from '@/models/api/transactions'
@@ -139,3 +142,15 @@ export const useReconfirm = (orderId: string) =>
   )
 export const useConfirmResolved = (orderId: string, side: 'buyer' | 'seller') =>
   useDisputeStep(() => confirmResolved(orderId, side))
+export const useSellerReceived = (orderId: string) => useDisputeStep(() => sellerReceived(orderId))
+export const useSellerResolution = (orderId: string) =>
+  useDisputeStep(
+    ({
+      action,
+      notes,
+    }: {
+      action: 'refund_issued' | 'repair_shipped' | 'replacement_shipped'
+      notes: string | null
+    }) => sellerResolution(orderId, action, notes),
+  )
+export const useEscalate = (orderId: string) => useDisputeStep((reason: string) => escalate(orderId, reason))

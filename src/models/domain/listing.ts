@@ -15,6 +15,8 @@ export interface DisputePolicy {
   acceptedProblems: string[]
   /** Serial-numbered items: what the seller does when a problem is confirmed. */
   resolution?: Resolution
+  /** What the backend lets the seller do (`allowed_seller_actions`), when declared. */
+  allowedActions?: SellerAction[]
 }
 
 export interface Listing {
@@ -170,4 +172,14 @@ export function issueLabel(category: string | null | undefined): string | null {
   const found = ISSUE_CATEGORIES.find((c) => c.value === category)
   if (!found) return category
   return found.value === 'not_working' ? "Doesn't work properly" : found.label
+}
+
+const SELLER_ACTIONS: SellerAction[] = ['refund_issued', 'repair_shipped', 'replacement_shipped']
+
+/** The seller's options on a received return: the declared list, else from the resolution, else all. */
+export function sellerOptions(policy: Pick<DisputePolicy, 'resolution' | 'allowedActions'>): SellerAction[] {
+  if (policy.allowedActions?.length) return SELLER_ACTIONS.filter((a) => policy.allowedActions?.includes(a))
+  const { resolution } = policy
+  if (resolution) return SELLER_ACTIONS.filter((a) => allowedSellerActions(resolution).includes(a))
+  return SELLER_ACTIONS
 }

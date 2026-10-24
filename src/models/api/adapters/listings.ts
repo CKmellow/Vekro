@@ -4,6 +4,7 @@ import {
   type DisputePolicy,
   type Listing,
   type ListingStatus,
+  type SellerAction,
 } from '@/models/domain/listing'
 import type { ListingDraft } from '@/models/schemas/listing'
 import { api, API_BASE, type Schemas } from '../client'
@@ -25,6 +26,9 @@ export interface ListingPage {
 export function toPolicy(raw: Record<string, unknown>): DisputePolicy {
   const list = (value: unknown) => (Array.isArray(value) ? value.map(String) : [])
   const resolution = raw.resolution
+  const actions = list(raw.allowed_seller_actions).filter(
+    (a): a is SellerAction => a === 'refund_issued' || a === 'repair_shipped' || a === 'replacement_shipped',
+  )
   return {
     doorRejectReasons: list(raw.door_reject_reasons) as DisputePolicy['doorRejectReasons'],
     acceptedProblems: list(raw.accepted_problems),
@@ -32,6 +36,7 @@ export function toPolicy(raw: Record<string, unknown>): DisputePolicy {
       resolution === 'refund' || resolution === 'repair' || resolution === 'replacement'
         ? resolution
         : undefined,
+    ...(actions.length ? { allowedActions: actions } : {}),
   }
 }
 
