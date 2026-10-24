@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
+  confirmResolved,
   createOrder,
   dispatchOrder,
   getOrder,
@@ -8,10 +9,13 @@ import {
   giveDeliveryCode,
   listOrders,
   markArrived,
+  markSentBack,
+  reconfirm,
+  reportIssue,
   rejectAtDoor,
   resendPayment,
 } from '@/models/api/transactions'
-import type { Order, OrderListFilter } from '@/models/domain/order'
+import type { DisputeCategory, Order, OrderListFilter } from '@/models/domain/order'
 
 export const orderKeys = {
   all: ['orders'] as const,
@@ -114,3 +118,24 @@ export function useSellerTransition() {
     onSettled: () => client.invalidateQueries({ queryKey: orderKeys.all }),
   })
 }
+
+/** Buyer and seller dispute steps; every order query refetches when one settles (409 means it moved on). */
+function useDisputeStep<V>(run: (variables: V) => Promise<void>) {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: run,
+    onSettled: () => client.invalidateQueries({ queryKey: orderKeys.all }),
+  })
+}
+
+export const useReportIssue = (orderId: string) =>
+  useDisputeStep(({ category, description }: { category: DisputeCategory; description: string }) =>
+    reportIssue(orderId, category, description),
+  )
+export const useMarkSentBack = (orderId: string) => useDisputeStep(() => markSentBack(orderId))
+export const useReconfirm = (orderId: string) =>
+  useDisputeStep(({ accepted, notes }: { accepted: boolean; notes: string | null }) =>
+    reconfirm(orderId, accepted, notes),
+  )
+export const useConfirmResolved = (orderId: string, side: 'buyer' | 'seller') =>
+  useDisputeStep(() => confirmResolved(orderId, side))

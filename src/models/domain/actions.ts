@@ -13,11 +13,12 @@ export type OrderAction =
   | 'mark_arrived' // S6: arrival
   | 'confirm_return_received' // S11: seller-received
   | 'choose_resolution' // S11: seller-resolution-action
+  | 'confirm_resolved' // B6, S11: confirm-resolved-buyer / confirm-resolved-seller
 
 /**
  * Mirrors the state guards in the backend's transaction service. `dispatched` is legacy and gets
  * nothing. Admins act through the dispute endpoints (A3), not these. The mutual "confirm resolved"
- * closure needs dispute data and arrives with the dispute model (M11).
+ * closure applies only to resolved_* cases with a dispute, and only until that side has confirmed.
  */
 const TABLE: Partial<Record<TransactionStatus, Partial<Record<ViewerRole, OrderAction[]>>>> = {
   initiated: { buyer: ['pay'] },
@@ -32,6 +33,16 @@ const TABLE: Partial<Record<TransactionStatus, Partial<Record<ViewerRole, OrderA
   awaiting_buyer_reconfirmation: { buyer: ['reconfirm'] },
 }
 
-export function getAvailableActions(role: ViewerRole, order: Pick<Order, 'status'>): OrderAction[] {
+const RESOLVED: TransactionStatus[] = ['resolved_release', 'resolved_refund', 'resolved_split']
+
+export function getAvailableActions(
+  role: ViewerRole,
+  order: Pick<Order, 'status'> & Partial<Pick<Order, 'dispute'>>,
+): OrderAction[] {
+  const dispute = order.dispute
+  if (dispute && RESOLVED.includes(order.status) && role !== 'admin') {
+    const confirmed = role === 'buyer' ? dispute.buyerConfirmedResolved : dispute.sellerConfirmedResolved
+    return confirmed ? [] : ['confirm_resolved']
+  }
   return TABLE[order.status]?.[role] ?? []
 }

@@ -1,3 +1,4 @@
+import type { DisputeCategory } from './order'
 /** Listings as the screens see them, mapped from the API's ListingResponse. */
 
 export type ListingStatus = 'active' | 'awaiting_payment' | 'sold' | 'archived'
@@ -152,4 +153,21 @@ export const LISTING_STATUS_VIEW: Record<
   awaiting_payment: { label: 'Waiting for payment', tone: 'saffron', icon: 'clock' },
   sold: { label: 'Sold', tone: 'lake', icon: 'lock' },
   archived: { label: 'Archived', tone: 'sand', icon: 'box' },
+}
+
+/** The report categories in buyer words (design/B5-report-issue), in display order. */
+export const ISSUE_CATEGORIES: { value: DisputeCategory; label: string }[] = [
+  { value: 'not_working', label: "It doesn't work properly" },
+  { value: 'damaged_on_arrival', label: 'Damaged when it arrived' },
+  { value: 'missing_parts', label: 'Parts are missing' },
+  { value: 'not_as_described', label: 'Not as described' },
+  { value: 'other', label: 'Something else' },
+]
+
+/** A category as a short chip label ("Doesn't work properly"). */
+export function issueLabel(category: string | null | undefined): string | null {
+  if (!category) return null
+  const found = ISSUE_CATEGORIES.find((c) => c.value === category)
+  if (!found) return category
+  return found.value === 'not_working' ? "Doesn't work properly" : found.label
 }

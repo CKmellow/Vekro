@@ -1,5 +1,6 @@
 import type {
   CreatedOrder,
+  DisputeCategory,
   Order,
   OrderDeadlines,
   OrderList,
@@ -71,6 +72,23 @@ export function toOrder(raw: DetailResponse, receivedAt = Date.now()): Order {
           paidAt: raw.payout.paid_at ?? null,
         }
       : null,
+    dispute: raw.dispute
+      ? {
+          id: raw.dispute.id,
+          status: raw.dispute.status,
+          category: raw.dispute.category,
+          description: raw.dispute.description,
+          openedAt: raw.dispute.opened_at,
+          escalatedAt: raw.dispute.escalated_at ?? null,
+          resolvedAt: raw.dispute.resolved_at ?? null,
+          sellerAction: raw.dispute.seller_action ?? null,
+          sellerNotes: raw.dispute.seller_notes ?? null,
+          buyerNotes: raw.dispute.buyer_notes ?? null,
+          reconfirmRejections: raw.dispute.reconfirm_rejections,
+          buyerConfirmedResolved: raw.dispute.buyer_confirmed_resolved,
+          sellerConfirmedResolved: raw.dispute.seller_confirmed_resolved,
+        }
+      : null,
     doorRejection: raw.door_rejection
       ? { reason: raw.door_rejection.reason ?? null, note: raw.door_rejection.note ?? null }
       : null,
@@ -94,6 +112,7 @@ export function toOrderSummary(raw: SummaryResponse): OrderSummary {
     },
     counterpart: { name: raw.counterpart.name, phoneMasked: raw.counterpart.phone_masked },
     deadlines: toDeadlines(raw.deadlines),
+    disputeCategory: raw.dispute_category ?? null,
     createdAt: raw.created_at,
     updatedAt: raw.updated_at,
   }
@@ -194,6 +213,43 @@ export async function dispatchOrder(orderId: string): Promise<void> {
 /** S6: the courier is at the buyer's door (out_for_delivery to at_door_pending_inspection). Seller only. */
 export async function markArrived(orderId: string): Promise<void> {
   await api.post('/transactions/{transaction_id}/arrival', { path: { transaction_id: orderId } })
+}
+
+/** B5: report a functional problem during the 24-hour hold (serialized items only). */
+export async function reportIssue(
+  orderId: string,
+  category: DisputeCategory,
+  description: string,
+): Promise<void> {
+  await api.post('/transactions/{transaction_id}/report-functional-issue', {
+    path: { transaction_id: orderId },
+    body: { category, description, evidence: {} },
+  })
+}
+
+/** B6: the buyer has sent the item back. */
+export async function markSentBack(orderId: string): Promise<void> {
+  await api.post('/transactions/{transaction_id}/buyer-sent-back', { path: { transaction_id: orderId } })
+}
+
+/** B6: after a repair or replacement, is it fixed? A "No" at the limit goes to Vekro support. */
+export async function reconfirm(orderId: string, accepted: boolean, notes: string | null): Promise<void> {
+  await api.post('/transactions/{transaction_id}/buyer-reconfirmation', {
+    path: { transaction_id: orderId },
+    body: { accepted, notes },
+  })
+}
+
+/** Closure on a resolved case; the case closes when both sides confirm. */
+export async function confirmResolved(orderId: string, side: 'buyer' | 'seller'): Promise<void> {
+  if (side === 'buyer')
+    await api.post('/transactions/{transaction_id}/confirm-resolved-buyer', {
+      path: { transaction_id: orderId },
+    })
+  else
+    await api.post('/transactions/{transaction_id}/confirm-resolved-seller', {
+      path: { transaction_id: orderId },
+    })
 }
 
 export interface TimelineEvent {
