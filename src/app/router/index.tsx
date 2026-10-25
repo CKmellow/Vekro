@@ -10,6 +10,8 @@ const seller = () => import('./screens/seller')
 const admin = () => import('./screens/admin')
 const shared = () => import('./screens/shared')
 const dev = () => import('@/views/pages/dev/UiGallery')
+// S12 has its own chunk so the charts library loads only on the analytics page.
+const analytics = () => import('./screens/analytics')
 
 type Module = Record<string, React.ComponentType>
 const page =
@@ -68,7 +70,7 @@ export const routes: RouteObject[] = [
               { path: '/seller/listings/:id/edit', lazy: page(seller, 'S7') },
               { path: '/seller/returns', lazy: page(seller, 'S10') },
               { path: '/seller/returns/:id', lazy: page(seller, 'S11') },
-              { path: '/seller/analytics', lazy: page(seller, 'S12') },
+              { path: '/seller/analytics', lazy: page(analytics, 'S12') },
               { path: '/seller/settings', lazy: page(seller, 'S13') },
               { path: '/seller/notifications', lazy: page(seller, 'S14') },
             ],

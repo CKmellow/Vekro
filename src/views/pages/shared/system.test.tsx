@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router'
-import { LoadingPage, OfflinePage, SLOW_AFTER_MS } from './system'
+import { LoadingPage, NotReadyPage, OfflinePage, SLOW_AFTER_MS } from './system'
 
 describe('LoadingPage', () => {
   beforeEach(() => vi.useFakeTimers())
@@ -46,5 +46,20 @@ describe('OfflinePage', () => {
       window.dispatchEvent(new Event('online'))
     })
     expect(onRetry).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('NotReadyPage', () => {
+  it('points sellers back to built pages', () => {
+    render(
+      <MemoryRouter>
+        <NotReadyPage area="seller" name="Reports" />
+      </MemoryRouter>,
+    )
+    expect(screen.getByText(/building the Reports page/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to your listings' })).toHaveAttribute(
+      'href',
+      '/seller/listings',
+    )
   })
 })

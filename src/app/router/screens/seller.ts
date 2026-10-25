@@ -1,4 +1,4 @@
-import { notReady } from '@/views/pages/shared/system'
+// Seller screens (PAGES.md S1 to S14; S12 lives in ./analytics).
 export { CreateListingPage as S7 } from '@/views/pages/seller/CreateListingPage'
 export { DashboardPage as S4 } from '@/views/pages/seller/DashboardPage'
 export { ForgotPasswordPage as ForgotPassword } from '@/views/pages/seller/ForgotPasswordPage'
@@ -13,6 +13,3 @@ export { ReturnCasePage as S11 } from '@/views/pages/seller/ReturnCasePage'
 export { ReturnsPage as S10 } from '@/views/pages/seller/ReturnsPage'
 export { SettingsPage as S13 } from '@/views/pages/seller/SettingsPage'
 export { SignUpPage as S1 } from '@/views/pages/seller/SignUpPage'
-
-// Seller screens (PAGES.md S1 to S14).
-export const S12 = notReady('seller', 'Analytics')

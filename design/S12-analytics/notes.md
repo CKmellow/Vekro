@@ -58,3 +58,10 @@ Usability and accessibility
 ## Open questions
 
 - None.
+
+## Build notes (M15 #125)
+
+1. Outcome colours: Released emerald-600, Refunded lake-600, Disputed coral-500. The brief's sand gray for Refunded failed the palette validator (chroma floor, normal-vision separation and contrast), lake passes every check.
+2. The Insights card is left out: it promised a feature that doesn't exist.
+3. S12 is its own route chunk, so Recharts loads only on this page.
+4. Every chart has a text summary or label for screen readers; Sales over time has a "View as table" toggle.

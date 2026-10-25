@@ -7,10 +7,9 @@ describe('gap flags', () => {
   it('turns on only gaps whose VITE_MOCK_ flag is truthy', () => {
     const on = mockedGaps({
       VITE_MOCK_TIMELINE: 'true',
-      VITE_MOCK_ANALYTICS: '1',
       VITE_MOCK_NOT_A_GAP: 'true',
     })
-    expect([...on].sort()).toEqual(['ANALYTICS', 'TIMELINE'])
+    expect([...on].sort()).toEqual(['TIMELINE'])
   })
 
   it('is off by default', () => {
@@ -18,8 +17,7 @@ describe('gap flags', () => {
   })
 
   it('lists every open gap from docs/BACKEND_GAPS.md with its issue', () => {
-    expect(Object.keys(GAPS)).toHaveLength(2)
-    expect(GAPS.ANALYTICS).toEqual({ id: 'P2-3', issue: 148 })
+    expect(Object.keys(GAPS)).toHaveLength(1)
   })
 })
 

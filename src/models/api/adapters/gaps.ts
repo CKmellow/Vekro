@@ -5,7 +5,6 @@
  */
 export const GAPS = {
   TIMELINE: { id: 'P1-5', issue: 142 },
-  ANALYTICS: { id: 'P2-3', issue: 148 },
 } as const
 
 export type Gap = keyof typeof GAPS

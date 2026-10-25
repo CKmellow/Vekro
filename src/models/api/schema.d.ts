@@ -1291,6 +1291,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/seller/analytics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The seller's analytics for 7, 30 or 90 days
+         * @description KPIs against the previous period of the same length, sales over time (EAT), outcomes per week, dispute categories and top listings. Only the seller's own paid orders.
+         */
+        get: operations["get_analytics_seller_analytics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1762,6 +1782,27 @@ export interface components {
             /** Page Size */
             page_size: number;
         };
+        /** AnalyticsKpis */
+        AnalyticsKpis: {
+            /** Sales Volume */
+            sales_volume: string;
+            /** Orders */
+            orders: number;
+            /** Average Order Value */
+            average_order_value: string | null;
+            /**
+             * Completion Rate
+             * @description 0 to 1; null without closed orders.
+             */
+            completion_rate: number | null;
+            /**
+             * Dispute Rate
+             * @description 0 to 1; null without orders.
+             */
+            dispute_rate: number | null;
+            /** Average Dispatch Seconds */
+            average_dispatch_seconds: number | null;
+        };
         /**
          * BuyerReconfirmationRequest
          * @description Buyer response after seller remediation action.
@@ -1946,6 +1987,13 @@ export interface components {
             resolved_at: string | null;
             /** Timeline Events */
             timeline_events: components["schemas"]["DisputeTimelineEventResponse"][];
+        };
+        /** DisputeCategoryCount */
+        DisputeCategoryCount: {
+            /** Category */
+            category: string;
+            /** Count */
+            count: number;
         };
         /**
          * DisputeStatus
@@ -2560,6 +2608,20 @@ export interface components {
              */
             note?: string | null;
         };
+        /** OutcomeWeek */
+        OutcomeWeek: {
+            /**
+             * Week Start
+             * Format: date
+             */
+            week_start: string;
+            /** Released */
+            released: number;
+            /** Refunded */
+            refunded: number;
+            /** Disputed */
+            disputed: number;
+        };
         /** PasswordChange */
         PasswordChange: {
             /** Current Password */
@@ -2916,6 +2978,50 @@ export interface components {
             /** Revoked */
             revoked: number;
         };
+        /** SalesPoint */
+        SalesPoint: {
+            /**
+             * Date
+             * Format: date
+             * @description EAT day, or the Monday of the week at 90 days.
+             */
+            date: string;
+            /** Amount */
+            amount: string;
+            /** Orders */
+            orders: number;
+        };
+        /** SellerAnalyticsResponse */
+        SellerAnalyticsResponse: {
+            /** Range Days */
+            range_days: number;
+            /**
+             * Completed Sales
+             * @description All-time released orders; S12 unlocks at 5.
+             */
+            completed_sales: number;
+            current: components["schemas"]["AnalyticsKpis"];
+            /** @description The period of the same length just before. */
+            previous: components["schemas"]["AnalyticsKpis"];
+            /**
+             * Bucket
+             * @enum {string}
+             */
+            bucket: "day" | "week";
+            /** Sales Series */
+            sales_series: components["schemas"]["SalesPoint"][];
+            /** Outcomes */
+            outcomes: components["schemas"]["OutcomeWeek"][];
+            /** Dispute Categories */
+            dispute_categories: components["schemas"]["DisputeCategoryCount"][];
+            /** Top Listings */
+            top_listings: components["schemas"]["TopListingRow"][];
+            /**
+             * Server Time
+             * Format: date-time
+             */
+            server_time: string;
+        };
         /**
          * SellerPayoutResponse
          * @description Where the seller's money is for this order.
@@ -3055,6 +3161,24 @@ export interface components {
             title: string;
             /** Description */
             description: string;
+        };
+        /** TopListingRow */
+        TopListingRow: {
+            /**
+             * Listing Id
+             * Format: uuid
+             */
+            listing_id: string;
+            /** Title */
+            title: string;
+            /** Photo Url */
+            photo_url: string | null;
+            /** Orders */
+            orders: number;
+            /** Sales */
+            sales: string;
+            /** Completion Rate */
+            completion_rate: number | null;
         };
         /**
          * TransactionCreatedResponse
@@ -6680,6 +6804,51 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NotificationPreferences"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a seller. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_analytics_seller_analytics_get: {
+        parameters: {
+            query?: {
+                range?: "7d" | "30d" | "90d";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SellerAnalyticsResponse"];
                 };
             };
             /** @description Authentication required. */
