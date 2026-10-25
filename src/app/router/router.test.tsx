@@ -59,11 +59,13 @@ describe('router', () => {
     expect(screen.getByText(/building the My orders page/)).toBeInTheDocument()
   })
 
-  it('sends visitors from / to log in until the landing page ships', async () => {
+  it('shows visitors the landing page at /', async () => {
     signedInAs(null)
     const { router } = renderAt('/')
-    await screen.findByRole('heading', { name: 'Log in to Vekro' })
-    expect(router.state.location.pathname).toBe('/login')
+    expect(
+      await screen.findByRole('heading', { name: "Sell on social media. Get paid when they're happy." }),
+    ).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/')
   })
 
   it('sends a signed-in seller from / to their dashboard', async () => {

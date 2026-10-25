@@ -40,3 +40,23 @@ afterEach(() => {
   if (missed.length > 0) throw new Error(`Unhandled requests (add MSW handlers): ${missed.join(', ')}`)
 })
 afterAll(() => server.close())
+
+// jsdom has no IntersectionObserver; the motion library's whileInView needs one. Everything counts as visible.
+class StubIntersectionObserver {
+  readonly root = null
+  readonly rootMargin = ''
+  readonly thresholds = []
+  constructor(private readonly callback: IntersectionObserverCallback) {}
+  observe(target: Element) {
+    this.callback(
+      [{ isIntersecting: true, target } as IntersectionObserverEntry],
+      this as unknown as IntersectionObserver,
+    )
+  }
+  unobserve() {}
+  disconnect() {}
+  takeRecords() {
+    return []
+  }
+}
+globalThis.IntersectionObserver ??= StubIntersectionObserver as unknown as typeof IntersectionObserver
