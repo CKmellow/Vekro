@@ -16,8 +16,8 @@ export interface Registration extends Credentials {
 }
 
 /**
- * How a person proves who they are. Screens only talk to this interface, so the buyer flow can move from
- * PasswordAccount to PhoneVerifiedGuest (backend-gap #11) without touching them.
+ * How a person proves who they are with a password: sellers, admins, and buyers saving their details on
+ * B1. Passwordless buyer sign-in (B8) uses PhoneVerifiedGuest below.
  */
 export interface AuthStrategy {
   readonly kind: 'password-account' | 'phone-verified-guest'
@@ -45,3 +45,29 @@ export const PasswordAccount: AuthStrategy = {
 
 /** The strategy in use. */
 export const authStrategy: AuthStrategy = PasswordAccount
+
+export interface SentCode {
+  /** Seconds before another code can be asked for. */
+  resendAfterSeconds: number
+  expiresAt: string
+  /** Only from a local or e2e backend with PHONE_CODE_DEV_ECHO on; never in production. */
+  devCode?: string
+}
+
+/**
+ * Buyer sign-in without a password (B8, backend #201): a 6-digit SMS code opens the same cookie session.
+ * The server finds or creates the buyer for the phone. An order ID plus phone is never a credential.
+ */
+export const PhoneVerifiedGuest = {
+  kind: 'phone-verified-guest' as const,
+  async requestCode(phone: string): Promise<SentCode> {
+    const r = await api.post('/auth/phone/request-code', { body: { phone } })
+    return {
+      resendAfterSeconds: r.resend_after_seconds,
+      expiresAt: r.expires_at,
+      devCode: r.dev_code ?? undefined,
+    }
+  },
+  verifyCode: (phone: string, code: string): Promise<CurrentUser> =>
+    api.post('/auth/phone/verify', { body: { phone, code } }),
+}

@@ -55,6 +55,8 @@ jobs:
       SECRET_KEY: ci-e2e-secret-key
       DATABASE_URL: postgresql+psycopg://vekro:vekro@localhost:5432/vekro
       ALEMBIC_DATABASE_URL: postgresql+psycopg://vekro:vekro@localhost:5432/vekro
+      # B8 e2e reads the SMS sign-in code from the API (never enabled in production).
+      PHONE_CODE_DEV_ECHO: 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
