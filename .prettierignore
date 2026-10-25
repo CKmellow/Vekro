@@ -14,4 +14,3 @@ src/models/api/schema.d.ts
 .vscode
 src/styles/tokens.css
 src/models/api/schema.d.ts
-public/mockServiceWorker.js

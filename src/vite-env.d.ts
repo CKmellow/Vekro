@@ -8,8 +8,6 @@ interface ImportMetaEnv {
   readonly VITE_SUPPORT_WHATSAPP?: string
   readonly VITE_SUPPORT_EMAIL?: string
   readonly VITE_SUPPORT_HOURS?: string
-  // Backend-gap mock flags (src/models/api/adapters/gaps.ts), "true" to enable.
-  readonly [key: `VITE_MOCK_${string}`]: string | undefined
 }
 
 interface ImportMeta {

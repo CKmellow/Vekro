@@ -1,14 +1,13 @@
 /// <reference types="node" />
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { GAPS } from '@/models/api/adapters/gaps'
 
 const example = readFileSync('.env.example', 'utf8')
 const gitignore = readFileSync('.gitignore', 'utf8')
 
 describe('.env.example', () => {
-  it('documents every backend-gap flag, off by default', () => {
-    for (const gap of Object.keys(GAPS)) expect(example).toMatch(new RegExp(`^VITE_MOCK_${gap}=false$`, 'm'))
+  it('has no backend-gap mock flags left (gaps are built in the backend)', () => {
+    expect(example).not.toMatch(/^VITE_MOCK_/m)
   })
 
   it('documents the API and dev-server variables', () => {

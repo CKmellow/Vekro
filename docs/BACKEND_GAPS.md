@@ -1,14 +1,18 @@
 # Backend gaps
 
-Each gap has a `backend-gap` issue, an MSW mock tagged `// backend-gap #<n>`, and a `VITE_MOCK_<GAP>` flag. When the backend ships, delete the mock and flag.
+A missing API capability gets a `backend-gap` issue here and is built in the backend (CKmellow/Vekro-backend): no MSW mocks or `VITE_MOCK_*` flags on the frontend (Cyprian, 2026-10-15). Since M16 #133 the gap-mock machinery is gone entirely; MSW is used by tests only.
 
-Reconciled against `api/openapi.json` on 2026-10-25 (resynced from CKmellow/Vekro-backend `main`).
+Reconciled against `api/openapi.json` on 2026-10-26 (resynced from CKmellow/Vekro-backend `main`).
 
 ## Open
 
-| Gap | Issue | Needed by (milestone) | Status | Flag | Mock file |
-| --- | --- | --- | --- | --- | --- |
-| P2-1 Courier/seller code verify | #14 | M16 | Open (only if needed) | none | n/a |
+None.
+
+## Not planned
+
+| Gap | Issue | Decided | Why |
+| --- | --- | --- | --- |
+| P2-1 Courier/seller code verify | #14 | 2026-10-26 | The courier is not a system actor, and the buyer enters the delivery code on B4, so no separate verify endpoint is needed. |
 
 ## Closed
 

@@ -22,7 +22,6 @@ export default mergeConfig(
           'src/main.tsx',
           'src/App.tsx',
           'src/preview.tsx',
-          'src/mocks/browser.ts',
           'src/styles/fonts.ts',
         ],
         // Floor, not target: CI fails if coverage drops below today's level.
