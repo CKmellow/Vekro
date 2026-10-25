@@ -10,7 +10,6 @@ Reconciled against `api/openapi.json` on 2026-10-25 (resynced from CKmellow/Vekr
 | --- | --- | --- | --- | --- | --- |
 | P2-1 Courier/seller code verify | #14 | M16 | Open (only if needed) | none | n/a |
 | P2-3 Seller analytics aggregates | #148 | M15 | Open | `VITE_MOCK_ANALYTICS` | not yet |
-| P2-4 Password change and reset, sessions and devices | #149 | M15 | Open | `VITE_MOCK_ACCOUNT_SECURITY` | not yet |
 
 ## Closed
 
@@ -35,3 +34,4 @@ Reconciled against `api/openapi.json` on 2026-10-25 (resynced from CKmellow/Vekr
 | P1-1 Public order summary | #10 | 2026-10-25 | Backend PR CKmellow/Vekro-backend#204 (issue #203). `GET /public/orders/{key}` (SMS link id or reference): reference, item title, amount, state group and listing status, no personal data; 30 lookups a minute per client. Used by the B3 phone gate with B8's SMS sign-in. |
 | P1-7 Seller profile and payout settings update | #144 | 2026-10-26 | Backend PR CKmellow/Vekro-backend#206 (issue #205). `GET/PATCH /me/profile`, `PUT/DELETE /me/profile/logo`, public `GET /sellers/{id}/logo`; `POST /me/mpesa-number/request-code` and `PUT /me/mpesa-number` (SMS code to a new number once the seller has orders; the old number is told). Used by S3 and S13; the `sellerProfile` MSW mock and adapter are deleted. |
 | P2-5 Notification preferences | #150 | 2026-10-26 | Backend PR CKmellow/Vekro-backend#208 (issue #207). `GET/PUT /me/notification-preferences`: in-app and SMS per category for sellers, support in-app locked on, buyers never muted; honoured by SMS delivery and the in-app list and count. Used by the S13 Notifications tab. |
+| P2-4 Password change and reset, sessions and devices | #149 | 2026-10-26 | Backend PR CKmellow/Vekro-backend#208 (issue #207). Password change (signs out other devices), reset by SMS code (always 202; signs out everywhere), devices list and sign out one or the rest. Used by S13 Security and S2 "Forgot password?" (`/forgot-password`). |

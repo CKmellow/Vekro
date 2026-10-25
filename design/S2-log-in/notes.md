@@ -57,3 +57,7 @@ Usability and accessibility
 ## Open questions
 
 - None.
+
+## Build notes (M15, #149)
+
+1. "Forgot password?" sits under the password field and opens `/forgot-password` (same split layout): phone, then the SMS code with a new password. The confirmation never says whether the number has an account. After the reset every device is signed out and S2 shows "Password updated. Log in with your new password."

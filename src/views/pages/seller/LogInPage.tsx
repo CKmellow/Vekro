@@ -11,16 +11,17 @@ import { AuthLayout } from '../../layouts/AuthLayout'
 
 const BANNERS: Record<
   Exclude<LogInBanner, null>,
-  { tone: 'warning' | 'escalation' | 'danger'; title: string }
+  { tone: 'info' | 'warning' | 'escalation' | 'danger'; title: string }
 > = {
   expired: { tone: 'warning', title: 'Your session expired. Log in again.' },
+  reset: { tone: 'info', title: 'Password updated. Log in with your new password.' },
   'wrong-role': { tone: 'escalation', title: 'This area is for sellers. Log in with a seller account.' },
   'wrong-details': { tone: 'danger', title: "Phone or password doesn't match. Check them and try again." },
   offline: { tone: 'danger', title: "You're offline. Check your connection and try again." },
   server: { tone: 'danger', title: "We couldn't log you in. Try again in a moment." },
 }
 
-/** S2 Log in (design/S2-log-in). No "Forgot password?" until backend-gap #149. */
+/** S2 Log in (design/S2-log-in), with "Forgot password?" (backend #207). */
 export function LogInPage() {
   const vault = useAuthShowcase()
   const { form, onSubmit, submitting, banner, lockedUntil, lockTotalMs, onUnlock } = useLogIn()
@@ -75,13 +76,18 @@ export function LogInPage() {
             />
           )}
         />
-        <PasswordField
-          label="Password"
-          autoComplete="current-password"
-          disabled={locked}
-          error={formState.errors.password?.message}
-          {...register('password')}
-        />
+        <div className="flex flex-col gap-2">
+          <PasswordField
+            label="Password"
+            autoComplete="current-password"
+            disabled={locked}
+            error={formState.errors.password?.message}
+            {...register('password')}
+          />
+          <Link to="/forgot-password" className="type-body-sm self-end font-semibold text-primary">
+            Forgot password?
+          </Link>
+        </div>
         <Button type="submit" fullWidth loading={submitting} disabled={locked}>
           Log in
         </Button>

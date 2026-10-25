@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { freshPhone, paidOrder } from './support'
+import { freshPhone, paidOrder, signUpVia } from './support'
 
 // Needs the backend's PHONE_CODE_DEV_ECHO=true (local and CI only): no SMS goes out, so the
 // request-code response carries the code.
@@ -57,4 +57,32 @@ test('an order link opened signed out asks for the phone first, then shows the o
 
   await expect(page.getByRole('heading', { name: 'Your order' })).toBeVisible()
   await expect(page.getByText('Amina Gadgets').first()).toBeVisible()
+})
+
+test('a seller resets a forgotten password by SMS code and logs in with the new one', async ({
+  browser,
+  page,
+}) => {
+  const national = freshPhone('1')
+  await signUpVia(await browser.newContext(), 'seller', 'Amina Gadgets', national)
+
+  await page.goto('/login')
+  await page.getByRole('link', { name: 'Forgot password?' }).click()
+  await page.getByLabel('Phone number').fill(national)
+  const [sent] = await Promise.all([
+    page.waitForResponse((r) => r.url().endsWith('/api/auth/password/reset/request-code')),
+    page.getByRole('button', { name: 'Send code' }).click(),
+  ])
+  const { dev_code: code } = (await sent.json()) as { dev_code: string }
+  await page.getByRole('textbox', { name: 'Digit 1 of 6' }).click()
+  await page.keyboard.type(code)
+  await page.getByLabel('New password', { exact: true }).fill('Papaya2027')
+  await page.getByLabel('Confirm new password').fill('Papaya2027')
+  await page.getByRole('button', { name: 'Set new password' }).click()
+
+  await expect(page.getByText('Password updated. Log in with your new password.')).toBeVisible()
+  await page.getByLabel('Phone number').fill(national)
+  await page.getByLabel('Password', { exact: true }).fill('Papaya2027')
+  await page.getByRole('button', { name: 'Log in' }).click()
+  await expect(page).toHaveURL(/\/seller/)
 })
