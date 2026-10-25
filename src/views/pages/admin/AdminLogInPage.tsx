@@ -12,9 +12,10 @@ import { PhoneField } from '../../components/ui/PhoneField'
 
 const BANNERS: Record<
   Exclude<LogInBanner, null>,
-  { tone: 'warning' | 'escalation' | 'danger'; title: string }
+  { tone: 'info' | 'warning' | 'escalation' | 'danger'; title: string }
 > = {
   expired: { tone: 'warning', title: 'Your session ended. Log in again to continue.' },
+  reset: { tone: 'info', title: 'Password updated. Log in with your new password.' },
   'wrong-role': { tone: 'escalation', title: "This account doesn't have console access." },
   'wrong-details': { tone: 'danger', title: "That phone number and password don't match." },
   offline: { tone: 'danger', title: "You're offline. Check your connection and try again." },

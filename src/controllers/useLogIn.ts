@@ -9,7 +9,7 @@ import { useSignIn, useSignOut } from '@/models/queries/session'
 import { logInSchema, type LogInValues } from '@/models/schemas/auth'
 import { useSession } from './useSession'
 
-export type LogInBanner = 'expired' | 'wrong-role' | 'wrong-details' | 'offline' | 'server' | null
+export type LogInBanner = 'expired' | 'reset' | 'wrong-role' | 'wrong-details' | 'offline' | 'server' | null
 
 const HOME = { seller: '/seller', admin: '/admin' } as const
 
@@ -23,7 +23,9 @@ export function useLogIn(role: 'seller' | 'admin' = 'seller') {
   const session = useSession()
   const signIn = useSignIn()
   const signOut = useSignOut()
-  const [banner, setBanner] = useState<LogInBanner>(params.get('reason') === 'expired' ? 'expired' : null)
+  const [banner, setBanner] = useState<LogInBanner>(
+    params.get('reason') === 'expired' ? 'expired' : params.get('reason') === 'reset' ? 'reset' : null,
+  )
   const [lockedUntil, setLockedUntil] = useState<string | null>(null)
   const form = useForm<LogInValues>({
     resolver: zodResolver(logInSchema),

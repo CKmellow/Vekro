@@ -8,7 +8,6 @@ describe('gap flags', () => {
     const on = mockedGaps({
       VITE_MOCK_TIMELINE: 'true',
       VITE_MOCK_ANALYTICS: '1',
-      VITE_MOCK_ACCOUNT_SECURITY: 'false',
       VITE_MOCK_NOT_A_GAP: 'true',
     })
     expect([...on].sort()).toEqual(['ANALYTICS', 'TIMELINE'])
@@ -19,8 +18,8 @@ describe('gap flags', () => {
   })
 
   it('lists every open gap from docs/BACKEND_GAPS.md with its issue', () => {
-    expect(Object.keys(GAPS)).toHaveLength(3)
-    expect(GAPS.ACCOUNT_SECURITY).toEqual({ id: 'P2-4', issue: 149 })
+    expect(Object.keys(GAPS)).toHaveLength(2)
+    expect(GAPS.ANALYTICS).toEqual({ id: 'P2-3', issue: 148 })
   })
 })
 

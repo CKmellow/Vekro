@@ -1,6 +1,7 @@
 import { notReady } from '@/views/pages/shared/system'
 export { CreateListingPage as S7 } from '@/views/pages/seller/CreateListingPage'
 export { DashboardPage as S4 } from '@/views/pages/seller/DashboardPage'
+export { ForgotPasswordPage as ForgotPassword } from '@/views/pages/seller/ForgotPasswordPage'
 export { ListingDetailPage as S9 } from '@/views/pages/seller/ListingDetailPage'
 export { ListingsPage as S8 } from '@/views/pages/seller/ListingsPage'
 export { LogInPage as S2 } from '@/views/pages/seller/LogInPage'
