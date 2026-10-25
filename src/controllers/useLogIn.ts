@@ -5,18 +5,24 @@ import { useNavigate, useSearchParams } from 'react-router'
 import { toE164 } from '@/lib/phone'
 import { safeReturnTo } from '@/lib/returnTo'
 import { ApiError } from '@/models/api/errors'
-import { useSignIn } from '@/models/queries/session'
+import { useSignIn, useSignOut } from '@/models/queries/session'
 import { logInSchema, type LogInValues } from '@/models/schemas/auth'
 import { useSession } from './useSession'
 
 export type LogInBanner = 'expired' | 'wrong-role' | 'wrong-details' | 'offline' | 'server' | null
 
-/** S2: seller log in. Returns to the page the seller was sent away from. */
-export function useLogIn() {
+const HOME = { seller: '/seller', admin: '/admin' } as const
+
+/**
+ * S2 seller log in, and A1 for the support console (`role: 'admin'`). Returns to the page the person was
+ * sent away from, inside their own area only. A wrong-role login at the console is signed out again.
+ */
+export function useLogIn(role: 'seller' | 'admin' = 'seller') {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const session = useSession()
   const signIn = useSignIn()
+  const signOut = useSignOut()
   const [banner, setBanner] = useState<LogInBanner>(params.get('reason') === 'expired' ? 'expired' : null)
   const [lockedUntil, setLockedUntil] = useState<string | null>(null)
   const form = useForm<LogInValues>({
@@ -25,14 +31,18 @@ export function useLogIn() {
     mode: 'onTouched',
   })
 
-  const wrongRole = session.status === 'authenticated' && session.role !== 'seller'
+  const wrongRole = session.status === 'authenticated' && session.role !== role
 
   const onSubmit = form.handleSubmit(async (values) => {
     setBanner(null)
     try {
       const user = await signIn.mutateAsync({ phone: toE164(values.phone), password: values.password })
-      if (user.role !== 'seller') return setBanner('wrong-role')
-      navigate(safeReturnTo(params.get('returnTo'), '/seller'), { replace: true })
+      if (user.role !== role) {
+        if (role === 'admin') await signOut.mutateAsync().catch(() => undefined)
+        return setBanner('wrong-role')
+      }
+      const back = safeReturnTo(params.get('returnTo'), HOME[role])
+      navigate(back.startsWith(HOME[role]) ? back : HOME[role], { replace: true })
     } catch (error) {
       if (!(error instanceof ApiError)) return setBanner('server')
       if (error.kind === 'rate_limited') {
