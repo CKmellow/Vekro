@@ -23,9 +23,7 @@ describe('supportContacts', () => {
   })
 
   it('leaves out the ones that are unset', () => {
-    expect(supportContacts({ VITE_SUPPORT_EMAIL: 'help@vekro.test' }).map((c) => c.kind)).toEqual([
-      'email',
-    ])
+    expect(supportContacts({ VITE_SUPPORT_EMAIL: 'help@vekro.test' }).map((c) => c.kind)).toEqual(['email'])
   })
 
   it('carries the page address in the report link', () => {
