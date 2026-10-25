@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { LoadingPage, SLOW_AFTER_MS } from './system'
+import { MemoryRouter } from 'react-router'
+import { LoadingPage, OfflinePage, SLOW_AFTER_MS } from './system'
 
 describe('LoadingPage', () => {
   beforeEach(() => vi.useFakeTimers())
@@ -21,5 +22,29 @@ describe('LoadingPage', () => {
     expect(screen.getByRole('main')).toHaveAttribute('aria-busy', 'false')
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }))
     expect(onRetry).toHaveBeenCalledOnce()
+  })
+})
+
+describe('OfflinePage', () => {
+  afterEach(() => vi.restoreAllMocks())
+
+  it('offers a retry and help, and retries by itself once back online', () => {
+    const online = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+    const onRetry = vi.fn()
+    render(
+      <MemoryRouter>
+        <OfflinePage onRetry={onRetry} />
+      </MemoryRouter>,
+    )
+    expect(screen.getByRole('heading', { name: "You're offline" })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Get help' })).toHaveAttribute('href', '/help')
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }))
+    expect(onRetry).toHaveBeenCalledOnce()
+
+    online.mockReturnValue(true)
+    act(() => {
+      window.dispatchEvent(new Event('online'))
+    })
+    expect(onRetry).toHaveBeenCalledTimes(2)
   })
 })

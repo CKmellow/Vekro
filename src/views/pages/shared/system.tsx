@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { CircleHelp, Unplug, Vault } from 'lucide-react'
+import { useEffect, useState, type ReactNode } from 'react'
+import { useNotFound, useOffline } from '@/controllers/useFallback'
 import { Button } from '@/views/components/ui/Button'
 import { ConstructionScene } from '@/views/components/ui/ConstructionScene'
 import { VekroMark } from '@/views/components/ui/VekroMark'
@@ -10,19 +12,56 @@ const PUBLIC_ACTIONS = {
   secondary: { label: 'Start selling', to: '/register' },
 }
 
-/** Unknown URL. */
+/** X2 illustration: a geometric icon in an emerald tile that floats gently (still under reduced motion). */
+function FallbackTile({ children }: { children: ReactNode }) {
+  return (
+    <div aria-hidden="true" className="relative mb-2 animate-float">
+      <span className="absolute inset-2 rounded-full bg-emerald-glow/15 blur-xl" />
+      <div className="relative grid size-28 place-items-center rounded-xl bg-emerald-50 text-primary shadow-1">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+const GET_HELP = { label: 'Get help', to: '/help' }
+
+/** X2 Not found (design/X2-not-found). Unknown URL. */
 export function NotFoundPage() {
+  const p = useNotFound()
   return (
     <StatusPage
       illustration={
-        <p aria-hidden="true" className="type-display-xl text-primary tabular-nums">
-          404
-        </p>
+        <FallbackTile>
+          <Vault strokeWidth={1.5} className="size-14" />
+          <span className="absolute -top-2 -right-2 grid size-10 place-items-center rounded-full bg-surface text-saffron-600 shadow-1">
+            <CircleHelp className="size-6" />
+          </span>
+        </FallbackTile>
       }
       title="We can't find that page"
       body="The link may be old or mistyped. If someone sent you a Vekro link, ask them to send it again."
       documentTitle="Page not found"
-      {...PUBLIC_ACTIONS}
+      primary={p.home}
+      secondary={GET_HELP}
+    />
+  )
+}
+
+/** X2 Offline (design/X2-not-found): a page opened with no connection and nothing to show. */
+export function OfflinePage({ onRetry }: { onRetry?: () => void }) {
+  const p = useOffline(onRetry)
+  return (
+    <StatusPage
+      illustration={
+        <FallbackTile>
+          <Unplug strokeWidth={1.5} className="size-14" />
+        </FallbackTile>
+      }
+      title="You're offline"
+      body="Check your connection. Your orders are safe in the vault while you're away."
+      primary={{ label: 'Try again', onClick: p.retry }}
+      secondary={GET_HELP}
     />
   )
 }

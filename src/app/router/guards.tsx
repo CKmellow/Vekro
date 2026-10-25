@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router'
 import { useSession, type Role } from '@/controllers/useSession'
-import { ErrorPage, LoadingPage, NoPermissionPage } from '@/views/pages/shared/system'
+import { ErrorPage, LoadingPage, NoPermissionPage, OfflinePage } from '@/views/pages/shared/system'
 
 const LOGIN: Record<'seller' | 'admin', string> = { seller: '/login', admin: '/admin/login' }
 
@@ -9,8 +9,9 @@ export function RequireRole({ allow: role }: { allow: Extract<Role, 'seller' | '
   const session = useSession()
   const location = useLocation()
 
-  if (session.status === 'loading') return <LoadingPage />
-  if (session.status === 'error') return <ErrorPage onRetry={session.retry} />
+  if (session.status === 'loading') return session.offline ? <OfflinePage /> : <LoadingPage />
+  if (session.status === 'error')
+    return session.offline ? <OfflinePage onRetry={session.retry} /> : <ErrorPage onRetry={session.retry} />
   if (session.status === 'anonymous') {
     const params = new URLSearchParams({ returnTo: `${location.pathname}${location.search}` })
     if (session.expired) params.set('reason', 'expired')

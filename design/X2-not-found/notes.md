@@ -28,3 +28,8 @@ Status: Specced (2026-10-24), reconciling the M4 build (`NotFoundPage`, `StatusP
 
 1. "Track an order" becomes "Get help" (FRONTEND_CONTRACT A).
 2. "Shows cached orders if available" is out of scope: the PWA caches the app shell, not API data (no data in browser storage by design).
+
+## Build notes (M14 #69)
+
+1. The offline page shows when the session check is paused or fails with no connection (`RequireRole`), or when a page's code can't load offline (`RouteError`). The query client starts from `navigator.onLine`, so a page opened offline shows it at once.
+2. "Try again" retries (the session check, or a reload) and the page retries by itself when the browser comes back online.
