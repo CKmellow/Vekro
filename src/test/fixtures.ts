@@ -230,3 +230,43 @@ export const adminCaseListResponse = (
   counters: { open: items.length, older_than_24h: 0, decided_today: 3, average_decision_seconds: 19_200 },
   ...overrides,
 })
+
+/** The full case for review: a seller escalated a repair dispute over VK-7K3P9Q. */
+export const adminCaseDetailResponse = (
+  overrides: Partial<Schemas['AdminCaseDetailResponse']> = {},
+): Schemas['AdminCaseDetailResponse'] => ({
+  ...adminCaseSummaryResponse(),
+  description: 'The screen flickers and goes black after a few minutes.',
+  unique_id: '352098114371234',
+  is_serialized: true,
+  dispute_policy: { resolution: 'repair', allowed_seller_actions: ['repair_shipped', 'refund_issued'] },
+  buyer: { name: 'Brian Otieno', phone: '+254712345678', orders: 3, completed_sales: 0, dispute_rate: 0 },
+  seller: {
+    name: 'Amina Gadgets',
+    phone: '+254722118904',
+    orders: 40,
+    completed_sales: 36,
+    dispute_rate: 0.05,
+  },
+  seller_action: null,
+  seller_notes: null,
+  buyer_notes: null,
+  reconfirm_rejections: 0,
+  escalation_reason: "The corner crack wasn't there when I sent it.",
+  decision: null,
+  timeline: [
+    {
+      at: '2026-10-20T09:00:00Z',
+      title: 'Buyer payment confirmed',
+      message: 'Paid.',
+      source: 'notification',
+    },
+    {
+      at: '2026-10-21T09:00:00Z',
+      title: 'Problem reported',
+      message: 'The screen flickers.',
+      source: 'dispute',
+    },
+  ],
+  ...overrides,
+})
