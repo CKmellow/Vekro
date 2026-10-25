@@ -36,8 +36,10 @@ function renderAt(path: string) {
 }
 
 describe('router', () => {
-  // The seller shell asks for badge counts, and the dashboard for its totals.
+  // The seller shell asks for badge counts, and the dashboard for its totals. Signed out unless a test
+  // says otherwise, so a late session refetch never meets a missing handler.
   beforeEach(() => {
+    signedInAs(null)
     server.use(
       http.get('/api/listings', () => HttpResponse.json(listingListResponse([]))),
       http.get('/api/transactions', () => HttpResponse.json(orderListResponse([]))),
