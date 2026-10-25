@@ -1,9 +1,11 @@
 import * as RadixTabs from '@radix-ui/react-tabs'
-import { ImagePlus, Smartphone } from 'lucide-react'
+import { ImagePlus, LogOut, Monitor, Smartphone } from 'lucide-react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useSettings } from '@/controllers/useSettings'
 import { ABOUT_MAX, useSettingsProfile } from '@/controllers/useSettingsProfile'
+import { useSettingsNotifications } from '@/controllers/useSettingsNotifications'
 import { useSettingsPayout } from '@/controllers/useSettingsPayout'
+import { useSettingsSecurity } from '@/controllers/useSettingsSecurity'
 import { cn } from '@/lib/cn'
 import { duration, spring } from '@/lib/motion'
 import { Banner } from '../../components/ui/Banner'
@@ -12,11 +14,15 @@ import { Card } from '../../components/ui/Card'
 import { CodeCells } from '../../components/ui/CodeCells'
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog'
 import { TextArea, TextField } from '../../components/ui/Field'
+import { PasswordField } from '../../components/ui/PasswordField'
 import { PhoneField } from '../../components/ui/PhoneField'
 import { Skeleton, SkeletonGroup } from '../../components/ui/Skeleton'
+import { Switch } from '../../components/ui/Switch'
 
 type Profile = ReturnType<typeof useSettingsProfile>
 type Payout = ReturnType<typeof useSettingsPayout>
+type Notifications = ReturnType<typeof useSettingsNotifications>
+type Security = ReturnType<typeof useSettingsSecurity>
 
 function LoadError({ what, retry }: { what: string; retry: () => void }) {
   return (
@@ -252,13 +258,194 @@ function PayoutTab({ p }: { p: Payout }) {
   )
 }
 
+function NotificationsTab({ p }: { p: Notifications }) {
+  if (p.state === 'loading')
+    return (
+      <SkeletonGroup label="Loading your notification settings">
+        <Skeleton className="h-48 w-full rounded-lg" />
+      </SkeletonGroup>
+    )
+  if (p.state === 'error') return <LoadError what="notification settings" retry={p.retry} />
+  return (
+    <div className="flex flex-col gap-4">
+      {p.error && <Banner tone="danger" title={p.error} />}
+      <p className="type-body-md text-text-muted">Choose how Vekro tells you about your orders.</p>
+      <table className="w-full border-collapse text-left">
+        <caption className="sr-only">Notifications by type and channel</caption>
+        <thead className="type-label text-text-muted">
+          <tr>
+            <th scope="col" className="py-2">
+              Type
+            </th>
+            <th scope="col" className="w-20 py-2 text-center">
+              In-app
+            </th>
+            <th scope="col" className="w-20 py-2 text-center">
+              SMS
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {p.rows.map((row) => (
+            <tr key={row.category} className="border-t border-border">
+              <th scope="row" className="type-body-md py-2 pr-3 font-semibold text-text">
+                {row.label}
+              </th>
+              <td className="py-2 text-center">
+                <Switch
+                  label={`${row.label} in the app`}
+                  checked={row.inApp}
+                  onChange={() => p.toggle(row.category, 'inApp')}
+                  disabled={row.inAppLocked || p.saving}
+                  title={row.inAppLocked ? 'Support decisions are always shown in the app' : undefined}
+                />
+              </td>
+              <td className="py-2 text-center">
+                <Switch
+                  label={`${row.label} by SMS`}
+                  checked={row.sms}
+                  onChange={() => p.toggle(row.category, 'sms')}
+                  disabled={p.saving}
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="type-body-sm text-text-muted">Support decisions are always shown in the app.</p>
+    </div>
+  )
+}
+
+function SecurityTab({ p }: { p: Security }) {
+  return (
+    <div className="flex flex-col gap-8">
+      <form
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault()
+          p.update()
+        }}
+        className="flex flex-col gap-5"
+        aria-labelledby="change-password"
+      >
+        <h2 id="change-password" className="type-headline text-text">
+          Change password
+        </h2>
+        {p.error && <Banner tone="danger" title={p.error} />}
+        <PasswordField
+          label="Current password"
+          autoComplete="current-password"
+          value={p.current}
+          onChange={(e) => p.setCurrent(e.target.value)}
+          error={p.errors.current}
+        />
+        <PasswordField
+          label="New password"
+          autoComplete="new-password"
+          value={p.next}
+          onChange={(e) => p.setNext(e.target.value)}
+          error={p.errors.next}
+          strength={p.strength}
+          rules={p.next ? p.rules : undefined}
+        />
+        <PasswordField
+          label="Confirm new password"
+          autoComplete="new-password"
+          value={p.confirm}
+          onChange={(e) => p.setConfirm(e.target.value)}
+          error={p.errors.confirm}
+        />
+        <div>
+          <Button type="submit" variant="secondary" loading={p.updating}>
+            Update password
+          </Button>
+        </div>
+        <p className="type-body-sm text-text-muted">Changing it signs out your other devices.</p>
+      </form>
+
+      <section aria-labelledby="devices" className="flex flex-col gap-4 border-t border-border pt-6">
+        <h2 id="devices" className="type-headline text-text">
+          Signed-in devices
+        </h2>
+        {p.sessionsState === 'loading' && (
+          <SkeletonGroup label="Loading your devices">
+            <Skeleton className="h-16 w-full rounded-md" />
+          </SkeletonGroup>
+        )}
+        {p.sessionsState === 'error' && <LoadError what="devices" retry={p.retrySessions} />}
+        {p.sessionsState === 'ready' && (
+          <ul className="flex flex-col divide-y divide-border rounded-lg border border-border">
+            {p.devices.map((d) => (
+              <li key={d.id} className="flex items-center gap-3 px-4 py-3">
+                <span className="grid size-10 shrink-0 place-items-center rounded-md bg-sand-100 text-ink-600">
+                  {/Android|iPhone|iPad/.test(d.device) ? (
+                    <Smartphone aria-hidden="true" className="size-5" />
+                  ) : (
+                    <Monitor aria-hidden="true" className="size-5" />
+                  )}
+                </span>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <span className="type-body-md truncate font-semibold text-text">{d.device}</span>
+                  <span className="type-body-sm text-text-muted">{d.seen}</span>
+                </div>
+                {d.current ? (
+                  <span className="type-body-sm rounded-full bg-emerald-50 px-2.5 py-1 font-semibold text-emerald-700">
+                    This device
+                  </span>
+                ) : (
+                  <Button variant="ghost" onClick={() => p.revoke(d.id)} loading={p.revoking === d.id}>
+                    Sign out<span className="sr-only"> {d.device}</span>
+                  </Button>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+        {p.hasOthers && (
+          <div>
+            <Button variant="secondary" onClick={p.revokeOthers} loading={p.revokingOthers}>
+              Sign out other devices
+            </Button>
+          </div>
+        )}
+      </section>
+
+      <div className="border-t border-border pt-6">
+        <Button variant="danger" onClick={p.logOut} loading={p.loggingOut}>
+          <LogOut aria-hidden="true" className="size-4" />
+          Log out
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 /** S13 Settings (design/S13-settings). Route /seller/settings?tab=. */
 export function SettingsPage() {
   const profile = useSettingsProfile()
   const payout = useSettingsPayout()
-  const s = useSettings({ dirty: profile.dirty, discard: profile.discard })
+  const notifications = useSettingsNotifications()
+  const security = useSettingsSecurity()
+  const s = useSettings({
+    dirty: profile.dirty || notifications.dirty,
+    discard: () => {
+      profile.discard()
+      notifications.discard()
+    },
+  })
   const reduce = useReducedMotion()
-  const showBar = s.tab === 'profile' && profile.dirty
+  // Profile and Notifications save from the bar; Payout and Security have their own confirm steps.
+  const bar =
+    s.tab === 'profile' && profile.dirty
+      ? profile
+      : s.tab === 'notifications' && notifications.dirty
+        ? {
+            save: () => void notifications.save(),
+            discard: notifications.discard,
+            saving: notifications.saving,
+          }
+        : null
 
   return (
     <div className="flex flex-col gap-6 pb-24">
@@ -300,11 +487,17 @@ export function SettingsPage() {
           <RadixTabs.Content value="payout">
             <PayoutTab p={payout} />
           </RadixTabs.Content>
+          <RadixTabs.Content value="notifications">
+            <NotificationsTab p={notifications} />
+          </RadixTabs.Content>
+          <RadixTabs.Content value="security">
+            <SecurityTab p={security} />
+          </RadixTabs.Content>
         </Card>
       </RadixTabs.Root>
 
       <AnimatePresence>
-        {showBar && (
+        {bar && (
           <motion.div
             initial={reduce ? false : { y: 96 }}
             animate={{ y: 0 }}
@@ -318,12 +511,12 @@ export function SettingsPage() {
                 <span className="sm:hidden">Unsaved changes</span>
               </p>
               <div className="flex gap-2">
-                <Button variant="ghost" onClick={profile.discard} disabled={profile.saving}>
+                <Button variant="ghost" onClick={bar.discard} disabled={bar.saving}>
                   Discard
                 </Button>
                 <Button
-                  onClick={profile.save}
-                  loading={profile.saving}
+                  onClick={bar.save}
+                  loading={bar.saving}
                   disabled={!profile.online}
                   className="whitespace-nowrap"
                 >

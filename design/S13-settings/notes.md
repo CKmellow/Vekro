@@ -68,3 +68,9 @@ Usability and accessibility
 1. Payout copy changed to what the backend does: "Payouts that haven't been sent yet will go to the new number. Vekro texts your old number when it changes." (payouts read the current number when they're sent).
 2. Before the first order a new payout number saves without a code ("Save number"), since no money can move yet; afterwards it needs the code texted to the new number.
 3. Tabs: Profile and Payout ship in #123; Notifications and Security join in #124.
+
+## Build notes (M15 #124)
+
+1. Notification categories follow the backend's grouping: "Payment received", "Dispatch and delivery", "Return updates", "Support messages" (the brief's "Dispatch reminders" also covers arrival and timeouts).
+2. Changing the password signs out other devices; the toast says how many.
+3. Devices show a label from the browser (no IP addresses or locations are stored), so the brief's "· Nairobi" is left out.

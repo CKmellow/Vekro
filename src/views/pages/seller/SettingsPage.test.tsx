@@ -54,10 +54,58 @@ function renderAt(url = '/seller/settings', over: Record<string, unknown> = {}) 
       return HttpResponse.json(current)
     }),
   )
+  let prefs = {
+    payment_received: { in_app: true, sms: true },
+    delivery: { in_app: true, sms: true },
+    returns: { in_app: true, sms: true },
+    support: { in_app: true, sms: true },
+  }
+  let devices = [
+    {
+      id: 's1',
+      device: 'Chrome on Android',
+      created_at: '2026-10-25T09:00:00Z',
+      last_seen_at: new Date().toISOString(),
+      current: true,
+    },
+    {
+      id: 's2',
+      device: 'Safari on iPhone',
+      created_at: '2026-10-20T09:00:00Z',
+      last_seen_at: '2026-10-20T09:00:00Z',
+      current: false,
+    },
+  ]
+  server.use(
+    http.get('/api/me/notification-preferences', () => HttpResponse.json(prefs)),
+    http.put('/api/me/notification-preferences', async ({ request }) => {
+      prefs = (await request.json()) as typeof prefs
+      calls.push({ method: 'PUT', path: '/me/notification-preferences', body: prefs })
+      return HttpResponse.json(prefs)
+    }),
+    http.get('/api/auth/sessions', () => HttpResponse.json(devices)),
+    http.delete('/api/auth/sessions/:id', ({ params }) => {
+      devices = devices.filter((d) => d.id !== params.id)
+      return new HttpResponse(null, { status: 204 })
+    }),
+    http.post('/api/auth/sessions/revoke-others', () => {
+      const n = devices.filter((d) => !d.current).length
+      devices = devices.filter((d) => d.current)
+      return HttpResponse.json({ revoked: n })
+    }),
+    http.post('/api/auth/password/change', async ({ request }) => {
+      const body = (await request.json()) as { current_password: string }
+      return body.current_password === 'Mango2026'
+        ? HttpResponse.json({ signed_out_devices: 1 })
+        : HttpResponse.json({ detail: "Your current password doesn't match." }, { status: 400 })
+    }),
+    http.post('/api/auth/logout', () => new HttpResponse(null, { status: 204 })),
+  )
   const router = createMemoryRouter(
     [
       { path: '/seller/settings', element: <SettingsPage /> },
       { path: '/seller', element: <h1>Dashboard</h1> },
+      { path: '/login', element: <h1>Log in</h1> },
     ],
     { initialEntries: [url] },
   )
@@ -140,9 +188,57 @@ describe('S13 settings: payout', () => {
   })
 
   it('says when the profile fails to load', async () => {
-    server.use(http.get('/api/me/profile', () => HttpResponse.json({ detail: 'x' }, { status: 400 })))
+    server.use(
+      http.get('/api/me/profile', () => HttpResponse.json({ detail: 'x' }, { status: 400 })),
+      http.get('/api/me/notification-preferences', () => HttpResponse.json({ detail: 'x' }, { status: 400 })),
+      http.get('/api/auth/sessions', () => HttpResponse.json([])),
+    )
     const router = createMemoryRouter([{ path: '/s', element: <SettingsPage /> }], { initialEntries: ['/s'] })
     renderWithProviders(<RouterProvider router={router} />)
     expect(await screen.findByText("We couldn't load your profile.")).toBeInTheDocument()
+  })
+})
+
+describe('S13 settings: notifications', () => {
+  it('toggles SMS per category, keeps support in-app on, and saves from the bar', async () => {
+    const { user, calls } = renderAt('/seller/settings?tab=notifications')
+    const returnsSms = await screen.findByRole('switch', { name: 'Return updates by SMS' })
+    expect(screen.getByRole('switch', { name: 'Support messages in the app' })).toBeDisabled()
+    await user.click(returnsSms)
+    expect(returnsSms).not.toBeChecked()
+    await user.click(screen.getByRole('button', { name: 'Save changes' }))
+    await vi.waitFor(() => expect(calls.at(-1)?.path).toBe('/me/notification-preferences'))
+    expect(calls.at(-1)?.body).toMatchObject({ returns: { in_app: true, sms: false } })
+  })
+})
+
+describe('S13 settings: security', () => {
+  it('changes the password and says when the current one is wrong', async () => {
+    const { user } = renderAt('/seller/settings?tab=security')
+    await user.type(await screen.findByLabelText('Current password'), 'wrong')
+    await user.type(screen.getByLabelText('New password'), 'Papaya2027')
+    await user.type(screen.getByLabelText('Confirm new password'), 'Papaya2027')
+    await user.click(screen.getByRole('button', { name: 'Update password' }))
+    expect(await screen.findByText("That password doesn't match")).toBeInTheDocument()
+    await user.clear(screen.getByLabelText('Current password'))
+    await user.type(screen.getByLabelText('Current password'), 'Mango2026')
+    await user.click(screen.getByRole('button', { name: 'Update password' }))
+    await vi.waitFor(() => expect(screen.getByLabelText('Current password')).toHaveValue(''))
+  })
+
+  it('lists devices, signs one out, and signs out the rest', async () => {
+    const { user } = renderAt('/seller/settings?tab=security')
+    expect(await screen.findByText('This device')).toBeInTheDocument()
+    expect(screen.getByText('Active now')).toBeInTheDocument()
+    expect(screen.getByText(/Last active/)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Sign out Safari on iPhone' }))
+    await vi.waitFor(() => expect(screen.queryByText('Safari on iPhone')).not.toBeInTheDocument())
+    expect(screen.queryByRole('button', { name: 'Sign out other devices' })).not.toBeInTheDocument()
+  })
+
+  it('logs out to the log in page', async () => {
+    const { user } = renderAt('/seller/settings?tab=security')
+    await user.click(await screen.findByRole('button', { name: 'Log out' }))
+    expect(await screen.findByRole('heading', { name: 'Log in' })).toBeInTheDocument()
   })
 })

@@ -7,7 +7,6 @@ export const GAPS = {
   TIMELINE: { id: 'P1-5', issue: 142 },
   ANALYTICS: { id: 'P2-3', issue: 148 },
   ACCOUNT_SECURITY: { id: 'P2-4', issue: 149 },
-  NOTIFICATION_PREFS: { id: 'P2-5', issue: 150 },
 } as const
 
 export type Gap = keyof typeof GAPS
