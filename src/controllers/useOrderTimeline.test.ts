@@ -89,3 +89,17 @@ describe('seller timeline', () => {
     expect(upcomingSteps(order, NOW)[0]?.text).toBe('Dispatch the order, or the buyer is refunded')
   })
 })
+
+describe('admin timeline', () => {
+  it('names both parties for support', () => {
+    const entries = toEntries(
+      [
+        { kind: 'transaction_dispatched', at: '2026-10-20T06:00:00Z', title: 'Dispatched', description: '' },
+        { kind: 'otp_given', at: '2026-10-20T07:00:00Z', title: 'Accepted', description: '' },
+      ],
+      NOW,
+      'admin',
+    )
+    expect(entries.map((e) => e.actor)).toEqual(['buyer', 'seller'])
+  })
+})

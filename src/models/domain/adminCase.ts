@@ -1,3 +1,5 @@
+import type { TransactionStatus } from './stateMeta'
+
 /** Escalated return cases as the support console sees them. */
 
 export type CaseTrigger = 'receipt_timeout' | 'buyer_not_fixed_twice' | 'party_escalated' | 'other_category'
@@ -96,4 +98,29 @@ export function decisionTime(seconds: number | null): string | null {
   const h = Math.floor(seconds / 3600)
   const m = Math.round((seconds % 3600) / 60)
   return h > 0 ? `${h}h ${String(m).padStart(2, '0')}m` : `${m}m`
+}
+
+export interface AdminTransactionRow {
+  transactionId: string
+  reference: string
+  status: TransactionStatus
+  amount: number
+  itemTitle: string
+  isSerialized: boolean
+  buyer: { name: string; phone: string }
+  seller: { name: string; phone: string }
+  createdAt: string
+  lastEvent: { title: string; at: string } | null
+  disputeId: string | null
+}
+
+export interface AdminSearchFilter {
+  q?: string
+  statuses?: TransactionStatus[]
+  placedFrom?: string
+  placedTo?: string
+  minAmount?: number
+  maxAmount?: number
+  serialized?: boolean
+  page?: number
 }
