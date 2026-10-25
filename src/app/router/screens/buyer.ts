@@ -1,4 +1,4 @@
-import { notReady } from '@/views/pages/shared/system'
+// Buyer screens (PAGES.md B1 to B9), inside BuyerLayout.
 export { PayPage as B1 } from '@/views/pages/buyer/PayPage'
 export { PaymentPage as B2 } from '@/views/pages/buyer/PaymentPage'
 export { PayReturnPage as PayReturn } from '@/views/pages/buyer/PayReturnPage'
@@ -8,6 +8,4 @@ export { ReportIssuePage as B5 } from '@/views/pages/buyer/ReportIssuePage'
 export { ReturnFlowPage as B6 } from '@/views/pages/buyer/ReturnFlowPage'
 export { TimelinePage as B7 } from '@/views/pages/buyer/TimelinePage'
 export { BuyerSignInPage as B8 } from '@/views/pages/buyer/BuyerSignInPage'
-
-// Buyer screens (PAGES.md B1 to B9), inside BuyerLayout. Each is replaced by its real page when built.
-export const B9 = notReady('buyer', 'My orders')
+export { MyOrdersPage as B9 } from '@/views/pages/buyer/MyOrdersPage'
