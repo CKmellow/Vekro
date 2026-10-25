@@ -156,7 +156,9 @@ export function moneyAt(status: TransactionStatus): MoneyAt {
 }
 
 /** Paid, On the way, At your door, Inspected, (Held 24h), Complete. */
-export function progress(order: Order): { steps: string[]; current: number } | null {
+export function progress(
+  order: Pick<Order, 'status'> & { listing: Pick<Order['listing'], 'isSerialized'> },
+): { steps: string[]; current: number } | null {
   const steps = [
     'Paid',
     'On the way',

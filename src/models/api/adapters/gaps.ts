@@ -5,7 +5,6 @@
  */
 export const GAPS = {
   PUBLIC_ORDER: { id: 'P1-1', issue: 10 },
-  BUYER_ORDERS: { id: 'P1-3', issue: 12 },
   TIMELINE: { id: 'P1-5', issue: 142 },
   SELLER_PROFILE: { id: 'P1-7', issue: 144 },
   ANALYTICS: { id: 'P2-3', issue: 148 },

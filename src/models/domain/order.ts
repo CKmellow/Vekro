@@ -159,3 +159,19 @@ export interface SellerSummary {
   openIssues: number
   nextRelease: { id: string; reference: string } | null
 }
+
+/**
+ * B9 "Active" for a buyer: the server's needs_action, in_transit and held segments together
+ * (backend `SEGMENT_STATUSES`), sent as a status filter since the API takes one segment.
+ */
+export const BUYER_ACTIVE_STATUSES: TransactionStatus[] = [
+  'initiated',
+  'awaiting_payment',
+  'locked',
+  'dispatched',
+  'out_for_delivery',
+  'at_door_pending_inspection',
+  'hold_24h',
+  'return_in_transit',
+  'return_received',
+]

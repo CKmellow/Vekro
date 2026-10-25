@@ -43,3 +43,8 @@ Usability and accessibility
 ## Open questions
 
 - None.
+
+## Build notes (M15 #122)
+
+1. "Sign out" sits beside the headline instead of in an avatar menu, so the buyer header stays the same on every buyer page.
+2. Signed-in sellers and admins are sent to their own areas.

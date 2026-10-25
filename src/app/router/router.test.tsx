@@ -54,9 +54,16 @@ describe('router', () => {
   })
 
   it('lazy-loads public buyer routes without a session', async () => {
-    renderAt('/buyer/orders')
-    expect(await screen.findByRole('heading', { name: 'Still under construction' })).toBeInTheDocument()
-    expect(screen.getByText(/building the My orders page/)).toBeInTheDocument()
+    signedInAs(null)
+    renderAt('/buyer/sign-in')
+    expect(await screen.findByRole('heading', { name: 'See all your orders' })).toBeInTheDocument()
+  })
+
+  it('sends signed-out visitors from my orders to buyer sign-in', async () => {
+    signedInAs(null)
+    const { router } = renderAt('/buyer/orders')
+    await screen.findByRole('heading', { name: 'See all your orders' })
+    expect(router.state.location.pathname).toBe('/buyer/sign-in')
   })
 
   it('shows visitors the landing page at /', async () => {
@@ -74,13 +81,6 @@ describe('router', () => {
     await waitFor(() => expect(router.state.location.pathname).toBe('/seller'))
     // Let the dashboard finish loading so its requests don't land in the next test.
     expect(await screen.findByRole('heading', { name: 'Needs your action' })).toBeInTheDocument()
-  })
-
-  it('sends unbuilt public pages to built pages only', async () => {
-    renderAt('/buyer/orders')
-    await screen.findByRole('heading', { name: 'Still under construction' })
-    expect(screen.getByRole('link', { name: 'Seller log in' })).toHaveAttribute('href', '/login')
-    expect(screen.getByRole('link', { name: 'Start selling' })).toHaveAttribute('href', '/register')
   })
 
   it('shows the not-found page for unknown routes', async () => {

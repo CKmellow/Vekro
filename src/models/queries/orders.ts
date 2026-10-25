@@ -38,6 +38,18 @@ export const useOrderTimeline = (id: string, options: { enabled?: boolean; updat
   })
 
 /** The caller's order list (GET /transactions). Keeps the previous page on screen while the next loads. */
+/**
+ * B9 "Track an order": the signed-in buyer's own order with this exact reference, or null. Searches only
+ * the caller's orders, so a reference never opens someone else's order.
+ */
+export const useFindOwnOrder = () =>
+  useMutation({
+    mutationFn: async (reference: string) => {
+      const list = await listOrders({ q: reference, pageSize: 5 })
+      return list.items.find((o) => o.reference.toUpperCase() === reference.toUpperCase())?.id ?? null
+    },
+  })
+
 export const useOrders = (
   filter: OrderListFilter = {},
   options: { enabled?: boolean; refetchInterval?: number | false } = {},

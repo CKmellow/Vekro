@@ -9,7 +9,6 @@ Reconciled against `api/openapi.json` on 2026-10-25 (resynced from CKmellow/Vekr
 | Gap | Issue | Needed by (milestone) | Status | Flag | Mock file |
 | --- | --- | --- | --- | --- | --- |
 | P1-1 Public order summary | #10 | M6 | Open | `VITE_MOCK_PUBLIC_ORDER` | not yet |
-| P1-3 Buyer order history | #12 | M15 | Open | `VITE_MOCK_BUYER_ORDERS` | not yet |
 | P1-7 Seller profile and payout settings update | #144 | M4 | Open (mocked) | `VITE_MOCK_SELLER_PROFILE` | `src/mocks/gaps/sellerProfile.ts` |
 | P2-1 Courier/seller code verify | #14 | M16 | Open (only if needed) | none | n/a |
 | P2-3 Seller analytics aggregates | #148 | M15 | Open | `VITE_MOCK_ANALYTICS` | not yet |
@@ -35,3 +34,4 @@ Reconciled against `api/openapi.json` on 2026-10-25 (resynced from CKmellow/Vekr
 | P1-9 Seller disagree-and-escalate | #146 | 2026-10-24 | Backend PR CKmellow/Vekro-backend#190 (issue #189). `POST /transactions/{id}/escalate` `{ reason }` (20 to 1,000 characters) for the buyer or seller on an open return case; moves it to `escalated_admin_review`, keeps the reason for support, notifies both. Used by S11; the `VITE_MOCK_ESCALATE` flag is removed. |
 | P1-10 Admin transaction search | #147 | 2026-10-25 | Backend PR CKmellow/Vekro-backend#196 (issue #195). `GET /admin/transactions` searches reference, phone (any format), seller, title or serial, with status, EAT date, amount and item-type filters; recent activity without a query. Used by A4; the `VITE_MOCK_ADMIN_SEARCH` flag is removed. Admin case reads (A2, A3) came with #194 and #198; the admin order timeline wording with #200. |
 | P1-2 Phone-verified guest session | #11 | 2026-10-25 | Backend PR CKmellow/Vekro-backend#202 (issue #201). `POST /auth/phone/request-code` (202, resend cooldown, hourly and per-client caps, 429 + Retry-After) and `POST /auth/phone/verify` (same session and CSRF cookies as login; 422 wrong, 410 expired, 429 locked, 409 seller number). Codes are single-use, 5 minutes, HMAC at rest. Used by B8 (`PhoneVerifiedGuest` in `src/models/api/auth.ts`). |
+| P1-3 Buyer order history | #12 | 2026-10-25 | Backend #176: `GET /transactions` returns only the caller's orders (a buyer's purchases) with segment counts, search and pagination; the seller is the `counterpart`. Used by B9 (`useMyOrders`), Active is the needs_action, in_transit and held statuses sent as a `status` filter. |
