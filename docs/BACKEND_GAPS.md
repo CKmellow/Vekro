@@ -8,7 +8,6 @@ Reconciled against `api/openapi.json` on 2026-10-25 (resynced from CKmellow/Vekr
 
 | Gap | Issue | Needed by (milestone) | Status | Flag | Mock file |
 | --- | --- | --- | --- | --- | --- |
-| P1-7 Seller profile and payout settings update | #144 | M4 | Open (mocked) | `VITE_MOCK_SELLER_PROFILE` | `src/mocks/gaps/sellerProfile.ts` |
 | P2-1 Courier/seller code verify | #14 | M16 | Open (only if needed) | none | n/a |
 | P2-3 Seller analytics aggregates | #148 | M15 | Open | `VITE_MOCK_ANALYTICS` | not yet |
 | P2-4 Password change and reset, sessions and devices | #149 | M15 | Open | `VITE_MOCK_ACCOUNT_SECURITY` | not yet |
@@ -35,3 +34,4 @@ Reconciled against `api/openapi.json` on 2026-10-25 (resynced from CKmellow/Vekr
 | P1-2 Phone-verified guest session | #11 | 2026-10-25 | Backend PR CKmellow/Vekro-backend#202 (issue #201). `POST /auth/phone/request-code` (202, resend cooldown, hourly and per-client caps, 429 + Retry-After) and `POST /auth/phone/verify` (same session and CSRF cookies as login; 422 wrong, 410 expired, 429 locked, 409 seller number). Codes are single-use, 5 minutes, HMAC at rest. Used by B8 (`PhoneVerifiedGuest` in `src/models/api/auth.ts`). |
 | P1-3 Buyer order history | #12 | 2026-10-25 | Backend #176: `GET /transactions` returns only the caller's orders (a buyer's purchases) with segment counts, search and pagination; the seller is the `counterpart`. Used by B9 (`useMyOrders`), Active is the needs_action, in_transit and held statuses sent as a `status` filter. |
 | P1-1 Public order summary | #10 | 2026-10-25 | Backend PR CKmellow/Vekro-backend#204 (issue #203). `GET /public/orders/{key}` (SMS link id or reference): reference, item title, amount, state group and listing status, no personal data; 30 lookups a minute per client. Used by the B3 phone gate with B8's SMS sign-in. |
+| P1-7 Seller profile and payout settings update | #144 | 2026-10-26 | Backend PR CKmellow/Vekro-backend#206 (issue #205). `GET/PATCH /me/profile`, `PUT/DELETE /me/profile/logo`, public `GET /sellers/{id}/logo`; `POST /me/mpesa-number/request-code` and `PUT /me/mpesa-number` (SMS code to a new number once the seller has orders; the old number is told). Used by S3 and S13; the `sellerProfile` MSW mock and adapter are deleted. |

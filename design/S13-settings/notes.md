@@ -62,3 +62,9 @@ Usability and accessibility
 ## Open questions
 
 - None.
+
+## Build notes (M15 #123)
+
+1. Payout copy changed to what the backend does: "Payouts that haven't been sent yet will go to the new number. Vekro texts your old number when it changes." (payouts read the current number when they're sent).
+2. Before the first order a new payout number saves without a code ("Save number"), since no money can move yet; afterwards it needs the code texted to the new number.
+3. Tabs: Profile and Payout ship in #123; Notifications and Security join in #124.

@@ -146,10 +146,10 @@ describe('router', () => {
 
   it('lets a seller into seller routes', async () => {
     signedInAs('seller')
-    renderAt('/seller/settings')
+    renderAt('/seller/analytics')
     expect(await screen.findByRole('heading', { name: 'Still under construction' })).toBeInTheDocument()
-    expect(screen.getByText(/building the Settings page/)).toBeInTheDocument()
-    expect(document.title).toBe('Settings · Vekro')
+    expect(screen.getByText(/building the Analytics page/)).toBeInTheDocument()
+    expect(document.title).toBe('Analytics · Vekro')
   })
 
   it('keeps the seller nav on unbuilt seller pages and points back to listings', async () => {

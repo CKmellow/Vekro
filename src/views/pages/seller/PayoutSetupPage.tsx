@@ -261,12 +261,6 @@ export function PayoutSetupPage() {
               <span className="type-mono text-body-lg">{s.maskedPayoutPhone}</span>
               <span className="type-title">{s.preview.shopName}</span>
             </div>
-            {!s.saved && (
-              <Banner tone="warning" title="Your payout number isn't stored yet">
-                Vekro can't save payout details from this screen yet. We'll ask for them again before your
-                first payout.
-              </Banner>
-            )}
             <div>
               <h1 id="ready" className="type-display-lg text-text">
                 You&apos;re ready to sell

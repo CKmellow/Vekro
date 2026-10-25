@@ -5,7 +5,6 @@
  */
 export const GAPS = {
   TIMELINE: { id: 'P1-5', issue: 142 },
-  SELLER_PROFILE: { id: 'P1-7', issue: 144 },
   ANALYTICS: { id: 'P2-3', issue: 148 },
   ACCOUNT_SECURITY: { id: 'P2-4', issue: 149 },
   NOTIFICATION_PREFS: { id: 'P2-5', issue: 150 },
