@@ -29,9 +29,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Precache the app shell only (no fonts, no MSW dev worker).
+        // Precache the app shell only (no fonts).
         globPatterns: ['**/*.{js,css,html,svg}', 'pwa-192.png'],
-        globIgnores: ['**/mockServiceWorker.js'],
         navigateFallback: '/index.html',
         // API responses are never cached: they are personal and authenticated.
         navigateFallbackDenylist: [/^\/api\//],
