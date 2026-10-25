@@ -77,17 +77,43 @@ describe('router', () => {
   })
 
   it('sends unbuilt public pages to built pages only', async () => {
-    renderAt('/help')
+    renderAt('/buyer/orders')
     await screen.findByRole('heading', { name: 'Still under construction' })
     expect(screen.getByRole('link', { name: 'Seller log in' })).toHaveAttribute('href', '/login')
     expect(screen.getByRole('link', { name: 'Start selling' })).toHaveAttribute('href', '/register')
   })
 
   it('shows the not-found page for unknown routes', async () => {
+    signedInAs(null)
     renderAt('/nope')
     expect(await screen.findByRole('heading', { name: "We can't find that page" })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Seller log in' })).toHaveAttribute('href', '/login')
+    expect(screen.getByRole('link', { name: 'Go home' })).toHaveAttribute('href', '/')
+    expect(screen.getByRole('link', { name: 'Get help' })).toHaveAttribute('href', '/help')
     expect(document.title).toBe('Page not found · Vekro')
+  })
+
+  it('points a signed-in seller on a 404 back to their dashboard', async () => {
+    signedInAs('seller')
+    renderAt('/nope')
+    expect(await screen.findByRole('link', { name: 'Go to your dashboard' })).toHaveAttribute(
+      'href',
+      '/seller',
+    )
+  })
+
+  it('serves the help page to everyone', async () => {
+    signedInAs(null)
+    renderAt('/help')
+    expect(await screen.findByRole('heading', { name: 'How can we help?' })).toBeInTheDocument()
+  })
+
+  it('shows the offline page when the session check fails with no connection', async () => {
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+    server.use(http.get('/api/auth/me', () => HttpResponse.error()))
+    renderAt('/seller')
+    expect(await screen.findByRole('heading', { name: "You're offline" })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument()
+    vi.restoreAllMocks()
   })
 
   it('sends anonymous users to the seller login with a return URL', async () => {
@@ -180,5 +206,21 @@ describe('route error boundary', () => {
     renderWithProviders(<RouterProvider router={router} />)
     expect(await screen.findByRole('heading', { name: 'Something went wrong' })).toBeInTheDocument()
     expect(logged).toHaveBeenCalled()
+  })
+
+  it('shows the offline page when a page fails to load with no connection', async () => {
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+    const router = createMemoryRouter(
+      [
+        {
+          errorElement: <RouteError />,
+          children: [{ path: '/page', lazy: () => Promise.reject(new TypeError('Failed to fetch')) }],
+        },
+      ],
+      { initialEntries: ['/page'] },
+    )
+    renderWithProviders(<RouterProvider router={router} />)
+    expect(await screen.findByRole('heading', { name: "You're offline" })).toBeInTheDocument()
+    vi.restoreAllMocks()
   })
 })
