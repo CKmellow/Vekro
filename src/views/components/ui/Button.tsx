@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from 'react'
 import { cn } from '@/lib/cn'
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'destructive' | 'ghost'
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'destructive' | 'ghost' | 'console'
 
 const variants: Record<ButtonVariant, string> = {
   primary: 'h-13 bg-primary text-on-primary shadow-highlight hover:bg-primary-hover active:bg-emerald-900',
@@ -10,6 +10,8 @@ const variants: Record<ButtonVariant, string> = {
   /** Solid coral: only for the final step of a confirmation. */
   destructive: 'h-13 bg-coral-600 text-sand-0 hover:brightness-95 active:brightness-90',
   ghost: 'h-11 bg-transparent text-ink-600 hover:bg-sand-100 active:bg-sand-200',
+  /** Plum: the support console's binding actions (log in, review and execute a decision). */
+  console: 'h-13 bg-plum-500 text-sand-0 hover:bg-plum-700 active:bg-plum-700',
 }
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

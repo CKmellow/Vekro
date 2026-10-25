@@ -112,7 +112,7 @@ describe('router', () => {
   it('sends anonymous users to the admin login for console routes', async () => {
     signedInAs(null)
     const { router } = renderAt('/admin')
-    await screen.findByText(/building the Support console page/)
+    await screen.findByRole('heading', { name: 'Vekro Support Console' })
     expect(router.state.location.pathname).toBe('/admin/login')
   })
 
