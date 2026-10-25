@@ -2,7 +2,8 @@ import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import { TriangleAlert } from 'lucide-react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { duration, spring } from '@/lib/motion'
-import { Button } from './Button'
+import type { ReactNode } from 'react'
+import { Button, type ButtonVariant } from './Button'
 
 export interface ConfirmDialogProps {
   open: boolean
@@ -16,6 +17,12 @@ export interface ConfirmDialogProps {
   /** Irreversible actions are coral. */
   destructive?: boolean
   loading?: boolean
+  /** Extra content under the body, such as a typed confirmation field. */
+  children?: ReactNode
+  /** Keeps the confirm button disabled, for example until the case id is typed. */
+  confirmDisabled?: boolean
+  /** Overrides the confirm button style (the console uses `console`). */
+  confirmVariant?: ButtonVariant
 }
 
 /**
@@ -32,6 +39,9 @@ export function ConfirmDialog({
   onConfirm,
   destructive = false,
   loading = false,
+  children,
+  confirmDisabled = false,
+  confirmVariant,
 }: ConfirmDialogProps) {
   const reduce = useReducedMotion()
   return (
@@ -66,6 +76,7 @@ export function ConfirmDialog({
                   <AlertDialog.Description className="type-body-md text-ink-600">
                     {body}
                   </AlertDialog.Description>
+                  {children}
                   <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                     <AlertDialog.Cancel asChild>
                       <Button variant="ghost" disabled={loading}>
@@ -73,8 +84,9 @@ export function ConfirmDialog({
                       </Button>
                     </AlertDialog.Cancel>
                     <Button
-                      variant={destructive ? 'destructive' : 'primary'}
+                      variant={confirmVariant ?? (destructive ? 'destructive' : 'primary')}
                       loading={loading}
+                      disabled={confirmDisabled}
                       onClick={onConfirm}
                     >
                       {confirmLabel}
