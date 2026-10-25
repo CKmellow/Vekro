@@ -6,6 +6,8 @@ export type SettingsTab = 'profile' | 'payout' | 'notifications' | 'security'
 export const SETTINGS_TABS: { value: SettingsTab; label: string }[] = [
   { value: 'profile', label: 'Profile' },
   { value: 'payout', label: 'Payout' },
+  { value: 'notifications', label: 'Notifications' },
+  { value: 'security', label: 'Security' },
 ]
 
 const isTab = (v: string | null): v is SettingsTab => SETTINGS_TABS.some((t) => t.value === v)
