@@ -2,6 +2,8 @@ import type {
   AdminCaseDetail,
   AdminCaseList,
   AdminCaseSummary,
+  AdminSearchFilter,
+  AdminTransactionRow,
   CaseStatusFilter,
 } from '@/models/domain/adminCase'
 import { api, type Schemas } from './client'
@@ -100,4 +102,45 @@ export async function decideCase(
       ...(decision === 'split' && sellerShare !== undefined ? { seller_share: sellerShare.toFixed(4) } : {}),
     },
   })
+}
+
+export const SEARCH_PAGE = 25
+
+/** GET /admin/transactions: read-only search; without a query it is recent activity. */
+export async function searchTransactions(
+  filter: AdminSearchFilter = {},
+  signal?: AbortSignal,
+): Promise<{ items: AdminTransactionRow[]; total: number; page: number; pageSize: number }> {
+  const raw = await api.get('/admin/transactions', {
+    query: {
+      q: filter.q?.trim() || undefined,
+      status: filter.statuses?.length ? filter.statuses : undefined,
+      placed_from: filter.placedFrom || undefined,
+      placed_to: filter.placedTo || undefined,
+      min_amount: filter.minAmount,
+      max_amount: filter.maxAmount,
+      serialized: filter.serialized,
+      page: filter.page,
+      page_size: SEARCH_PAGE,
+    },
+    signal,
+  })
+  return {
+    items: raw.items.map((r) => ({
+      transactionId: r.transaction_id,
+      reference: r.reference,
+      status: r.status,
+      amount: Number(r.amount),
+      itemTitle: r.item_title,
+      isSerialized: r.is_serialized,
+      buyer: r.buyer,
+      seller: r.seller,
+      createdAt: r.created_at,
+      lastEvent: r.last_event ?? null,
+      disputeId: r.dispute_id ?? null,
+    })),
+    total: raw.total,
+    page: raw.page,
+    pageSize: raw.page_size,
+  }
 }

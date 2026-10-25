@@ -31,6 +31,15 @@ const SELLER_VIEW: Record<TimelineActor, TimelineActor> = {
   support: 'support',
 }
 
+/** An admin reads both sides: the buyer is "Buyer" and the seller "Seller". */
+const ADMIN_VIEW: Record<TimelineActor, TimelineActor> = {
+  you: 'buyer',
+  buyer: 'buyer',
+  seller: 'seller',
+  vekro: 'vekro',
+  support: 'support',
+}
+
 /** What comes next, dashed, with its deadline (server time) when one runs. Worded for the viewer. */
 export function upcomingSteps(order: Order, now = new Date()): TimelineEntry[] {
   const deadline = currentDeadline(order)
@@ -89,7 +98,11 @@ export function toEntries(
   return events
     .map((event, i) => {
       const actor = ACTORS[event.kind] ?? 'vekro'
-      return { event, i, actor: viewer === 'buyer' ? actor : SELLER_VIEW[actor] }
+      return {
+        event,
+        i,
+        actor: viewer === 'buyer' ? actor : viewer === 'admin' ? ADMIN_VIEW[actor] : SELLER_VIEW[actor],
+      }
     })
     .map(({ event, i, actor }) => ({
       id: `${event.kind}-${i}`,

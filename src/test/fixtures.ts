@@ -270,3 +270,21 @@ export const adminCaseDetailResponse = (
   ],
   ...overrides,
 })
+
+/** One row of the admin order search. */
+export const adminTransactionRowResponse = (
+  overrides: Partial<Schemas['AdminTransactionRow']> = {},
+): Schemas['AdminTransactionRow'] => ({
+  transaction_id: orderResponse().id,
+  reference: 'VK-7K3P9Q',
+  status: 'locked',
+  amount: '52000.00',
+  item_title: 'iPhone 13, 128GB, Midnight',
+  is_serialized: true,
+  buyer: { name: 'Brian Otieno', phone: '+254712345678' },
+  seller: { name: 'Amina Gadgets', phone: '+254722118904' },
+  created_at: '2026-10-24T09:10:00Z',
+  last_event: { title: 'Buyer payment confirmed', at: '2026-10-24T09:12:00Z' },
+  dispute_id: null,
+  ...overrides,
+})
