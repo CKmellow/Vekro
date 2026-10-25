@@ -128,13 +128,13 @@ describe('router', () => {
 
   it('says the session expired when it ends under a signed-in seller', async () => {
     signedInAs('seller')
-    const { router, client } = renderAt('/seller/analytics')
-    await screen.findByText(/building the Analytics page/)
+    const { router, client } = renderAt('/seller')
+    await screen.findByRole('heading', { name: 'Needs your action' })
     signedInAs(null)
     await act(() => client.invalidateQueries({ queryKey: ['session', 'me'] }))
     await screen.findByRole('heading', { name: 'Log in to Vekro' })
     expect(new URLSearchParams(router.state.location.search).get('reason')).toBe('expired')
-    expect(new URLSearchParams(router.state.location.search).get('returnTo')).toBe('/seller/analytics')
+    expect(new URLSearchParams(router.state.location.search).get('returnTo')).toBe('/seller')
   })
 
   it('sends anonymous users to the admin login for console routes', async () => {
@@ -146,24 +146,8 @@ describe('router', () => {
 
   it('lets a seller into seller routes', async () => {
     signedInAs('seller')
-    renderAt('/seller/analytics')
-    expect(await screen.findByRole('heading', { name: 'Still under construction' })).toBeInTheDocument()
-    expect(screen.getByText(/building the Analytics page/)).toBeInTheDocument()
-    expect(document.title).toBe('Analytics · Vekro')
-  })
-
-  it('keeps the seller nav on unbuilt seller pages and points back to listings', async () => {
-    signedInAs('seller')
-    renderAt('/seller/analytics')
-    await screen.findByRole('heading', { name: 'Still under construction' })
-    expect(screen.getByRole('link', { name: 'Go to your listings' })).toHaveAttribute(
-      'href',
-      '/seller/listings',
-    )
-    expect(screen.getByRole('link', { name: 'Create a listing' })).toHaveAttribute(
-      'href',
-      '/seller/listings/new',
-    )
+    renderAt('/seller')
+    expect(await screen.findByRole('heading', { name: 'Needs your action' })).toBeInTheDocument()
     expect(screen.getAllByRole('main')).toHaveLength(1)
   })
 

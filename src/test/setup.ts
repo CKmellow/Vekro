@@ -60,3 +60,11 @@ class StubIntersectionObserver {
   }
 }
 globalThis.IntersectionObserver ??= StubIntersectionObserver as unknown as typeof IntersectionObserver
+
+// jsdom has no ResizeObserver; Recharts' ResponsiveContainer needs one. Charts render at a fixed size.
+class StubResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+globalThis.ResizeObserver ??= StubResizeObserver as unknown as typeof ResizeObserver
