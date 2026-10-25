@@ -66,8 +66,15 @@ export const STATE_META: Record<TransactionStatus, StateMeta> = {
   resolved_split: meta('Settled by Vekro support', 'Settled by Vekro support', 'plum', 'scale', 'plum', true),
 }
 
+/**
+ * Shown for a status the app doesn't know yet (the backend added one before the frontend synced):
+ * honest and neutral, never the raw state name. stateCoverage.test.ts fails until it is mapped.
+ */
+export const UNKNOWN_STATUS: StatusView = { label: 'Updating', tone: 'sand', icon: 'clock' }
+
 /** What a status pill shows for this viewer. Admins read the seller wording. */
 export function statusView(status: TransactionStatus, role: ViewerRole): StatusView {
-  const m = STATE_META[status]
+  const m = STATE_META[status] as StateMeta | undefined
+  if (!m) return UNKNOWN_STATUS
   return { label: role === 'buyer' ? m.buyerLabel : m.sellerLabel, tone: m.tone, icon: m.icon }
 }
