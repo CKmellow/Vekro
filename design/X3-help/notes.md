@@ -45,5 +45,5 @@ Usability and accessibility
 
 ## Build notes (M14 #69)
 
-1. `/help` uses the public layout for everyone, signed-in sellers included, so the page stays a single static route that works offline; the seller nav links to it.
+1. `/help` uses the public layout for everyone, signed-in sellers included, so the page stays a single static route that works offline; seller pages reach it through "Get help".
 2. While searching, every matching answer shows open (no disclosures to tap); clearing the search restores the accordions.
