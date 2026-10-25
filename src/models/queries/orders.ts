@@ -5,6 +5,7 @@ import {
   dispatchOrder,
   escalate,
   getOrder,
+  getPublicOrder,
   getSellerSummary,
   getTimeline,
   giveDeliveryCode,
@@ -48,6 +49,15 @@ export const useFindOwnOrder = () =>
       const list = await listOrders({ q: reference, pageSize: 5 })
       return list.items.find((o) => o.reference.toUpperCase() === reference.toUpperCase())?.id ?? null
     },
+  })
+
+/** B3 phone gate: the public summary of an order link (no personal data). */
+export const usePublicOrder = (key: string, enabled: boolean) =>
+  useQuery({
+    queryKey: ['orders', 'public', key] as const,
+    queryFn: ({ signal }) => getPublicOrder(key, signal),
+    enabled,
+    staleTime: 60_000,
   })
 
 export const useOrders = (

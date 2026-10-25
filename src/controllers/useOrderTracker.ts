@@ -7,8 +7,10 @@ import { getAvailableActions } from '@/models/domain/actions'
 import { currentDeadline, type Deadline } from '@/models/domain/deadlines'
 import type { Order } from '@/models/domain/order'
 import { STATE_META, statusView, type TransactionStatus } from '@/models/domain/stateMeta'
-import { useOrder } from '@/models/queries/orders'
+import { useOrder, usePublicOrder } from '@/models/queries/orders'
 import { useOnline } from './useOnline'
+import { usePhoneSignIn } from './usePhoneSignIn'
+import { useSession } from './useSession'
 
 const ACTIVE_POLL_MS = 15_000
 
@@ -195,18 +197,35 @@ export function useOrderTracker(orderId: string) {
   })
   const order = query.data
   const meta = order ? STATE_META[order.status] : null
+  const session = useSession()
+  // No session: the phone gate. Order details only ever come from a verified buyer session.
+  const gated =
+    !order &&
+    session.status === 'anonymous' &&
+    query.error instanceof ApiError &&
+    query.error.kind === 'unauthorized'
+  const summary = usePublicOrder(orderId, gated)
+  const signIn = usePhoneSignIn(() => void query.refetch())
 
   const state = order
     ? ('ready' as const)
-    : query.isPending
-      ? ('loading' as const)
-      : query.error instanceof ApiError &&
-          (query.error.kind === 'not_found' || query.error.kind === 'unauthorized')
-        ? ('not_found' as const)
-        : ('error' as const)
+    : gated
+      ? ('gate' as const)
+      : query.isPending || query.isFetching
+        ? ('loading' as const)
+        : query.error instanceof ApiError &&
+            (query.error.kind === 'not_found' || query.error.kind === 'unauthorized')
+          ? ('not_found' as const)
+          : ('error' as const)
 
   return {
     state,
+    gate: {
+      signIn,
+      /** Reference, item and amount from the public summary; null while loading or unknown. */
+      summary: summary.data ?? null,
+      unknown: summary.error instanceof ApiError && summary.error.kind === 'not_found',
+    },
     retry: () => void query.refetch(),
     online,
     /** Offline with data: show it dimmed with the time it was fetched (EAT). */

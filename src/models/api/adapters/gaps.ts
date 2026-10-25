@@ -4,7 +4,6 @@
  * When the backend ships a gap: delete its handlers, its entry here and its flag.
  */
 export const GAPS = {
-  PUBLIC_ORDER: { id: 'P1-1', issue: 10 },
   TIMELINE: { id: 'P1-5', issue: 142 },
   SELLER_PROFILE: { id: 'P1-7', issue: 144 },
   ANALYTICS: { id: 'P2-3', issue: 148 },

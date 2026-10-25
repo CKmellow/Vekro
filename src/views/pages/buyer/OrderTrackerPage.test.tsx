@@ -30,7 +30,24 @@ function serve(...responses: Parameters<typeof orderResponse>[0][]) {
   return reads
 }
 
-function renderTracker() {
+const BUYER = {
+  id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+  name: 'Wanjiru',
+  phone: '+254712345678',
+  role: 'buyer',
+  mpesa_phone: null,
+  mpesa_account_name: null,
+  is_active: true,
+  created_at: '2026-10-15T09:00:00Z',
+  session_expires_at: '2026-10-22T09:00:00Z',
+}
+
+function renderTracker(signedIn = true) {
+  server.use(
+    http.get('/api/auth/me', () =>
+      signedIn ? HttpResponse.json(BUYER) : HttpResponse.json({ detail: 'x' }, { status: 401 }),
+    ),
+  )
   const router = createMemoryRouter(
     [
       { path: '/order/:orderId', element: <OrderTrackerPage /> },
@@ -159,5 +176,50 @@ describe('B3 order tracker', () => {
     server.use(http.get(`/api/transactions/${ID}`, () => HttpResponse.json({ detail: 'x' }, { status: 404 })))
     renderTracker()
     expect(await screen.findByRole('heading', { name: "We can't find this order" })).toBeInTheDocument()
+  })
+
+  it('gates a signed-out visitor behind an SMS code, showing only the public summary', async () => {
+    let signedIn = false
+    server.use(
+      http.get('/api/auth/me', () =>
+        signedIn ? HttpResponse.json(BUYER) : HttpResponse.json({ detail: 'x' }, { status: 401 }),
+      ),
+      http.get(`/api/transactions/${ID}`, () =>
+        signedIn
+          ? HttpResponse.json(orderResponse({ server_time: NOW, payment: null, status: 'locked' }))
+          : HttpResponse.json({ detail: 'Authentication required.' }, { status: 401 }),
+      ),
+      http.get(`/api/public/orders/${ID}`, () =>
+        HttpResponse.json({
+          reference: 'VK-7K3P9Q',
+          listing_title: 'iPhone 13, 128GB, Midnight',
+          amount: '52000.00',
+          state_group: 'paid',
+          listing_status: 'sold',
+        }),
+      ),
+      http.post('/api/auth/phone/request-code', () =>
+        HttpResponse.json({ resend_after_seconds: 30, expires_at: NOW, dev_code: null }, { status: 202 }),
+      ),
+      http.post('/api/auth/phone/verify', () => {
+        signedIn = true
+        return HttpResponse.json(BUYER)
+      }),
+    )
+    const router = createMemoryRouter([{ path: '/order/:orderId', element: <OrderTrackerPage /> }], {
+      initialEntries: [`/order/${ID}`],
+    })
+    const { user } = renderWithProviders(<RouterProvider router={router} />)
+
+    expect(await screen.findByRole('heading', { name: "Confirm it's you" })).toBeInTheDocument()
+    expect(await screen.findByText('VK-7K3P9Q')).toBeInTheDocument()
+    expect(screen.queryByText(/Amina|Brian/)).not.toBeInTheDocument()
+
+    await user.type(screen.getByLabelText('Phone number'), '712345678')
+    await user.click(screen.getByRole('button', { name: 'Show my order' }))
+    await user.type(await screen.findByLabelText('Digit 1 of 6'), '482913')
+    expect(await screen.findByRole('heading', { name: 'Your order' }, { timeout: 4000 })).toBeInTheDocument()
+    expect(screen.getAllByText('Paid, funds held safely').length).toBeGreaterThan(0)
+    expect(screen.queryByRole('heading', { name: "Confirm it's you" })).not.toBeInTheDocument()
   })
 })

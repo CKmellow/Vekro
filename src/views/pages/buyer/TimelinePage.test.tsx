@@ -28,6 +28,20 @@ const EVENTS = [
 
 function serve(events: typeof EVENTS | 'error' = EVENTS) {
   server.use(
+    // The tracker checks the session for its phone gate; this buyer is signed in.
+    http.get('/api/auth/me', () =>
+      HttpResponse.json({
+        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        name: 'Wanjiru',
+        phone: '+254712345678',
+        role: 'buyer',
+        mpesa_phone: null,
+        mpesa_account_name: null,
+        is_active: true,
+        created_at: '2026-10-15T09:00:00Z',
+        session_expires_at: '2026-10-22T09:00:00Z',
+      }),
+    ),
     http.get(`/api/transactions/${ID}`, () =>
       HttpResponse.json(
         orderResponse({

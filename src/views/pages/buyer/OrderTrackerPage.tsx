@@ -19,6 +19,7 @@ import { cn } from '@/lib/cn'
 import { duration, spring } from '@/lib/motion'
 import { CountdownRing } from '../../components/domain/CountdownRing'
 import { MoneyPath } from '../../components/domain/MoneyPath'
+import { PhoneCodeSteps } from '../../components/domain/PhoneCodeSteps'
 import { Stepper } from '../../components/domain/Stepper'
 import { VaultCard } from '../../components/domain/VaultCard'
 import { ActionDock } from '../../components/ui/ActionDock'
@@ -98,6 +99,44 @@ export function OrderTrackerPage() {
         <Skeleton className="h-20 w-full rounded-lg" />
       </SkeletonGroup>
     )
+  if (page.state === 'gate')
+    return (
+      <div className="relative">
+        <title>Confirm it's you · Vekro</title>
+        <div aria-hidden="true" className="pointer-events-none flex flex-col gap-4 blur-sm select-none">
+          <Skeleton className="h-48 w-full rounded-xl" />
+          <Skeleton className="h-24 w-full rounded-lg" />
+        </div>
+        <section
+          aria-labelledby="gate-title"
+          className="absolute inset-x-0 top-0 flex flex-col gap-5 rounded-xl bg-surface p-5 shadow-3"
+        >
+          <div className="flex flex-col gap-1">
+            <h1 id="gate-title" className="type-headline text-text">
+              Confirm it's you
+            </h1>
+            <p className="type-body-md text-text-muted">
+              Enter the phone number you paid with. We'll text you a code.
+            </p>
+          </div>
+          {page.gate.summary && (
+            <div className="flex items-center justify-between gap-3 rounded-md bg-sand-100 px-4 py-3">
+              <div className="min-w-0">
+                <p className="type-title truncate text-text">{page.gate.summary.title}</p>
+                <p className="type-body-sm font-mono text-text-muted">{page.gate.summary.reference}</p>
+              </div>
+              <p className="type-title shrink-0 text-text">
+                <MoneyText amount={page.gate.summary.amount} />
+              </p>
+            </div>
+          )}
+          {page.gate.unknown && (
+            <Banner tone="warning" title="We can't find this order. Check the link in your SMS." />
+          )}
+          <PhoneCodeSteps flow={page.gate.signIn} sendLabel="Show my order" />
+        </section>
+      </div>
+    )
   if (page.state === 'not_found' || (page.state === 'ready' && !page.order))
     return (
       <EmptyState
@@ -106,10 +145,10 @@ export function OrderTrackerPage() {
         body="Check the link in your SMS, or log in with the phone you paid with."
         action={
           <Link
-            to={`/login?returnTo=${encodeURIComponent(`/order/${orderId}`)}`}
+            to={`/buyer/sign-in?returnTo=${encodeURIComponent(`/order/${orderId}`)}`}
             className="type-title text-primary"
           >
-            Log in
+            Sign in
           </Link>
         }
       />
