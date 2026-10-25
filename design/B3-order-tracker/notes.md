@@ -75,3 +75,9 @@ Life and motion
 
 1. **Seller contact.** Call and WhatsApp need the seller's number, which the buyer contract doesn't expose, and the UI masks phones outside the admin console. Proposal: the buttons dial without printing the number, and the backend adds the seller's contact to the buyer's order read (with #6). Until then the buttons are hidden.
 2. **Buyer "Courier is here".** Kept as default (a): the seller marks arrival. A backend gap for buyer-confirmed arrival can be filed if you want option (b).
+
+## Build notes (M15 #93)
+
+1. The phone gate shipped with #10 (backend #203) and #11 (backend #201): a signed-out visitor sees only the public summary (item, reference, amount) and verifies by SMS code; the order loads once the session exists. Another person's number gets "We can't find this order".
+2. The gate is a card over the blurred skeleton rather than a dismissable `Sheet`, since there's nothing behind it to return to.
+3. "Not found" now offers buyer sign-in (B8) instead of the seller log in.

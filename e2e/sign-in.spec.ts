@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { freshPhone } from './support'
+import { freshPhone, paidOrder } from './support'
 
 // Needs the backend's PHONE_CODE_DEV_ECHO=true (local and CI only): no SMS goes out, so the
 // request-code response carries the code.
@@ -28,4 +28,33 @@ test('a buyer signs in with an SMS code and no password', async ({ page }) => {
   await expect(page).toHaveURL(/\/buyer\/orders$/)
   const me = await page.request.get('/api/auth/me')
   expect(await me.json()).toMatchObject({ role: 'buyer', phone: `+254${national}` })
+})
+
+test('an order link opened signed out asks for the phone first, then shows the order', async ({
+  browser,
+  baseURL,
+}) => {
+  const sellerContext = await browser.newContext()
+  const buyerContext = await browser.newContext()
+  const { orderId, reference } = await paidOrder(sellerContext, buyerContext, baseURL ?? '', false)
+  const { phone } = (await (await buyerContext.request.get('/api/auth/me')).json()) as { phone: string }
+
+  // A fresh device: no session, so only the public summary shows.
+  const page = await (await browser.newContext()).newPage()
+  await page.goto(`/order/${orderId}`)
+  await expect(page.getByRole('heading', { name: "Confirm it's you" })).toBeVisible()
+  await expect(page.getByText(reference)).toBeVisible()
+  await expect(page.getByText('Amina Gadgets')).toHaveCount(0)
+
+  await page.getByLabel('Phone number').fill(phone.slice(4))
+  const [sent] = await Promise.all([
+    page.waitForResponse((r) => r.url().endsWith('/api/auth/phone/request-code')),
+    page.getByRole('button', { name: 'Show my order' }).click(),
+  ])
+  const { dev_code: code } = (await sent.json()) as { dev_code: string }
+  await page.getByRole('textbox', { name: 'Digit 1 of 6' }).click()
+  await page.keyboard.type(code)
+
+  await expect(page.getByRole('heading', { name: 'Your order' })).toBeVisible()
+  await expect(page.getByText('Amina Gadgets').first()).toBeVisible()
 })

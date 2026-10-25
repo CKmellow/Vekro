@@ -288,3 +288,21 @@ export interface TimelineEvent {
 export async function getTimeline(orderId: string, signal?: AbortSignal): Promise<TimelineEvent[]> {
   return api.get('/transactions/{transaction_id}/timeline', { path: { transaction_id: orderId }, signal })
 }
+
+export interface PublicOrder {
+  reference: string
+  title: string
+  amount: number
+  stateGroup: 'unpaid' | 'paid' | 'closed'
+}
+
+/** GET /public/orders/{key}: what an order link shows before phone verification. No personal data. */
+export async function getPublicOrder(key: string, signal?: AbortSignal): Promise<PublicOrder> {
+  const raw = await api.get('/public/orders/{key}', { path: { key }, signal })
+  return {
+    reference: raw.reference,
+    title: raw.listing_title,
+    amount: Number(raw.amount),
+    stateGroup: raw.state_group,
+  }
+}

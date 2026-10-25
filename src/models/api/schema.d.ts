@@ -1034,6 +1034,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/public/orders/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Public order summary (no auth)
+         * @description The order behind an SMS link (its id) or a reference: title, amount and where the money is, with no names, phones or ids. Full details need a phone-verified session.
+         */
+        get: operations["public_order_public_orders__key__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2442,6 +2462,32 @@ export interface components {
              * @description The 6-digit code from the SMS.
              */
             code: string;
+        };
+        /**
+         * PublicOrderSummary
+         * @description What an order link shows before the buyer verifies their phone: no personal data.
+         */
+        PublicOrderSummary: {
+            /**
+             * Reference
+             * @description Human order reference, such as VK-7K3P9Q.
+             */
+            reference: string;
+            /** Listing Title */
+            listing_title: string;
+            /** Amount */
+            amount: string;
+            /**
+             * State Group
+             * @description unpaid: waiting for M-Pesa; paid: money in escrow; closed: released or refunded.
+             * @enum {string}
+             */
+            state_group: "unpaid" | "paid" | "closed";
+            /**
+             * Listing Status
+             * @enum {string}
+             */
+            listing_status: "active" | "awaiting_payment" | "sold" | "archived";
         };
         /**
          * RailBreakerState
@@ -5566,6 +5612,51 @@ export interface operations {
             };
             /** @description Pesapal collection rail is unavailable. */
             503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    public_order_public_orders__key__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicOrderSummary"];
+                };
+            };
+            /** @description No such order. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too many lookups. See Retry-After. */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
