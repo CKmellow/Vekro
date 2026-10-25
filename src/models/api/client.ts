@@ -14,7 +14,9 @@ type SuccessBody<O> = O extends { responses: infer R }
     ? Json<R[200]>
     : 201 extends keyof R
       ? Json<R[201]>
-      : undefined
+      : 202 extends keyof R
+        ? Json<R[202]>
+        : undefined
   : never
 type RawBody<O> = O extends { requestBody?: infer R } ? R : never
 type RequestBody<O> = [NonNullable<RawBody<O>>] extends [never]

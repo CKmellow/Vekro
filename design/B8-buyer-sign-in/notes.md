@@ -44,3 +44,9 @@ Usability and accessibility
 ## Open questions
 
 - None.
+
+## Build notes (M15 #121)
+
+1. Gap #11 shipped as backend #201 (PR #202); the page uses `PhoneVerifiedGuest`, so the password fallback in Deviation 1 is not needed.
+2. A seller's number gets the escalation banner "This number has a seller account. Log in with your password." with a link to S2 (the server answers 409).
+3. A "Send code" answered with a short wait (a code went out moments ago) goes straight to the code step with the resend timer.

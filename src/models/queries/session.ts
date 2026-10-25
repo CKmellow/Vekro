@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import {
   authStrategy,
+  PhoneVerifiedGuest,
   type Credentials,
   type CurrentUser,
   type Registration,
@@ -95,6 +96,16 @@ export const useSignIn = () =>
   useSessionMutation((credentials: Credentials) => authStrategy.signIn(credentials))
 export const useRegister = () =>
   useSessionMutation((registration: Registration) => authStrategy.register(registration))
+
+/** B8: ask for an SMS sign-in code. */
+export const useRequestPhoneCode = () =>
+  useMutation({ mutationFn: (phone: string) => PhoneVerifiedGuest.requestCode(phone), meta: { auth: true } })
+
+/** B8: verify the code; on success the buyer is signed in. */
+export const useVerifyPhoneCode = () =>
+  useSessionMutation(({ phone, code }: { phone: string; code: string }) =>
+    PhoneVerifiedGuest.verifyCode(phone, code),
+  )
 
 export function useSignOut() {
   const client = useQueryClient()

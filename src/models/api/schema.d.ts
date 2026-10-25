@@ -44,6 +44,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/phone/request-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a buyer sign-in code by SMS
+         * @description Send a one-time 6-digit code to the phone. A new code replaces the previous one. Codes expire after a few minutes; resends wait out a short cooldown and are capped per hour.
+         */
+        post: operations["phone_request_code_auth_phone_request_code_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/phone/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify a sign-in code and open a buyer session
+         * @description Check the SMS code. On success, find or create the buyer for this phone and set the same session and CSRF cookies as /auth/login.
+         */
+        post: operations["phone_verify_auth_phone_verify_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/logout": {
         parameters: {
             query?: never;
@@ -2355,6 +2395,55 @@ export interface components {
             detail: string;
         };
         /**
+         * PhoneCodeRequest
+         * @description Ask for a one-time sign-in code by SMS.
+         */
+        PhoneCodeRequest: {
+            /**
+             * Phone
+             * @description Buyer's phone number.
+             */
+            phone: string;
+        };
+        /**
+         * PhoneCodeRequestResponse
+         * @description The code is on its way.
+         */
+        PhoneCodeRequestResponse: {
+            /**
+             * Resend After Seconds
+             * @description Seconds before another code can be requested.
+             */
+            resend_after_seconds: number;
+            /**
+             * Expires At
+             * Format: date-time
+             * @description When this code stops working.
+             */
+            expires_at: string;
+            /**
+             * Dev Code
+             * @description The code itself, only when PHONE_CODE_DEV_ECHO is on (never in production).
+             */
+            dev_code?: string | null;
+        };
+        /**
+         * PhoneCodeVerifyRequest
+         * @description Verify the SMS code and open a buyer session.
+         */
+        PhoneCodeVerifyRequest: {
+            /**
+             * Phone
+             * @description Buyer's phone number.
+             */
+            phone: string;
+            /**
+             * Code
+             * @description The 6-digit code from the SMS.
+             */
+            code: string;
+        };
+        /**
          * RailBreakerState
          * @enum {string}
          */
@@ -2994,6 +3083,96 @@ export interface operations {
                 content?: never;
             };
             /** @description Too many login attempts or account temporarily locked. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    phone_request_code_auth_phone_request_code_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PhoneCodeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhoneCodeRequestResponse"];
+                };
+            };
+            /** @description Invalid phone number. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too soon after the last code, too many codes, or locked after wrong tries. See Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    phone_verify_auth_phone_verify_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PhoneCodeVerifyRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginResponse"];
+                };
+            };
+            /** @description The number belongs to a seller or admin, who log in with a password. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No active code: it expired or was already used. */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The code doesn't match. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many wrong tries. See Retry-After. */
             429: {
                 headers: {
                     [name: string]: unknown;
