@@ -790,6 +790,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/cases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Support queue: escalated cases with counters
+         * @description Open cases oldest first (by escalation), decided cases newest first, or all. Each case carries its reference, amount, item, parties and why it reached support.
+         */
+        get: operations["list_cases_admin_cases_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/cases/{dispute_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One case for review and decision
+         * @description Parties with full phones and history, the item and declared policy, both accounts, the escalation reason, the decision when made, and a timeline (payloads are never returned).
+         */
+        get: operations["get_case_admin_cases__dispute_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search orders (admin only, read only)
+         * @description Matches the reference, buyer or seller phone (any format), seller name, item title or serial. Filters by status, placed dates (EAT), amount and item type. Newest first; without a query this is recent activity.
+         */
+        get: operations["search_admin_transactions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/rails/health": {
         parameters: {
             query?: never;
@@ -938,6 +998,198 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AdminCaseCounters */
+        AdminCaseCounters: {
+            /** Open */
+            open: number;
+            /** Older Than 24H */
+            older_than_24h: number;
+            /**
+             * Decided Today
+             * @description Decided by support today (EAT).
+             */
+            decided_today: number;
+            /**
+             * Average Decision Seconds
+             * @description Average from escalation to decision over the last 30 days.
+             */
+            average_decision_seconds: number | null;
+        };
+        /** AdminCaseDecision */
+        AdminCaseDecision: {
+            decision: components["schemas"]["AdminDecision"];
+            /** Reason */
+            reason: string | null;
+            /** Seller Share */
+            seller_share: string | null;
+            /** Decided By */
+            decided_by: string | null;
+            /** Decided At */
+            decided_at: string | null;
+        };
+        /**
+         * AdminCaseDetailResponse
+         * @description Everything support needs to decide a case. Notification payloads are never included.
+         */
+        AdminCaseDetailResponse: {
+            /**
+             * Dispute Id
+             * Format: uuid
+             */
+            dispute_id: string;
+            /**
+             * Transaction Id
+             * Format: uuid
+             */
+            transaction_id: string;
+            /** Reference */
+            reference: string;
+            /** Amount */
+            amount: string;
+            /** Item Title */
+            item_title: string;
+            /** Buyer Name */
+            buyer_name: string;
+            /** Seller Name */
+            seller_name: string;
+            /** Category */
+            category: string;
+            /** @description Why the case reached support. */
+            trigger: components["schemas"]["CaseTrigger"] | null;
+            /**
+             * Escalated By
+             * @description buyer or seller, when a party escalated.
+             */
+            escalated_by: string | null;
+            dispute_status: components["schemas"]["DisputeStatus"];
+            transaction_status: components["schemas"]["TransactionStatus"];
+            admin_decision: components["schemas"]["AdminDecision"] | null;
+            /**
+             * Opened At
+             * Format: date-time
+             */
+            opened_at: string;
+            /** Escalated At */
+            escalated_at: string | null;
+            /** Resolved At */
+            resolved_at: string | null;
+            /** Description */
+            description: string;
+            /** Unique Id */
+            unique_id: string | null;
+            /** Is Serialized */
+            is_serialized: boolean;
+            /** Dispute Policy */
+            dispute_policy: {
+                [key: string]: unknown;
+            };
+            buyer: components["schemas"]["AdminCaseParty"];
+            seller: components["schemas"]["AdminCaseParty"];
+            seller_action: components["schemas"]["SellerResolutionAction"] | null;
+            /** Seller Notes */
+            seller_notes: string | null;
+            /** Buyer Notes */
+            buyer_notes: string | null;
+            /** Reconfirm Rejections */
+            reconfirm_rejections: number;
+            /** Escalation Reason */
+            escalation_reason: string | null;
+            decision: components["schemas"]["AdminCaseDecision"] | null;
+            /** Timeline */
+            timeline: components["schemas"]["AdminCaseEvent"][];
+        };
+        /** AdminCaseEvent */
+        AdminCaseEvent: {
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Title */
+            title: string;
+            /** Message */
+            message: string;
+            /** Source */
+            source: string;
+        };
+        /** AdminCaseListResponse */
+        AdminCaseListResponse: {
+            /** Items */
+            items: components["schemas"]["AdminCaseSummaryResponse"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            counters: components["schemas"]["AdminCaseCounters"];
+        };
+        /** AdminCaseParty */
+        AdminCaseParty: {
+            /** Name */
+            name: string;
+            /**
+             * Phone
+             * @description Full phone number (admins only).
+             */
+            phone: string;
+            /** Orders */
+            orders: number;
+            /** Completed Sales */
+            completed_sales: number;
+            /**
+             * Dispute Rate
+             * @description Share of paid orders that had a dispute (sellers).
+             */
+            dispute_rate: number;
+        };
+        /**
+         * AdminCaseSummaryResponse
+         * @description One escalated case in the support queue.
+         */
+        AdminCaseSummaryResponse: {
+            /**
+             * Dispute Id
+             * Format: uuid
+             */
+            dispute_id: string;
+            /**
+             * Transaction Id
+             * Format: uuid
+             */
+            transaction_id: string;
+            /** Reference */
+            reference: string;
+            /** Amount */
+            amount: string;
+            /** Item Title */
+            item_title: string;
+            /** Buyer Name */
+            buyer_name: string;
+            /** Seller Name */
+            seller_name: string;
+            /** Category */
+            category: string;
+            /** @description Why the case reached support. */
+            trigger: components["schemas"]["CaseTrigger"] | null;
+            /**
+             * Escalated By
+             * @description buyer or seller, when a party escalated.
+             */
+            escalated_by: string | null;
+            dispute_status: components["schemas"]["DisputeStatus"];
+            transaction_status: components["schemas"]["TransactionStatus"];
+            admin_decision: components["schemas"]["AdminDecision"] | null;
+            /**
+             * Opened At
+             * Format: date-time
+             */
+            opened_at: string;
+            /** Escalated At */
+            escalated_at: string | null;
+            /** Resolved At */
+            resolved_at: string | null;
+        };
         /**
          * AdminCollectionControlResponse
          * @description Result payload for collection-focused simulated admin controls.
@@ -1004,6 +1256,11 @@ export interface components {
              * @description Required rationale for the admin decision.
              */
             reason: string;
+            /**
+             * Seller Share
+             * @description Split only: the seller's share of the escrow; the buyer gets the rest.
+             */
+            seller_share?: number | string | null;
         };
         /**
          * AdminForceResolveResponse
@@ -1153,6 +1410,61 @@ export interface components {
              */
             rails: components["schemas"]["AdminRailHealthEntry"][];
         };
+        /** AdminSearchEvent */
+        AdminSearchEvent: {
+            /** Title */
+            title: string;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+        };
+        /** AdminSearchParty */
+        AdminSearchParty: {
+            /** Name */
+            name: string;
+            /** Phone */
+            phone: string;
+        };
+        /** AdminTransactionRow */
+        AdminTransactionRow: {
+            /**
+             * Transaction Id
+             * Format: uuid
+             */
+            transaction_id: string;
+            /** Reference */
+            reference: string;
+            status: components["schemas"]["TransactionStatus"];
+            /** Amount */
+            amount: string;
+            /** Item Title */
+            item_title: string;
+            /** Is Serialized */
+            is_serialized: boolean;
+            buyer: components["schemas"]["AdminSearchParty"];
+            seller: components["schemas"]["AdminSearchParty"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            last_event: components["schemas"]["AdminSearchEvent"] | null;
+            /** Dispute Id */
+            dispute_id: string | null;
+        };
+        /** AdminTransactionSearchResponse */
+        AdminTransactionSearchResponse: {
+            /** Items */
+            items: components["schemas"]["AdminTransactionRow"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
         /**
          * BuyerReconfirmationRequest
          * @description Buyer response after seller remediation action.
@@ -1166,6 +1478,16 @@ export interface components {
              */
             notes?: string | null;
         };
+        /**
+         * CaseStatusFilter
+         * @enum {string}
+         */
+        CaseStatusFilter: "open" | "decided" | "all";
+        /**
+         * CaseTrigger
+         * @enum {string}
+         */
+        CaseTrigger: "receipt_timeout" | "buyer_not_fixed_twice" | "party_escalated" | "other_category";
         /**
          * CollectionOutcome
          * @enum {string}
@@ -4577,6 +4899,158 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    list_cases_admin_cases_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["CaseStatusFilter"];
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCaseListResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated user is not an admin. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_case_admin_cases__dispute_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dispute_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCaseDetailResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated user is not an admin. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Case not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_admin_transactions_get: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                status?: components["schemas"]["TransactionStatus"][] | null;
+                placed_from?: string | null;
+                placed_to?: string | null;
+                min_amount?: number | string | null;
+                max_amount?: number | string | null;
+                serialized?: boolean | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTransactionSearchResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated user is not an admin. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
