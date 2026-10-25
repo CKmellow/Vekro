@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { payoutBreakdown } from '@/lib/fees'
 import { maskPhone, toE164, toNationalDigits } from '@/lib/phone'
 import { ApiError } from '@/models/api/errors'
-import { useSaveSellerProfile } from '@/models/queries/sellerProfile'
+import { useChangePayout, useUpdateShopDetails, useUploadLogo } from '@/models/queries/sellerProfile'
 import { AREAS, payoutSetupSchema, SHOP_FIELDS, type PayoutSetupValues } from '@/models/schemas/payout'
 import { useSession } from './useSession'
 
@@ -14,12 +14,14 @@ export type PayoutStep = 'shop' | 'payout' | 'saved'
 export function usePayoutSetup() {
   const session = useSession()
   const user = session.status === 'authenticated' ? session.user : null
-  const save = useSaveSellerProfile()
+  const saveShop = useUpdateShopDetails()
+  const saveLogo = useUploadLogo()
+  const savePayout = useChangePayout()
   const [step, setStep] = useState<PayoutStep>('shop')
   const [saleAmount, setSaleAmount] = useState(52_000)
   const [logoUrl, setLogoUrl] = useState<string | null>(null)
+  const [logoFile, setLogoFile] = useState<File | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [saved, setSaved] = useState(true)
 
   const form = useForm<PayoutSetupValues>({
     resolver: zodResolver(payoutSetupSchema),
@@ -52,21 +54,24 @@ export function usePayoutSetup() {
   const onSubmit = form.handleSubmit(async (values) => {
     setError(null)
     try {
-      const result = await save.mutateAsync({
+      await saveShop.mutateAsync({
         shopName: values.shopName,
-        area: values.area,
-        description: values.description,
-        logoUrl,
+        shopArea: values.area,
+        shopAbout: values.description,
+      })
+      if (logoFile) await saveLogo.mutateAsync(logoFile)
+      await savePayout.mutateAsync({
         mpesaPhone: toE164(values.mpesaPhone),
         mpesaAccountName: values.mpesaAccountName,
       })
-      setSaved(result.saved)
       setStep('saved')
     } catch (e) {
       setError(
         e instanceof ApiError && e.kind === 'network'
           ? "You're offline. Your details are still here; try again when you're connected."
-          : "We couldn't save your details. Try again.",
+          : e instanceof ApiError && e.status === 428
+            ? 'You already have orders, so a new payout number needs an SMS code. Change it in Settings.'
+            : "We couldn't save your details. Try again.",
       )
     }
   })
@@ -78,9 +83,8 @@ export function usePayoutSetup() {
     next,
     back: () => setStep('shop'),
     onSubmit,
-    saving: save.isPending,
+    saving: saveShop.isPending || saveLogo.isPending || savePayout.isPending,
     error,
-    saved,
     signedInAs: user?.name ?? '',
     preview: {
       shopName: values.shopName || 'Your shop',
@@ -97,7 +101,10 @@ export function usePayoutSetup() {
       max: 200_000,
       ...payoutBreakdown(saleAmount),
     },
-    onLogo: (file: File | undefined) => setLogoUrl(file ? URL.createObjectURL(file) : null),
+    onLogo: (file: File | undefined) => {
+      setLogoFile(file ?? null)
+      setLogoUrl(file ? URL.createObjectURL(file) : null)
+    },
     areas: AREAS,
   }
 }

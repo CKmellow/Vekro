@@ -139,6 +139,11 @@ export const api = {
     path: P,
     options: Omit<Options<Operation<P, 'post'>>, 'body'> & { body: Blob },
   ) => request('post', path, options as unknown as Options<Operation<P, 'post'>>),
+  /** PUT a file as the raw request body, e.g. the shop logo. */
+  uploadPut: <P extends PathsWith<'put'>>(
+    path: P,
+    options: Omit<Options<Operation<P, 'put'>>, 'body'> & { body: Blob },
+  ) => request('put', path, options as unknown as Options<Operation<P, 'put'>>),
 }
 
 /**
