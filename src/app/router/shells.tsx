@@ -30,7 +30,12 @@ export function SellerShell() {
 export function AdminShell() {
   const shell = useShell()
   return (
-    <AdminLayout name={shell.name} onSearch={shell.onAdminSearch} onSignOut={shell.onAdminSignOut}>
+    <AdminLayout
+      name={shell.name}
+      queueCount={shell.queueCount}
+      onSearch={shell.onAdminSearch}
+      onSignOut={shell.onAdminSignOut}
+    >
       <Outlet />
     </AdminLayout>
   )

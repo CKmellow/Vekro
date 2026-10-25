@@ -195,3 +195,38 @@ export const disputeResponse = (
   admin_decision: null,
   ...overrides,
 })
+
+/** An escalated case in the support queue (escalated two hours before `escalatedAt` is read). */
+export const adminCaseSummaryResponse = (
+  overrides: Partial<Schemas['AdminCaseSummaryResponse']> = {},
+): Schemas['AdminCaseSummaryResponse'] => ({
+  dispute_id: '7a3f9c2e-1b4d-4e8f-9a0b-1c2d3e4f5a6b',
+  transaction_id: orderResponse().id,
+  reference: 'VK-7K3P9Q',
+  amount: '52000.00',
+  item_title: 'iPhone 13, 128GB, Midnight',
+  buyer_name: 'Brian Otieno',
+  seller_name: 'Amina Gadgets',
+  category: 'not_working',
+  trigger: 'party_escalated',
+  escalated_by: 'seller',
+  dispute_status: 'escalated_admin_review',
+  transaction_status: 'escalated_admin_review',
+  admin_decision: null,
+  opened_at: '2026-10-21T09:00:00Z',
+  escalated_at: new Date(Date.now() - 2 * 3_600_000).toISOString(),
+  resolved_at: null,
+  ...overrides,
+})
+
+export const adminCaseListResponse = (
+  items: Schemas['AdminCaseSummaryResponse'][] = [adminCaseSummaryResponse()],
+  overrides: Partial<Schemas['AdminCaseListResponse']> = {},
+): Schemas['AdminCaseListResponse'] => ({
+  items,
+  total: items.length,
+  page: 1,
+  page_size: 25,
+  counters: { open: items.length, older_than_24h: 0, decided_today: 3, average_decision_seconds: 19_200 },
+  ...overrides,
+})
