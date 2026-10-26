@@ -110,5 +110,5 @@ jobs:
       - uses: actions/checkout@v4
       - run: docker build -t vekro-web:ci .
       - name: nginx config renders and is valid
-        run: docker run --rm -e API_UPSTREAM=http://api.example.invalid:8000 vekro-web:ci sh -c '/docker-entrypoint.d/20-envsubst-on-templates.sh && nginx -t'
+        run: docker run --rm -e API_UPSTREAM=http://127.0.0.1:8000 vekro-web:ci sh -c '/docker-entrypoint.d/20-envsubst-on-templates.sh && nginx -t'
 
