@@ -1,4 +1,4 @@
-import { ArrowRight, ImagePlus, MapPin, Package, Share2, ShieldCheck, Wallet } from 'lucide-react'
+import { Store, ArrowRight, ImagePlus, MapPin, Package, Share2, ShieldCheck, Wallet } from 'lucide-react'
 import { Controller } from 'react-hook-form'
 import { Link } from 'react-router'
 import { usePayoutSetup } from '@/controllers/usePayoutSetup'
@@ -113,8 +113,10 @@ export function PayoutSetupPage() {
                 <span className="grid size-16 place-items-center overflow-hidden rounded-full bg-sand-100 font-display text-title font-bold text-emerald-800">
                   {s.preview.logoUrl ? (
                     <img src={s.preview.logoUrl} alt="" className="size-full object-cover" />
+                  ) : s.preview.initials ? (
+                    s.preview.initials
                   ) : (
-                    s.preview.shopName.slice(0, 2).toUpperCase()
+                    <Store aria-hidden="true" className="size-6" />
                   )}
                 </span>
                 <p className="type-title text-text">{s.preview.shopName}</p>

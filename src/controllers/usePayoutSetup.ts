@@ -88,6 +88,13 @@ export function usePayoutSetup() {
     signedInAs: user?.name ?? '',
     preview: {
       shopName: values.shopName || 'Your shop',
+      // "Amina Gadgets" -> "AG"; empty until a name is typed (the view shows a shop icon).
+      initials: values.shopName
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map((word) => word[0]?.toUpperCase() ?? '')
+        .join(''),
       area: values.area,
       description: values.description,
       logoUrl,
