@@ -34,8 +34,9 @@ beforeAll(() =>
   }),
 )
 afterEach(() => {
-  server.resetHandlers()
+  // Unmount first, so queries still in flight finish against this test's handlers, not none.
   cleanup()
+  server.resetHandlers()
   const missed = takeUnhandled()
   if (missed.length > 0) throw new Error(`Unhandled requests (add MSW handlers): ${missed.join(', ')}`)
 })
