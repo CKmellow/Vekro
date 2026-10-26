@@ -1,4 +1,5 @@
 import { Eye, Package, ScanBarcode } from 'lucide-react'
+import { useReducedMotion } from 'motion/react'
 import { useRef, useState } from 'react'
 import type { PayListingView } from '@/controllers/usePayPage'
 import { cn } from '@/lib/cn'
@@ -11,11 +12,12 @@ export function ProductCard({ listing, dimmed = false }: { listing: PayListingVi
   const [current, setCurrent] = useState(0)
   const [zoomed, setZoomed] = useState<number | null>(null)
   const track = useRef<HTMLDivElement>(null)
+  const reduce = useReducedMotion()
   const photos = listing.photoUrls
 
   const goTo = (index: number) => {
     const el = track.current
-    if (el) el.scrollTo({ left: index * el.clientWidth, behavior: 'smooth' })
+    if (el) el.scrollTo({ left: index * el.clientWidth, behavior: reduce ? 'auto' : 'smooth' })
   }
 
   return (
