@@ -8,6 +8,7 @@ import {
   type Role,
 } from '@/models/api/auth'
 import { api } from '@/models/api/client'
+import { clearDraft } from '@/models/domain/listingDraftStore'
 import { ApiError } from '@/models/api/errors'
 
 export type { CurrentUser, Role }
@@ -112,8 +113,10 @@ export function useSignOut() {
   return useMutation({
     mutationFn: () => authStrategy.signOut(),
     meta: { auth: true },
-    // Signed out either way: an already-expired session also ends here.
+    // Signed out either way: an already-expired session also ends here. The unfinished listing draft
+    // goes too, so the next person on a shared phone doesn't see it.
     onSettled: () => {
+      clearDraft()
       client.removeQueries({ predicate: (q) => q.queryKey[0] !== 'session' })
       client.setQueryData(sessionKeys.expired, false)
       client.setQueryData(sessionKeys.me, null)
