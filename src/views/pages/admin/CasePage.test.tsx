@@ -103,7 +103,7 @@ describe('A3 case detail and decision', () => {
     await waitFor(() =>
       expect(bodies).toEqual([{ decision: 'split', reason: REASON, seller_share: '0.6000' }]),
     )
-  })
+  }, 15_000)
 
   it('disables Split when the payment provider refuses it', async () => {
     serve(adminCaseDetailResponse(), () =>

@@ -32,7 +32,7 @@ export function Stepper({
                 'grid size-6 shrink-0 place-items-center rounded-full font-mono text-label font-bold',
                 done && 'bg-emerald-600 text-sand-0',
                 active && 'bg-saffron-500 text-ink-950 motion-safe:animate-ring-pulse',
-                !done && !active && 'border border-sand-300 text-ink-400',
+                !done && !active && 'border border-sand-300 text-ink-500',
               )}
             >
               {done ? <Check className="size-3.5" strokeWidth={3} /> : i + 1}
@@ -41,7 +41,7 @@ export function Stepper({
               className={cn(
                 'type-body-sm font-semibold',
                 active ? 'shrink-0' : 'truncate',
-                done ? 'text-text' : active ? 'text-saffron-700' : 'text-ink-400',
+                done ? 'text-text' : active ? 'text-saffron-700' : 'text-ink-500',
                 // Narrow screens show only the current step's name.
                 !active && 'max-sm:sr-only',
               )}

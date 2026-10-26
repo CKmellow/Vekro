@@ -53,7 +53,7 @@ export function Timeline({
                 i === newest && !reduce && 'motion-safe:animate-pulse-once',
               )}
             />
-            <div className={cn('flex min-w-0 flex-col gap-1', entry.upcoming && 'text-ink-400')}>
+            <div className={cn('flex min-w-0 flex-col gap-1', entry.upcoming && 'text-ink-500')}>
               <div className="flex flex-wrap items-center gap-2">
                 {entry.time && <span className="type-mono text-text-muted">{entry.time}</span>}
                 {entry.upcoming && <span className="type-label">Upcoming</span>}
@@ -61,7 +61,7 @@ export function Timeline({
                   <span className={cn('type-body-sm rounded-xs px-1.5', actor.chip)}>{actor.name}</span>
                 )}
               </div>
-              <p className={cn('type-body-md', entry.upcoming ? 'text-ink-400' : 'text-text')}>
+              <p className={cn('type-body-md', entry.upcoming ? 'text-ink-500' : 'text-text')}>
                 {entry.text}
               </p>
               {entry.detail && <p className="type-body-sm text-text-muted">{entry.detail}</p>}

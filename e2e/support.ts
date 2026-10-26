@@ -1,4 +1,5 @@
-import { request, type APIRequestContext, type BrowserContext } from '@playwright/test'
+import { createRequire } from 'node:module'
+import { request, type APIRequestContext, type BrowserContext, type Page } from '@playwright/test'
 
 export const PASSWORD = 'Mango2026'
 
@@ -153,4 +154,32 @@ export async function returnOnItsWay(
     if (!response.ok()) throw new Error(`${path} ${response.status()}: ${await response.text()}`)
   }
   return { orderId }
+}
+
+const AXE = createRequire(import.meta.url).resolve('axe-core/axe.min.js')
+
+/** Runs axe on the page as it stands and returns a readable list of violations (empty when clean). */
+export async function axeViolations(page: Page): Promise<string[]> {
+  await page.addScriptTag({ path: AXE })
+  return page.evaluate(async () => {
+    // Runs in the browser; typed loosely because the e2e tsconfig has no DOM types.
+    const g = globalThis as unknown as {
+      document: unknown
+      axe: { run: (context: unknown) => Promise<{ violations: AxeViolation[] }> }
+    }
+    const { violations } = await g.axe.run(g.document)
+    return violations.map(
+      (v) =>
+        `${v.impact} ${v.id}: ${v.nodes
+          .map((n) => n.target.join(' '))
+          .slice(0, 3)
+          .join(', ')}`,
+    )
+  })
+}
+
+interface AxeViolation {
+  id: string
+  impact: string
+  nodes: { target: string[] }[]
 }
