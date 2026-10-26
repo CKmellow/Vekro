@@ -3,10 +3,21 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { CSP } from './src/app/csp'
 
 export default defineConfig({
   plugins: [
     react(),
+    {
+      // Strict CSP and referrer policy in the built app only: the dev server injects inline scripts.
+      name: 'vekro-security-meta',
+      apply: 'build',
+      transformIndexHtml: (html) =>
+        html.replace(
+          '<meta charset="UTF-8" />',
+          `<meta charset="UTF-8" />\n    <meta http-equiv="Content-Security-Policy" content="${CSP}" />\n    <meta name="referrer" content="strict-origin-when-cross-origin" />`,
+        ),
+    },
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
