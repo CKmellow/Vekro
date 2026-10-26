@@ -10,6 +10,7 @@ Every Stitch screen for Vekro, its exports and its review status.
 - **Specced** (from M5, Cyprian 2026-10-17): no Stitch render. The folder holds a code-ready brief (`prompt.md`) and notes (`notes.md`: checklist, build map, motion, backend dependencies, deviations); the built page, with its PR screenshots, is the visual reference.
 - Exports live in `design/<ID>-<slug>/`: `mobile.png` and/or `desktop.png`, variant PNGs, the matching `.html`, `prompt.md` and `notes.md`.
 - Review checklist: [`docs/DESIGN_REVIEW_CHECKLIST.md`](../docs/DESIGN_REVIEW_CHECKLIST.md)
+- Design versus build, every page: [`RECONCILIATION.md`](RECONCILIATION.md) (2026-10-26). Every page in this table is built.
 
 | ID | Name | Folder | Device | Milestone | Stitch screens | Status |
 | --- | --- | --- | --- | --- | --- | --- |
