@@ -20,6 +20,16 @@ describe('.env.example', () => {
   })
 })
 
+describe('docs/ENVIRONMENT.md', () => {
+  it('documents every variable the app and its tooling read', () => {
+    const doc = readFileSync('docs/ENVIRONMENT.md', 'utf8')
+    const types = readFileSync('src/vite-env.d.ts', 'utf8')
+    const declared = [...types.matchAll(/readonly (VITE_[A-Z_]+)/g)].map((m) => m[1])
+    const fromExample = [...example.matchAll(/^([A-Z_]+)=/gm)].map((m) => m[1])
+    for (const name of new Set([...declared, ...fromExample])) expect(doc, name).toContain(`\`${name}\``)
+  })
+})
+
 describe('.gitignore', () => {
   it('keeps secrets, local docs and build output out of git', () => {
     for (const entry of [
