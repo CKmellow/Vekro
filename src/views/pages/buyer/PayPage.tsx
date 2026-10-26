@@ -1,5 +1,5 @@
 import { ChevronDown, Eye, KeyRound, Lock, ShieldCheck, Smartphone } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { useState, type ReactNode } from 'react'
 import { Controller } from 'react-hook-form'
 import { useParams } from 'react-router'
@@ -33,13 +33,13 @@ const STEPS = [
 function Reveal({ index, children }: { index: number; children: ReactNode }) {
   const reduce = useReducedMotion()
   return (
-    <motion.div
+    <m.div
       initial={reduce ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: duration.state, ease: [...ease], delay: index * 0.06 }}
     >
       {children}
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -49,7 +49,7 @@ function Expand({ open, children }: { open: boolean; children: ReactNode }) {
   return (
     <AnimatePresence initial={false}>
       {open && (
-        <motion.div
+        <m.div
           initial={reduce ? false : { height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
           exit={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
@@ -57,7 +57,7 @@ function Expand({ open, children }: { open: boolean; children: ReactNode }) {
           className="overflow-hidden"
         >
           {children}
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   )

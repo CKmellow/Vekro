@@ -2,10 +2,10 @@ import { createBrowserRouter, type RouteObject } from 'react-router'
 import { LoadingPage, NotFoundPage } from '@/views/pages/shared/system'
 import { RequireRole } from './guards'
 import { RouteError } from './RouteError'
-import { AdminShell, BuyerShell, SellerShell } from './shells'
+import { BuyerShell } from './shells'
 
-// Lazy page modules: one chunk per area keeps the buyer bundle small.
-const buyer = () => import('./screens/buyer')
+// Lazy page modules: one chunk per buyer page (a buyer from an SMS link loads only that page), one per
+// seller, admin and shared area.
 const seller = () => import('./screens/seller')
 const admin = () => import('./screens/admin')
 const shared = () => import('./screens/shared')
@@ -35,16 +35,43 @@ export const routes: RouteObject[] = [
       {
         element: <BuyerShell />,
         children: [
-          { path: '/pay/return', lazy: page(buyer, 'PayReturn') },
-          { path: '/pay/:listingId', lazy: page(buyer, 'B1') },
-          { path: '/order/:orderId', lazy: page(buyer, 'B3') },
-          { path: '/order/:orderId/payment', lazy: page(buyer, 'B2') },
-          { path: '/order/:orderId/inspect', lazy: page(buyer, 'B4') },
-          { path: '/order/:orderId/report', lazy: page(buyer, 'B5') },
-          { path: '/order/:orderId/return', lazy: page(buyer, 'B6') },
-          { path: '/order/:orderId/timeline', lazy: page(buyer, 'B7') },
-          { path: '/buyer/sign-in', lazy: page(buyer, 'B8') },
-          { path: '/buyer/orders', lazy: page(buyer, 'B9') },
+          {
+            path: '/pay/return',
+            lazy: page(() => import('@/views/pages/buyer/PayReturnPage'), 'PayReturnPage'),
+          },
+          { path: '/pay/:listingId', lazy: page(() => import('@/views/pages/buyer/PayPage'), 'PayPage') },
+          {
+            path: '/order/:orderId',
+            lazy: page(() => import('@/views/pages/buyer/OrderTrackerPage'), 'OrderTrackerPage'),
+          },
+          {
+            path: '/order/:orderId/payment',
+            lazy: page(() => import('@/views/pages/buyer/PaymentPage'), 'PaymentPage'),
+          },
+          {
+            path: '/order/:orderId/inspect',
+            lazy: page(() => import('@/views/pages/buyer/InspectionPage'), 'InspectionPage'),
+          },
+          {
+            path: '/order/:orderId/report',
+            lazy: page(() => import('@/views/pages/buyer/ReportIssuePage'), 'ReportIssuePage'),
+          },
+          {
+            path: '/order/:orderId/return',
+            lazy: page(() => import('@/views/pages/buyer/ReturnFlowPage'), 'ReturnFlowPage'),
+          },
+          {
+            path: '/order/:orderId/timeline',
+            lazy: page(() => import('@/views/pages/buyer/TimelinePage'), 'TimelinePage'),
+          },
+          {
+            path: '/buyer/sign-in',
+            lazy: page(() => import('@/views/pages/buyer/BuyerSignInPage'), 'BuyerSignInPage'),
+          },
+          {
+            path: '/buyer/orders',
+            lazy: page(() => import('@/views/pages/buyer/MyOrdersPage'), 'MyOrdersPage'),
+          },
         ],
       },
 
@@ -59,7 +86,7 @@ export const routes: RouteObject[] = [
         children: [
           { path: '/onboarding', lazy: page(seller, 'S3') },
           {
-            element: <SellerShell />,
+            lazy: page(() => import('./accountShells'), 'SellerShell'),
             children: [
               { path: '/seller', lazy: page(seller, 'S4') },
               { path: '/seller/orders', lazy: page(seller, 'S5') },
@@ -84,7 +111,7 @@ export const routes: RouteObject[] = [
         element: <RequireRole allow="admin" />,
         children: [
           {
-            element: <AdminShell />,
+            lazy: page(() => import('./accountShells'), 'AdminShell'),
             children: [
               { path: '/admin', lazy: page(admin, 'A2') },
               { path: '/admin/cases/:id', lazy: page(admin, 'A3') },

@@ -1,5 +1,5 @@
 import { ArrowLeft, Package } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router'
 import { DESCRIPTION_MAX, DESCRIPTION_MIN, useReportIssue } from '@/controllers/useReportIssue'
@@ -107,7 +107,7 @@ export function ReportIssuePage() {
     const support = p.submitted === 'other'
     return (
       <AnimatePresence mode="wait">
-        <motion.div
+        <m.div
           key="success"
           initial={reduce ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -146,7 +146,7 @@ export function ReportIssuePage() {
               {support ? 'See your order' : 'Next: send the item back'}
             </Button>
           </ActionDock>
-        </motion.div>
+        </m.div>
       </AnimatePresence>
     )
   }

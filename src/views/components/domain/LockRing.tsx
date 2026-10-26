@@ -10,7 +10,7 @@ import {
   Truck,
   type LucideIcon,
 } from 'lucide-react'
-import { motion, useReducedMotion } from 'motion/react'
+import { m, useReducedMotion } from 'motion/react'
 import { cn } from '@/lib/cn'
 import { duration, spring } from '@/lib/motion'
 import type { LockRingState } from '@/lib/status'
@@ -75,7 +75,7 @@ export function LockRing({ state, remaining = 1, className }: LockRingProps) {
           strokeOpacity={0.18}
           strokeWidth={STROKE}
         />
-        <motion.circle
+        <m.circle
           cx={SIZE / 2}
           cy={SIZE / 2}
           r={R}
@@ -90,7 +90,7 @@ export function LockRing({ state, remaining = 1, className }: LockRingProps) {
           transition={reduce ? { duration: 0 } : { duration: duration.moment }}
         />
       </svg>
-      <motion.span
+      <m.span
         key={state}
         initial={state === 'locked' && !reduce ? { scale: 0.6 } : false}
         animate={{ scale: 1 }}
@@ -98,7 +98,7 @@ export function LockRing({ state, remaining = 1, className }: LockRingProps) {
         className="relative"
       >
         <Icon className="size-7" strokeWidth={2} />
-      </motion.span>
+      </m.span>
     </span>
   )
 }

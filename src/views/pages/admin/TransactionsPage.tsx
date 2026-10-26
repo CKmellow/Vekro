@@ -1,6 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { ChevronLeft, ChevronRight, Search, X } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { Link } from 'react-router'
 import { useTransactionsExplorer } from '@/controllers/useTransactionsExplorer'
 import { cn } from '@/lib/cn'
@@ -248,7 +248,7 @@ export function TransactionsPage() {
           {p.selected !== null && (
             <Dialog.Portal forceMount>
               <Dialog.Overlay asChild forceMount>
-                <motion.div
+                <m.div
                   className="fixed inset-0 z-40 bg-scrim"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -256,7 +256,7 @@ export function TransactionsPage() {
                 />
               </Dialog.Overlay>
               <Dialog.Content asChild forceMount aria-describedby={undefined}>
-                <motion.aside
+                <m.aside
                   initial={reduce ? false : { x: 480 }}
                   animate={{ x: 0 }}
                   exit={reduce ? { opacity: 0 } : { x: 480 }}
@@ -329,7 +329,7 @@ export function TransactionsPage() {
                       </div>
                     </>
                   )}
-                </motion.aside>
+                </m.aside>
               </Dialog.Content>
             </Dialog.Portal>
           )}

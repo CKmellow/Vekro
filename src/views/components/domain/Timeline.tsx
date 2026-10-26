@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'motion/react'
+import { m, useReducedMotion } from 'motion/react'
 import { cn } from '@/lib/cn'
 import type { TimelineActor, TimelineEntry } from '@/lib/timeline'
 
@@ -27,7 +27,7 @@ export function Timeline({
       {entries.map((entry, i) => {
         const actor = entry.actor ? actors[entry.actor] : undefined
         return (
-          <motion.li
+          <m.li
             key={entry.id}
             initial={reduce ? false : { opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
@@ -71,7 +71,7 @@ export function Timeline({
                 </blockquote>
               )}
             </div>
-          </motion.li>
+          </m.li>
         )
       })}
     </ol>

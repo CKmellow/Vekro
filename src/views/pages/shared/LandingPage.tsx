@@ -12,7 +12,7 @@ import {
   Tag,
   Truck,
 } from 'lucide-react'
-import { motion, useReducedMotion } from 'motion/react'
+import { m, useReducedMotion } from 'motion/react'
 import { Link, Navigate } from 'react-router'
 import { useLanding } from '@/controllers/useLanding'
 import { LANDING_FAQ } from '@/lib/help'
@@ -140,7 +140,7 @@ export function LandingPage() {
         </h2>
         <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map(({ Icon, title, body }, i) => (
-            <motion.li
+            <m.li
               key={title}
               initial={reduce ? false : { opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -154,7 +154,7 @@ export function LandingPage() {
               <span className="type-label text-text-muted">Step {i + 1}</span>
               <h3 className="type-title text-text">{title}</h3>
               <p className="type-body-md text-ink-600">{body}</p>
-            </motion.li>
+            </m.li>
           ))}
         </ol>
       </section>

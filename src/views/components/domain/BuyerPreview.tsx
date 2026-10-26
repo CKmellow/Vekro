@@ -1,5 +1,5 @@
 import { Lock, Package, ShieldCheck } from 'lucide-react'
-import { motion, useReducedMotion } from 'motion/react'
+import { m, useReducedMotion } from 'motion/react'
 import { cn } from '@/lib/cn'
 import { formatKes } from '@/lib/money'
 import { VekroMark } from '../ui/VekroMark'
@@ -39,7 +39,7 @@ export function BuyerPreview({ data, className }: { data: BuyerPreviewData; clas
         </div>
         <div>
           <p className="type-title text-text">{data.title}</p>
-          <motion.p
+          <m.p
             key={data.price}
             initial={flash}
             animate={{ backgroundColor: 'rgba(0,0,0,0)' }}
@@ -47,7 +47,7 @@ export function BuyerPreview({ data, className }: { data: BuyerPreviewData; clas
             className="type-amount -mx-1 rounded-sm px-1 text-text"
           >
             {formatKes(data.price)}
-          </motion.p>
+          </m.p>
           <p className="type-body-sm text-text-muted">Sold by {data.sellerName}</p>
         </div>
         {data.isSerialized && (

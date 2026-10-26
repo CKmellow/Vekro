@@ -1,5 +1,5 @@
 import { Lock, Store, User, type LucideIcon } from 'lucide-react'
-import { motion, useReducedMotion } from 'motion/react'
+import { m, useReducedMotion } from 'motion/react'
 import { cn } from '@/lib/cn'
 import { duration, ease } from '@/lib/motion'
 
@@ -35,7 +35,7 @@ export function MoneyPath({ buyer, vault, seller, position }: MoneyPathProps) {
       <figcaption className="sr-only">Money path: the money is with {nodes[position].title}.</figcaption>
       <div className="relative mx-5 h-10" aria-hidden="true">
         <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-sand-200" />
-        <motion.div
+        <m.div
           className="absolute top-1/2 left-0 h-1 -translate-y-1/2 rounded-full bg-emerald-600"
           animate={{ width: at[position] }}
           transition={reduce ? { duration: 0 } : { duration: duration.moment, ease: [...ease] }}
@@ -59,7 +59,7 @@ export function MoneyPath({ buyer, vault, seller, position }: MoneyPathProps) {
             </span>
           )
         })}
-        <motion.span
+        <m.span
           className="absolute -top-1 size-3 -translate-x-1/2 rounded-full bg-emerald-glow shadow-glow"
           initial={false}
           animate={{ left: `calc(${at[position]} + 14px)` }}

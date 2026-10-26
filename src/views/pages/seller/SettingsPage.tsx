@@ -1,6 +1,6 @@
 import * as RadixTabs from '@radix-ui/react-tabs'
 import { ImagePlus, LogOut, Monitor, Smartphone } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { useSettings } from '@/controllers/useSettings'
 import { ABOUT_MAX, useSettingsProfile } from '@/controllers/useSettingsProfile'
 import { useSettingsNotifications } from '@/controllers/useSettingsNotifications'
@@ -144,7 +144,7 @@ function PayoutTab({ p }: { p: Payout }) {
       )}
       <AnimatePresence mode="wait" initial={false}>
         {p.step === 'view' && (
-          <motion.div
+          <m.div
             key="view"
             {...fade}
             className="flex flex-wrap items-start gap-4 rounded-lg border border-border p-5"
@@ -161,10 +161,10 @@ function PayoutTab({ p }: { p: Payout }) {
             <Button variant="secondary" onClick={p.start} disabled={!p.online}>
               Change
             </Button>
-          </motion.div>
+          </m.div>
         )}
         {p.step === 'enter' && (
-          <motion.form
+          <m.form
             key="enter"
             {...fade}
             noValidate
@@ -205,10 +205,10 @@ function PayoutTab({ p }: { p: Payout }) {
                 Cancel
               </Button>
             </div>
-          </motion.form>
+          </m.form>
         )}
         {p.step === 'code' && (
-          <motion.div key="code" {...fade} className="flex flex-col gap-5">
+          <m.div key="code" {...fade} className="flex flex-col gap-5">
             <CodeCells
               label={`Enter the code we sent to ${p.maskedNew}`}
               value={p.code}
@@ -247,7 +247,7 @@ function PayoutTab({ p }: { p: Payout }) {
                 Cancel
               </Button>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
       <p className="type-body-sm rounded-md bg-saffron-50 px-4 py-3 text-saffron-700">
@@ -498,7 +498,7 @@ export function SettingsPage() {
 
       <AnimatePresence>
         {bar && (
-          <motion.div
+          <m.div
             initial={reduce ? false : { y: 96 }}
             animate={{ y: 0 }}
             exit={reduce ? undefined : { y: 96 }}
@@ -524,7 +524,7 @@ export function SettingsPage() {
                 </Button>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 

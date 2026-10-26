@@ -61,6 +61,8 @@ export default defineConfig({
       },
     }),
   ],
+  // The bundle budget (scripts/check-bundle-budget.mjs) reads the chunk graph from the manifest.
+  build: { manifest: true },
   server: {
     // Same-origin API: the backend's session and CSRF cookies are host-only.
     proxy: {

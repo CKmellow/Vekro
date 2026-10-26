@@ -1,5 +1,5 @@
 import { Check, Info, Lock, PackageCheck } from 'lucide-react'
-import { motion, useReducedMotion } from 'motion/react'
+import { m, useReducedMotion } from 'motion/react'
 import { useState } from 'react'
 import { useParams } from 'react-router'
 import { useInspection } from '@/controllers/useInspection'
@@ -53,13 +53,13 @@ function Checklist({
                 )}
               >
                 {item.checked && (
-                  <motion.span
+                  <m.span
                     initial={reduce ? false : { scale: 0.4 }}
                     animate={{ scale: 1 }}
                     transition={spring}
                   >
                     <Check className="size-4" strokeWidth={3} />
-                  </motion.span>
+                  </m.span>
                 )}
               </span>
               <span className="type-body-md text-text">{item.label}</span>
