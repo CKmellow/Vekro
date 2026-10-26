@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router'
 import { useOrderTimelineView } from '@/controllers/useOrderTimeline'
 import { StatusPill } from '../../components/domain/StatusPill'
 import { MoneyText } from '../../components/ui/MoneyText'
+import { OfflineBanner } from '../../components/ui/OfflineBanner'
 import { TimelinePanel } from './timeline/TimelinePanel'
 
 /** B7 Transaction timeline (PAGES.md B7). Route /order/:orderId/timeline. */
@@ -22,6 +23,7 @@ export function TimelinePage() {
         </button>
         <h1 className="type-headline text-text">Order timeline</h1>
       </div>
+      <OfflineBanner since={view.staleSince} />
       {view.summary && (
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="type-mono text-text">{view.summary.reference}</span>

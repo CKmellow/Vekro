@@ -21,6 +21,11 @@ export function TransactionsPage() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="type-display-lg">Transactions</h1>
+      {p.staleSince && (
+        <p role="status" className="type-body-sm rounded-md bg-saffron-500/15 px-4 py-3 text-saffron-500">
+          You're offline. Showing the last update at <span className="font-mono">{p.staleSince}</span>.
+        </p>
+      )}
 
       <form
         role="search"

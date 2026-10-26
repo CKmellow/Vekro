@@ -8,6 +8,7 @@ import { currentDeadline } from '@/models/domain/deadlines'
 import type { Order } from '@/models/domain/order'
 import { statusView } from '@/models/domain/stateMeta'
 import { useOrder, useOrderTimeline } from '@/models/queries/orders'
+import { useStaleSince } from './useOnline'
 
 const ACTORS: Record<string, TimelineActor> = {
   transaction_created: 'you',
@@ -123,8 +124,10 @@ export function useOrderTimelineView(orderId: string) {
     updatedAt: order.data?.updatedAt,
   })
   const failed = order.error ?? timeline.error
+  const staleSince = useStaleSince(timeline)
 
   return {
+    staleSince,
     state:
       order.data && timeline.data
         ? ('ready' as const)

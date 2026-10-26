@@ -7,6 +7,7 @@ import { currentDeadline } from '@/models/domain/deadlines'
 import { STATE_META, statusView, type TransactionStatus } from '@/models/domain/stateMeta'
 import { useTransactionSearch } from '@/models/queries/admin'
 import { useOrder } from '@/models/queries/orders'
+import { useStaleSince } from './useOnline'
 
 /** Status groups for the filter, the same grouping the seller order list uses. */
 export const STATUS_GROUPS: { value: string; label: string; statuses: TransactionStatus[] }[] = [
@@ -79,6 +80,7 @@ export function useTransactionsExplorer() {
     page,
   }
   const query = useTransactionSearch(filter)
+  const staleSince = useStaleSince(query)
   const detail = useOrder(selected ?? '', { enabled: Boolean(selected) })
 
   function update(changes: Record<string, string | string[] | null>) {
@@ -111,6 +113,7 @@ export function useTransactionsExplorer() {
   const row = (data?.items ?? []).find((r) => r.transactionId === selected)
 
   return {
+    staleSince,
     search,
     setSearch,
     submitSearch: () => update({ q: search.trim() || null }),

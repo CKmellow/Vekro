@@ -23,6 +23,7 @@ import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog'
 import { Skeleton, SkeletonGroup } from '../../components/ui/Skeleton'
+import { OfflineBanner } from '../../components/ui/OfflineBanner'
 
 /** Draws the shareable QR card: emerald background, title, price, QR and link. */
 function downloadQrCard(qr: HTMLCanvasElement, title: string, price: string, link: string) {
@@ -99,6 +100,7 @@ export function ListingDetailPage() {
   const lockedNote = "This listing has a paid order, so it can't be changed."
   return (
     <div className="flex flex-col gap-6">
+      <OfflineBanner since={d.staleSince} note="Archiving and restoring need a connection." />
       <div className="flex flex-col gap-3">
         <Link
           to="/seller/listings"

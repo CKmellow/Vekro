@@ -6,6 +6,7 @@ import { Banner } from '../../components/ui/Banner'
 import { Button } from '../../components/ui/Button'
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog'
 import { EmptyState } from '../../components/ui/EmptyState'
+import { OfflineBanner } from '../../components/ui/OfflineBanner'
 import { SegmentedControl } from '../../components/ui/SegmentedControl'
 import { Skeleton, SkeletonGroup } from '../../components/ui/Skeleton'
 import { ListingCard } from './listing/ListingCard'
@@ -34,6 +35,7 @@ export function ListingsPage() {
         </h1>
         {newListing}
       </div>
+      <OfflineBanner since={p.staleSince} />
 
       {p.state !== 'empty' && (
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">

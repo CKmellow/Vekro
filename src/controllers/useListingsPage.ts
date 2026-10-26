@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import { toast } from '@/lib/toast'
 import { LISTING_STATUS_VIEW, type Listing, type ListingStatus } from '@/models/domain/listing'
 import { useArchiveListing, useListings } from '@/models/queries/listings'
+import { useStaleSince } from './useOnline'
 
 const FILTERS: { value: ListingStatus; label: string }[] = [
   { value: 'active', label: 'Active' },
@@ -30,6 +31,7 @@ export function useListingsPage() {
   const [view, setView] = useState<'grid' | 'list'>('grid')
   const [archiving, setArchiving] = useState<Listing | null>(null)
   const shown = useListings({ status, q: q.trim() || undefined })
+  const staleSince = useStaleSince(shown)
   const page = shown.data
   const archive = useArchiveListing()
 
@@ -50,6 +52,7 @@ export function useListingsPage() {
   const total = counts ? Object.values(counts).reduce((a, b) => a + b, 0) : undefined
 
   return {
+    staleSince,
     filters: FILTERS.map((f) => ({
       value: f.value,
       label: f.label,
