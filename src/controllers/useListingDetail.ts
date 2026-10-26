@@ -5,6 +5,7 @@ import { toast } from '@/lib/toast'
 import { LISTING_STATUS_VIEW, policySummary } from '@/models/domain/listing'
 import { useArchiveListing, useListing, useRestoreListing } from '@/models/queries/listings'
 import { listingLink } from './useListingsPage'
+import { useStaleSince } from './useOnline'
 
 async function copy(text: string, done: string) {
   try {
@@ -21,6 +22,7 @@ export function useListingDetail() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const query = useListing(id)
+  const staleSince = useStaleSince(query)
   const archive = useArchiveListing()
   const restore = useRestoreListing()
   const listing = query.data
@@ -42,6 +44,7 @@ export function useListingDetail() {
 
   return {
     state: 'ready' as const,
+    staleSince,
     justPublished: params.get('published') === '1',
     listing: {
       title: listing.title,

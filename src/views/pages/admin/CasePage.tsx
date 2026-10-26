@@ -92,6 +92,13 @@ export function CasePage() {
         )}
       </div>
 
+      {p.staleSince && (
+        <p role="status" className="type-body-sm rounded-md bg-saffron-500/15 px-4 py-3 text-saffron-500">
+          You're offline. Showing the last update at <span className="font-mono">{p.staleSince}</span>.
+          Decisions need a connection.
+        </p>
+      )}
+
       <div className="grid items-start gap-6 lg:grid-cols-12">
         <div className="flex flex-col gap-4 lg:col-span-7">
           <div className="grid gap-4 sm:grid-cols-2">

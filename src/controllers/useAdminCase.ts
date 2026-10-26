@@ -9,6 +9,7 @@ import { caseAge, type AdminCaseDetail, type AdminDecision } from '@/models/doma
 import { issueLabel, sellerOptions } from '@/models/domain/listing'
 import { useCase, useDecideCase } from '@/models/queries/admin'
 import { shortCaseId, toQueueRow } from './useAdminQueue'
+import { useStaleSince } from './useOnline'
 
 export const REASON_MIN = 20
 export const REASON_MAX = 1000
@@ -50,6 +51,7 @@ export function useAdminCase() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
   const query = useCase(id)
+  const staleSince = useStaleSince(query)
   const decide = useDecideCase(id)
   const c = query.data
   const [decision, setDecision] = useState<AdminDecision | undefined>()
@@ -113,6 +115,7 @@ export function useAdminCase() {
 
   return {
     state,
+    staleSince,
     retry: () => void query.refetch(),
     back: () => navigate('/admin'),
     caseView: c

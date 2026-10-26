@@ -1,3 +1,4 @@
+import { formatEat } from '@/lib/time'
 import { useSyncExternalStore } from 'react'
 
 const subscribe = (onChange: () => void) => {
@@ -16,4 +17,15 @@ export function useOnline(): boolean {
     () => navigator.onLine,
     () => true,
   )
+}
+
+/**
+ * "14:36" (EAT) when the browser is offline and the page is showing data fetched earlier, so the
+ * view can say how old it is; null otherwise.
+ */
+export function useStaleSince(query: { data?: unknown; dataUpdatedAt: number }): string | null {
+  const online = useOnline()
+  return !online && query.data !== undefined && query.dataUpdatedAt
+    ? formatEat(new Date(query.dataUpdatedAt).toISOString())
+    : null
 }
