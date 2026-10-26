@@ -1,6 +1,6 @@
 import * as RadixToast from '@radix-ui/react-toast'
 import { CircleAlert, CircleCheck, Info } from 'lucide-react'
-import { motion, useReducedMotion } from 'motion/react'
+import { m, useReducedMotion } from 'motion/react'
 import { useSyncExternalStore } from 'react'
 import { cn } from '@/lib/cn'
 import { spring } from '@/lib/motion'
@@ -28,7 +28,7 @@ export function Toaster() {
             onOpenChange={(open) => !open && toast.dismiss(id)}
             asChild
           >
-            <motion.li
+            <m.li
               initial={reduce ? false : { y: -24, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={spring}
@@ -36,7 +36,7 @@ export function Toaster() {
             >
               <Icon aria-hidden="true" className={cn('size-4 shrink-0', iconTone[tone])} />
               <RadixToast.Description>{message}</RadixToast.Description>
-            </motion.li>
+            </m.li>
           </RadixToast.Root>
         )
       })}

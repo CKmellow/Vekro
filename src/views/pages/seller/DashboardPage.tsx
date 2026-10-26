@@ -1,5 +1,5 @@
 import { ArrowDown, ArrowUp, CircleCheck, Circle, Lightbulb, Lock, Package, Plus } from 'lucide-react'
-import { motion, useReducedMotion } from 'motion/react'
+import { m, useReducedMotion } from 'motion/react'
 import { Link } from 'react-router'
 import { useSellerDashboard, type DashboardAction, type KpiTile } from '@/controllers/useSellerDashboard'
 import type { OrderRow } from '@/controllers/useOrdersPage'
@@ -77,7 +77,7 @@ function ActionCard({
 }) {
   const reduce = useReducedMotion()
   return (
-    <motion.li
+    <m.li
       initial={reduce ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reduce ? 0 : duration.state, delay: reduce ? 0 : index * 0.04 }}
@@ -113,7 +113,7 @@ function ActionCard({
         {action.button.label}
         <span className="sr-only"> {action.reference}</span>
       </Button>
-    </motion.li>
+    </m.li>
   )
 }
 

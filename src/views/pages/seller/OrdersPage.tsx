@@ -1,5 +1,5 @@
 import { Package, Search, SearchX } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { Link } from 'react-router'
 import { useOrdersPage, type OrderRow } from '@/controllers/useOrdersPage'
 import { cn } from '@/lib/cn'
@@ -192,7 +192,7 @@ export function OrdersPage() {
 
       <AnimatePresence mode="wait" initial={false}>
         {p.state === 'ready' && (
-          <motion.div
+          <m.div
             key={`${p.segment}:${p.page}`}
             initial={reduce ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -239,7 +239,7 @@ export function OrdersPage() {
               )}
               <Pagination page={p.page} pageCount={p.pageCount} onPageChange={p.setPage} />
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 

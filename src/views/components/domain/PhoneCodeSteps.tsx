@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { useEffect, useRef } from 'react'
 import { Link } from 'react-router'
 import type { PhoneSignIn, SignInBanner } from '@/controllers/usePhoneSignIn'
@@ -58,7 +58,7 @@ export function PhoneCodeSteps({ flow, sendLabel = 'Send code' }: { flow: PhoneS
 
       <AnimatePresence mode="wait" initial={false}>
         {flow.step === 'phone' ? (
-          <motion.form
+          <m.form
             key="phone"
             {...slide}
             noValidate
@@ -79,9 +79,9 @@ export function PhoneCodeSteps({ flow, sendLabel = 'Send code' }: { flow: PhoneS
             <Button type="submit" fullWidth loading={flow.sending} disabled={flow.locked}>
               {sendLabel}
             </Button>
-          </motion.form>
+          </m.form>
         ) : (
-          <motion.div key="code" {...slide} className="flex flex-col gap-5">
+          <m.div key="code" {...slide} className="flex flex-col gap-5">
             <p className="type-body-md text-text">
               Enter the 6-digit code we sent to{' '}
               <span className="type-mono whitespace-nowrap">{flow.maskedPhone}</span>
@@ -135,7 +135,7 @@ export function PhoneCodeSteps({ flow, sendLabel = 'Send code' }: { flow: PhoneS
                 Use a different number
               </Button>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </>

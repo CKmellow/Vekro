@@ -1,5 +1,5 @@
 import { ArrowLeft, CircleCheck, Clock, Info } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { useReturnFlow, type ReturnPanel } from '@/controllers/useReturnFlow'
@@ -150,7 +150,7 @@ export function ReturnFlowPage() {
 
         <div aria-live="polite">
           <AnimatePresence mode="wait" initial={false}>
-            <motion.section
+            <m.section
               key={panel.title}
               aria-label="Where your return stands"
               initial={reduce ? false : { opacity: 0 }}
@@ -178,7 +178,7 @@ export function ReturnFlowPage() {
                   "{panel.quote}"
                 </blockquote>
               )}
-            </motion.section>
+            </m.section>
           </AnimatePresence>
         </div>
 

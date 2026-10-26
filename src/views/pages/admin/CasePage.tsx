@@ -1,5 +1,5 @@
 import { ArrowLeft, Phone } from 'lucide-react'
-import { motion, useReducedMotion } from 'motion/react'
+import { m, useReducedMotion } from 'motion/react'
 import { Link } from 'react-router'
 import { REASON_MAX, useAdminCase } from '@/controllers/useAdminCase'
 import { cn } from '@/lib/cn'
@@ -271,7 +271,7 @@ export function CasePage() {
               )}
 
               {p.decision === 'split' && (
-                <motion.div
+                <m.div
                   initial={reduce ? false : { opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   transition={{ duration: reduce ? 0 : duration.state }}
@@ -322,7 +322,7 @@ export function CasePage() {
                       {p.errors.split}
                     </p>
                   )}
-                </motion.div>
+                </m.div>
               )}
 
               <div className="flex flex-col gap-1">

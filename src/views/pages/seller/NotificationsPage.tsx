@@ -9,7 +9,7 @@ import {
   Truck,
   type LucideIcon,
 } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { Link } from 'react-router'
 import {
   useNotificationsPage,
@@ -37,8 +37,7 @@ function Row({ row, onOpen }: { row: NotificationRow; onOpen: () => void }) {
   const reduce = useReducedMotion()
   const { Icon, tint } = KINDS[row.kind]
   return (
-    <motion.li
-      layout={!reduce}
+    <m.li
       initial={reduce ? false : { opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reduce ? 0 : duration.state }}
@@ -82,7 +81,7 @@ function Row({ row, onOpen }: { row: NotificationRow; onOpen: () => void }) {
         />
         <ChevronRight aria-hidden="true" className="hidden size-4 shrink-0 text-ink-400 sm:block" />
       </Link>
-    </motion.li>
+    </m.li>
   )
 }
 

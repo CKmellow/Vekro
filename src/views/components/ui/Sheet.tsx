@@ -1,5 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import type { ReactNode } from 'react'
 import { duration, spring } from '@/lib/motion'
 
@@ -22,7 +22,7 @@ export function Sheet({ open, onOpenChange, title, description, children, footer
         {open && (
           <Dialog.Portal forceMount>
             <Dialog.Overlay asChild forceMount>
-              <motion.div
+              <m.div
                 className="fixed inset-0 z-40 bg-scrim"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -31,7 +31,7 @@ export function Sheet({ open, onOpenChange, title, description, children, footer
               />
             </Dialog.Overlay>
             <Dialog.Content asChild forceMount {...(description ? {} : { 'aria-describedby': undefined })}>
-              <motion.div
+              <m.div
                 className="fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[90dvh] w-full max-w-lg flex-col gap-4 rounded-t-xl bg-surface px-6 pt-3 pb-[max(24px,env(safe-area-inset-bottom))] shadow-3 focus:outline-none"
                 initial={reduce ? false : { y: '100%' }}
                 animate={{ y: 0 }}
@@ -49,7 +49,7 @@ export function Sheet({ open, onOpenChange, title, description, children, footer
                 </div>
                 <div className="-mx-1 overflow-y-auto px-1">{children}</div>
                 {footer && <div className="flex flex-col gap-2 sm:flex-row-reverse">{footer}</div>}
-              </motion.div>
+              </m.div>
             </Dialog.Content>
           </Dialog.Portal>
         )}

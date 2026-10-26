@@ -1,6 +1,6 @@
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import { TriangleAlert } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { duration, spring } from '@/lib/motion'
 import type { ReactNode } from 'react'
 import { Button, type ButtonVariant } from './Button'
@@ -50,7 +50,7 @@ export function ConfirmDialog({
         {open && (
           <AlertDialog.Portal forceMount>
             <AlertDialog.Overlay asChild forceMount>
-              <motion.div
+              <m.div
                 className="fixed inset-0 z-40 bg-scrim"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -60,7 +60,7 @@ export function ConfirmDialog({
             </AlertDialog.Overlay>
             <div className="fixed inset-0 z-50 grid place-items-center p-4">
               <AlertDialog.Content asChild forceMount>
-                <motion.div
+                <m.div
                   className="flex w-full max-w-md flex-col gap-4 rounded-lg bg-surface p-6 shadow-3 focus:outline-none"
                   initial={reduce ? false : { y: 24, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -92,7 +92,7 @@ export function ConfirmDialog({
                       {confirmLabel}
                     </Button>
                   </div>
-                </motion.div>
+                </m.div>
               </AlertDialog.Content>
             </div>
           </AlertDialog.Portal>

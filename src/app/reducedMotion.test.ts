@@ -28,7 +28,7 @@ describe('reduced motion', () => {
 
   it('gives every motion component its own fallback', () => {
     const missing = files
-      .filter((f) => /from 'motion\/react'/.test(f.text) && /<motion\.|animate=/.test(f.text))
+      .filter((f) => /from 'motion\/react'/.test(f.text) && /<m\.|<motion\.|animate=/.test(f.text))
       .filter((f) => !/useReducedMotion|reduce/.test(f.text))
       .map((f) => f.path)
     expect(missing).toEqual([])

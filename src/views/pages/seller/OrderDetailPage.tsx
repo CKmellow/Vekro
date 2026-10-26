@@ -15,7 +15,7 @@ import {
   Truck,
   type LucideIcon,
 } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useSellerOrder, type ActionPanel, type PayoutLine } from '@/controllers/useSellerOrder'
@@ -172,7 +172,7 @@ export function OrderDetailPage() {
 
       <div aria-live="polite">
         <AnimatePresence mode="wait" initial={false}>
-          <motion.section
+          <m.section
             key={panel.title}
             aria-label="What to do now"
             initial={reduce ? false : { opacity: 0 }}
@@ -203,7 +203,7 @@ export function OrderDetailPage() {
               )}
             </div>
             {action && <div className="hidden lg:block">{actionButton(false)}</div>}
-          </motion.section>
+          </m.section>
         </AnimatePresence>
       </div>
 

@@ -8,7 +8,7 @@ import {
   Coins,
   type LucideIcon,
 } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { useEffect } from 'react'
 import { Link } from 'react-router'
 import { NOTE_MAX, REASON_MAX, useReturnCase, type CasePanel } from '@/controllers/useReturnCase'
@@ -129,7 +129,7 @@ export function ReturnCasePage() {
     <div className="flex flex-col gap-4 lg:sticky lg:top-24">
       <div aria-live="polite">
         <AnimatePresence mode="wait" initial={false}>
-          <motion.section
+          <m.section
             key={panel.title}
             aria-label="What to do now"
             initial={reduce ? false : { opacity: 0 }}
@@ -217,7 +217,7 @@ export function ReturnCasePage() {
             {p.can.choose && !p.choice && (
               <p className="type-body-sm text-text-muted">Pick an option first.</p>
             )}
-          </motion.section>
+          </m.section>
         </AnimatePresence>
       </div>
 

@@ -31,6 +31,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run test:coverage
       - run: npm run build
+      - name: Bundle budget (buyer pages)
+        run: npm run budget
 
   e2e:
     name: End-to-end (Playwright, real backend)

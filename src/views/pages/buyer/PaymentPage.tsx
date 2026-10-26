@@ -1,5 +1,5 @@
 import { ChevronDown, Copy, ExternalLink, X } from 'lucide-react'
-import { motion, useReducedMotion } from 'motion/react'
+import { m, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router'
 import { usePaymentPage, type PaymentVariant } from '@/controllers/usePaymentPage'
@@ -35,7 +35,7 @@ const NOT_THROUGH: StatusView = { label: "Payment didn't go through", tone: 'cor
 function PhoneIllustration({ amount }: { amount: string }) {
   const reduce = useReducedMotion()
   return (
-    <motion.svg
+    <m.svg
       aria-hidden="true"
       viewBox="0 0 120 180"
       className="mx-auto h-36 w-24"
@@ -60,7 +60,7 @@ function PhoneIllustration({ amount }: { amount: string }) {
         <circle key={i} cx={42 + i * 12} cy="94" r="3.5" className="fill-emerald-600" />
       ))}
       <rect x="44" y="134" width="32" height="10" rx="5" className="fill-emerald-700" />
-    </motion.svg>
+    </m.svg>
   )
 }
 

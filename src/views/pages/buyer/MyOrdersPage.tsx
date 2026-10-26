@@ -1,5 +1,5 @@
 import { LogOut, Package, Search } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { Link, Navigate } from 'react-router'
 import { useMyOrders, type BuyerOrderCard } from '@/controllers/useMyOrders'
 import { cn } from '@/lib/cn'
@@ -172,7 +172,7 @@ export function MyOrdersPage() {
 
       {p.state === 'ready' && (
         <AnimatePresence mode="wait" initial={false}>
-          <motion.ul
+          <m.ul
             key={`${p.segment}-${p.q}-${p.page}`}
             initial={reduce ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -185,7 +185,7 @@ export function MyOrdersPage() {
                 <OrderCard card={card} serverOffsetMs={p.serverOffsetMs} />
               </li>
             ))}
-          </motion.ul>
+          </m.ul>
         </AnimatePresence>
       )}
       {p.pageCount > 1 && <Pagination page={p.page} pageCount={p.pageCount} onPageChange={p.setPage} />}

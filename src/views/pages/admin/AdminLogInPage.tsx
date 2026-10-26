@@ -1,5 +1,5 @@
 import { ShieldCheck } from 'lucide-react'
-import { motion, useReducedMotion } from 'motion/react'
+import { m, useReducedMotion } from 'motion/react'
 import { Controller } from 'react-hook-form'
 import { Link } from 'react-router'
 import { useLogIn, type LogInBanner } from '@/controllers/useLogIn'
@@ -39,7 +39,7 @@ export function AdminLogInPage() {
         aria-hidden="true"
         className="pointer-events-none absolute -right-40 -bottom-40 size-[36rem] rounded-full bg-plum-700/30 blur-3xl"
       />
-      <motion.main
+      <m.main
         initial={reduce ? false : { opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: reduce ? 0 : duration.state }}
@@ -105,7 +105,7 @@ export function AdminLogInPage() {
           </Button>
         </form>
         <p className="type-body-sm text-center text-dark-text-muted">All actions are logged.</p>
-      </motion.main>
+      </m.main>
     </div>
   )
 }

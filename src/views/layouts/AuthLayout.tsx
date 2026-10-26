@@ -1,5 +1,5 @@
 import { Lock, ShieldCheck, Truck, type LucideIcon } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import type { ReactNode } from 'react'
 import { duration } from '@/lib/motion'
 import { VaultCard, type VaultCardProps } from '../components/domain/VaultCard'
@@ -53,7 +53,7 @@ export function AuthLayout({ headline, lead, benefits = false, vault, children }
         )}
         <div className="mt-10 hidden max-w-md lg:mb-auto lg:block" aria-hidden="true">
           <AnimatePresence mode="wait" initial={false}>
-            <motion.div
+            <m.div
               key={vault.status.label}
               initial={reduce ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -61,7 +61,7 @@ export function AuthLayout({ headline, lead, benefits = false, vault, children }
               transition={{ duration: duration.state }}
             >
               <VaultCard {...vault} className="border border-emerald-glow/15" />
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
       </section>

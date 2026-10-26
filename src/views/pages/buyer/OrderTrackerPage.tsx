@@ -11,7 +11,7 @@ import {
   ShieldCheck,
   Truck,
 } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { useOrderTracker, type NextStep } from '@/controllers/useOrderTracker'
@@ -54,7 +54,7 @@ function NextStepCard({ step, offsetMs }: { step: NextStep; offsetMs: number }) 
         : ICONS[step.tone]
   return (
     <AnimatePresence mode="wait" initial={false}>
-      <motion.section
+      <m.section
         key={step.title}
         aria-label="Next step"
         initial={reduce ? false : { opacity: 0 }}
@@ -79,7 +79,7 @@ function NextStepCard({ step, offsetMs }: { step: NextStep; offsetMs: number }) 
             label={step.deadline.label}
           />
         )}
-      </motion.section>
+      </m.section>
     </AnimatePresence>
   )
 }
@@ -263,7 +263,7 @@ export function OrderTrackerPage() {
       />
       <AnimatePresence>
         {dock && (
-          <motion.div
+          <m.div
             key={dock.label}
             initial={reduce ? false : { y: 80 }}
             animate={{ y: 0 }}
@@ -279,7 +279,7 @@ export function OrderTrackerPage() {
                 {dock.label}
               </Button>
             </ActionDock>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>
