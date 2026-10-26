@@ -102,3 +102,13 @@ jobs:
             playwright-report
             test-results
           retention-days: 7
+
+  image:
+    name: Web image (build and nginx config check)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t vekro-web:ci .
+      - name: nginx config renders and is valid
+        run: docker run --rm -e API_UPSTREAM=http://api.example.invalid:8000 vekro-web:ci sh -c '/docker-entrypoint.d/20-envsubst-on-templates.sh && nginx -t'
+
