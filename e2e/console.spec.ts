@@ -53,7 +53,7 @@ test('support resolves an escalated return from the console and the buyer is ref
     ((await dialog.getByText(/^Type D-[A-Z0-9]{4} to confirm$/).textContent()) ?? '').split(' ')[1] ?? ''
   await dialog.getByLabel(/Type .* to confirm/).fill(caseId)
   await dialog.getByRole('button', { name: 'Confirm and execute' }).click()
-  await expect(admin.getByText('Decision recorded. Payouts are on their way.')).toBeVisible()
+  await expect(admin.getByText('Decision recorded. Payouts are on their way.', { exact: true })).toBeVisible()
 
   // B3: the buyer sees the refund.
   const buyer = await buyerContext.newPage()
