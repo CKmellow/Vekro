@@ -92,7 +92,10 @@ export function SellerLayout({
   return (
     <div className="min-h-dvh lg:pl-66">
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 hidden w-66 flex-col gap-6 bg-emerald-950 p-4 text-sand-0 lg:flex">
+      <aside
+        aria-label="Seller menu"
+        className="fixed inset-y-0 left-0 hidden w-66 flex-col gap-6 bg-emerald-950 p-4 text-sand-0 lg:flex"
+      >
         <VekroMark className="px-2 pt-2" />
         <nav aria-label="Seller" className="flex flex-col gap-1">
           {items.map(({ to, label, Icon, badge, end }) => (
@@ -139,6 +142,7 @@ export function SellerLayout({
           <p className="type-title flex-1 truncate lg:hidden">Habari, {name.split(' ')[0]}</p>
           <form
             role="search"
+            aria-label="Search orders"
             className="hidden flex-1 lg:block"
             onSubmit={(e) => {
               e.preventDefault()

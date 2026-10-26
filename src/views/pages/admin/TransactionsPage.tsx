@@ -29,6 +29,7 @@ export function TransactionsPage() {
 
       <form
         role="search"
+        aria-label="Search and filter orders"
         onSubmit={(e) => {
           e.preventDefault()
           p.submitSearch()

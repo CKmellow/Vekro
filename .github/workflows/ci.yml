@@ -57,6 +57,9 @@ jobs:
       ALEMBIC_DATABASE_URL: postgresql+psycopg://vekro:vekro@localhost:5432/vekro
       # B8 e2e reads the SMS sign-in code from the API (never enabled in production).
       PHONE_CODE_DEV_ECHO: 'true'
+      # A throwaway support admin for the console e2e (created below with the backend's CLI).
+      E2E_ADMIN_PHONE: '+254700000001'
+      E2E_ADMIN_PASSWORD: ci-admin-password-1
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -74,6 +77,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           alembic upgrade head
+          VEKRO_ADMIN_PASSWORD="$E2E_ADMIN_PASSWORD" python -m app.cli create-admin --phone "$E2E_ADMIN_PHONE" --name "CI Support"
           nohup uvicorn app.main:app --host 127.0.0.1 --port 8000 > ../backend.log 2>&1 &
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/health && exit 0; sleep 1; done
           cat ../backend.log; exit 1

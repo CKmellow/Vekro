@@ -30,7 +30,10 @@ export function AuthLayout({ headline, lead, benefits = false, vault, children }
   const reduce = useReducedMotion()
   return (
     <div className="min-h-dvh bg-background lg:grid lg:grid-cols-[55fr_45fr]">
-      <section className="bg-vault relative overflow-hidden px-5 pt-6 pb-16 text-sand-0 lg:flex lg:flex-col lg:px-14 lg:py-12">
+      <section
+        aria-label="About Vekro"
+        className="bg-vault relative overflow-hidden px-5 pt-6 pb-16 text-sand-0 lg:flex lg:flex-col lg:px-14 lg:py-12"
+      >
         <VekroMark className="text-sand-0" />
         <div className="mt-6 flex max-w-xl flex-col gap-3 lg:mt-auto lg:gap-5">
           <h1 className="type-display-lg lg:type-display-xl text-balance">{headline}</h1>

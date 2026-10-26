@@ -334,7 +334,7 @@ export function DashboardPage() {
               />
             </section>
 
-            <aside className="flex flex-col gap-4 lg:col-span-4">
+            <aside aria-label="Shortcuts" className="flex flex-col gap-4 lg:col-span-4">
               {p.payouts && (
                 <Card className="flex flex-col gap-3">
                   <h2 className="type-title text-text">Payouts</h2>
