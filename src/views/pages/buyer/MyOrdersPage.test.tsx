@@ -35,7 +35,7 @@ function renderAt(url = '/buyer/orders', role: string | null = 'buyer') {
   const router = createMemoryRouter(
     [
       { path: '/buyer/orders', element: <MyOrdersPage /> },
-      { path: '/buyer/sign-in', element: <h1>Sign in</h1> },
+      { path: '/login', element: <h1>Sign in</h1> },
       { path: '/order/:id', element: <h1>Order page</h1> },
       { path: '/', element: <h1>Home</h1> },
     ],
@@ -116,7 +116,7 @@ describe('B9 my orders', () => {
   it('sends signed-out visitors to sign in and back', async () => {
     const { router } = renderAt('/buyer/orders', null)
     await screen.findByRole('heading', { name: 'Sign in' })
-    expect(router.state.location.search).toBe('?returnTo=%2Fbuyer%2Forders')
+    expect(router.state.location.search).toBe('?method=code&returnTo=%2Fbuyer%2Forders')
   })
 
   it('opens an own order by reference and refuses one that is not theirs', async () => {

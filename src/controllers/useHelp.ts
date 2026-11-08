@@ -40,7 +40,7 @@ export function useHelp() {
     isOpen: (group: string, id: string) => open[group] === id,
     toggle: (group: string, id: string) =>
       setOpen((o) => ({ ...o, [group]: o[group] === id ? undefined : id })),
-    ordersTo: buyer ? '/buyer/orders' : '/buyer/sign-in',
+    ordersTo: buyer ? '/buyer/orders' : '/login?method=code',
     contacts: supportContacts(),
     hours: supportHours(),
     reportHref: reportPageHref(window.location.href),

@@ -33,9 +33,9 @@ test('support resolves an escalated return from the console and the buyer is ref
     reference: string
   }
 
-  // A1: log in to the console.
+  // Staff log in on the one log in page and land in the console.
   const admin = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage()
-  await admin.goto('/admin/login')
+  await admin.goto('/login')
   await admin.getByLabel('Phone number').fill((phone ?? '').replace(/^\+254/, ''))
   await admin.getByLabel('Password', { exact: true }).fill(password ?? '')
   await admin.getByRole('button', { name: 'Log in' }).click()

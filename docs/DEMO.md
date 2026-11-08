@@ -25,8 +25,8 @@ The seed prints the order references. Use three browser profiles (or one normal 
 | Who | Log in | Phone |
 | --- | --- | --- |
 | Seller, Amina Gadgets | `/login` | 722 118 904 |
-| Buyer, Brian Otieno | `/buyer/sign-in` (SMS code; with `PHONE_CODE_DEV_ECHO` the code is in the network response) or the B1 card | 712 345 678 |
-| Support, Ada Admin | `/admin/login` | 700 000 103 |
+| Buyer, Brian Otieno | `/login`, "Text me a code" (SMS code; with `PHONE_CODE_DEV_ECHO` the code is in the network response) or the B1 card | 712 345 678 |
+| Support, Ada Admin | `/login` | 700 000 103 |
 
 ## 1. The seller's day (S4, S5, S6), 3 minutes
 

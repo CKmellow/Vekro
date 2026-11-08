@@ -5,8 +5,10 @@ import { freshPhone, paidOrder, signUpVia } from './support'
 // request-code response carries the code.
 test('a buyer signs in with an SMS code and no password', async ({ page }) => {
   const national = freshPhone()
+  // The old address still works: it lands on the one log in, on the SMS code.
   await page.goto('/buyer/sign-in')
-  await expect(page.getByRole('heading', { name: 'See all your orders' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Log in to Vekro' })).toBeVisible()
+  await expect(page.getByRole('radio', { name: 'Text me a code' })).toBeChecked()
 
   await page.getByLabel('Phone number').fill(national)
   const [sent] = await Promise.all([

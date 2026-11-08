@@ -103,9 +103,6 @@ export function PublicLayout({ children }: { children: ReactNode }) {
             <Link to="/register" className="hover:text-text">
               Start selling
             </Link>
-            <Link to="/admin/login" className="type-body-sm hover:text-text">
-              Support console
-            </Link>
           </nav>
           <p className="type-body-sm text-text-muted">© 2026 Vekro</p>
         </div>

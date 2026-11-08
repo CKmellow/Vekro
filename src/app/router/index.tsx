@@ -1,6 +1,6 @@
 import { createBrowserRouter, type RouteObject } from 'react-router'
 import { LoadingPage, NotFoundPage } from '@/views/pages/shared/system'
-import { RequireRole } from './guards'
+import { RequireRole, ToLogIn } from './guards'
 import { RouteError } from './RouteError'
 import { BuyerShell } from './shells'
 
@@ -65,19 +65,20 @@ export const routes: RouteObject[] = [
             lazy: page(() => import('@/views/pages/buyer/TimelinePage'), 'TimelinePage'),
           },
           {
-            path: '/buyer/sign-in',
-            lazy: page(() => import('@/views/pages/buyer/BuyerSignInPage'), 'BuyerSignInPage'),
-          },
-          {
             path: '/buyer/orders',
             lazy: page(() => import('@/views/pages/buyer/MyOrdersPage'), 'MyOrdersPage'),
           },
         ],
       },
 
+      // One log in for every role; the old addresses redirect to it.
+      // Its own chunk: buyers arriving from an SMS link load only the log in.
+      { path: '/login', lazy: page(() => import('@/views/pages/shared/LogInPage'), 'LogInPage') },
+      { path: '/admin/login', element: <ToLogIn /> },
+      { path: '/buyer/sign-in', element: <ToLogIn method="code" /> },
+
       // Seller (public)
       { path: '/register', lazy: page(seller, 'S1') },
-      { path: '/login', lazy: page(seller, 'S2') },
       { path: '/forgot-password', lazy: page(seller, 'ForgotPassword') },
 
       // Seller (signed in)
@@ -106,7 +107,6 @@ export const routes: RouteObject[] = [
       },
 
       // Admin
-      { path: '/admin/login', lazy: page(admin, 'A1') },
       {
         element: <RequireRole allow="admin" />,
         children: [

@@ -36,7 +36,7 @@ const DEADLINE_LABEL: Record<Deadline['kind'], string> = {
 }
 
 export const PAGE_SIZE = 20
-const SIGN_IN = `/buyer/sign-in?returnTo=${encodeURIComponent('/buyer/orders')}`
+const SIGN_IN = `/login?method=code&returnTo=${encodeURIComponent('/buyer/orders')}`
 
 export interface BuyerOrderCard {
   id: string

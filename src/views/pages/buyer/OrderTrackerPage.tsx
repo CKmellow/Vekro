@@ -145,7 +145,7 @@ export function OrderTrackerPage() {
         body="Check the link in your SMS, or log in with the phone you paid with."
         action={
           <Link
-            to={`/buyer/sign-in?returnTo=${encodeURIComponent(`/order/${orderId}`)}`}
+            to={`/login?method=code&returnTo=${encodeURIComponent(`/order/${orderId}`)}`}
             className="type-title text-primary"
           >
             Sign in

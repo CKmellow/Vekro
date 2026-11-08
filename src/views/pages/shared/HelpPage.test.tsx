@@ -58,7 +58,7 @@ describe('HelpPage', () => {
     renderPage()
     expect(screen.getByRole('link', { name: 'See all your orders' })).toHaveAttribute(
       'href',
-      '/buyer/sign-in',
+      '/login?method=code',
     )
   })
 

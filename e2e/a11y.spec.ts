@@ -22,8 +22,7 @@ test('public pages have no axe violations', async ({ browser }) => {
     '/login',
     '/register',
     '/forgot-password',
-    '/buyer/sign-in',
-    '/admin/login',
+    '/login?method=code',
     '/nope',
   ])
 })
