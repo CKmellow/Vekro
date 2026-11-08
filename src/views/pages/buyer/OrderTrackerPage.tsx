@@ -12,7 +12,7 @@ import {
   Truck,
 } from 'lucide-react'
 import { AnimatePresence, m, useReducedMotion } from 'motion/react'
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { useOrderTracker, type NextStep } from '@/controllers/useOrderTracker'
 import { cn } from '@/lib/cn'
@@ -32,6 +32,9 @@ import { MoneyText } from '../../components/ui/MoneyText'
 import { Skeleton, SkeletonGroup } from '../../components/ui/Skeleton'
 import { Tabs } from '../../components/ui/Tabs'
 import { TimelinePanel } from './timeline/TimelinePanel'
+
+// Checked after the page shows: the verifier and its hashing load on their own.
+const VerifiedRecordSection = lazy(() => import('../shared/VerifiedRecordSection'))
 
 const TONES: Record<NextStep['tone'], { box: string; icon: string }> = {
   emerald: { box: 'bg-emerald-50', icon: 'text-emerald-700' },
@@ -250,6 +253,9 @@ export function OrderTrackerPage() {
                     />
                   </Card>
                 )}
+                <Suspense fallback={null}>
+                  <VerifiedRecordSection orderId={order.id} version={order.status.label} />
+                </Suspense>
                 <p className="type-body-sm text-center">
                   <Link to="/help" className="font-semibold text-primary">
                     Get help

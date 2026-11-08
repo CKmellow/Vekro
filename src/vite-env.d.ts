@@ -8,6 +8,11 @@ interface ImportMetaEnv {
   readonly VITE_SUPPORT_WHATSAPP?: string
   readonly VITE_SUPPORT_EMAIL?: string
   readonly VITE_SUPPORT_HOURS?: string
+  // The public AnchorRegistry the "Verified record" panel checks (src/models/api/registry.ts); the
+  // panel is hidden unless all three are set.
+  readonly VITE_ANCHOR_CHAIN_ID?: string
+  readonly VITE_ANCHOR_REGISTRY_ADDRESS?: string
+  readonly VITE_ANCHOR_RPC_URL?: string
 }
 
 interface ImportMeta {

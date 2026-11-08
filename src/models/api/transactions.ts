@@ -306,3 +306,10 @@ export async function getPublicOrder(key: string, signal?: AbortSignal): Promise
     stateGroup: raw.state_group,
   }
 }
+
+export type VerificationBundle = Schemas['TransactionVerificationResponse']
+
+/** The order's tamper-evident record: data only; the browser decides (domain/verification). */
+export async function getVerification(id: string, signal?: AbortSignal): Promise<VerificationBundle> {
+  return api.get('/transactions/{transaction_id}/verification', { path: { transaction_id: id }, signal })
+}

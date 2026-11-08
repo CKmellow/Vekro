@@ -19,9 +19,26 @@ export const CSP_DIRECTIVES: Record<string, string[]> = {
   'form-action': ["'self'"],
 }
 
-export const CSP = Object.entries(CSP_DIRECTIVES)
-  .map(([name, values]) => `${name} ${values.join(' ')}`)
-  .join('; ')
+/**
+ * The policy for a build. The anchoring RPC (VITE_ANCHOR_RPC_URL, the "Verified record" panel) is
+ * the one cross-origin request the app makes, so its origin joins connect-src when it is set.
+ */
+export function cspFor(anchorRpcUrl?: string): string {
+  let rpcOrigin: string | null = null
+  try {
+    rpcOrigin = anchorRpcUrl ? new URL(anchorRpcUrl).origin : null
+  } catch {
+    rpcOrigin = null
+  }
+  return Object.entries(CSP_DIRECTIVES)
+    .map(([name, values]) => {
+      const all = name === 'connect-src' && rpcOrigin ? [...values, rpcOrigin] : values
+      return `${name} ${all.join(' ')}`
+    })
+    .join('; ')
+}
+
+export const CSP = cspFor()
 
 /** Header-only additions for the deployment (M17 #134). */
 export const CSP_HEADER = `${CSP}; frame-ancestors 'none'; upgrade-insecure-requests`

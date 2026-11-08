@@ -930,6 +930,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/anchoring/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Anchoring worker status (admin only)
+         * @description Whether anchoring is enabled, the chain and registry, the last confirmed batch, the batch in flight, how many recorded events still wait for a batch, and whether anchoring has halted because the chain disagreed with the database. Never shows the anchoring key.
+         */
+        get: operations["admin_anchoring_status_admin_anchoring_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/transactions/{transaction_id}/verification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Verification data for an order (buyer, seller or admin)
+         * @description Everything needed to check the order's tamper-evident record independently: each event's canonical payload, salt, hashes and Merkle proof in chain order, and the live status and amount. Data only: the verdict is the verifier's, after reading each batch root from the AnchorRegistry. See docs/frontend-verification-contract.md.
+         */
+        get: operations["get_transaction_verification_transactions__transaction_id__verification_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/anchoring/batches/{batch_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * An anchored batch (public)
+         * @description A batch's root, sequence range, status and anchoring transaction. No personal data. Rate-limited per client.
+         */
+        get: operations["get_public_batch_anchoring_batches__batch_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sellers/{seller_id}/track-record": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A seller's verifiable track record (public)
+         * @description Each completed sale as a public, anchored event (seller, outcome, amount band; no buyer or order) with its Merkle proof, so anyone can check the count against the AnchorRegistry. Rate-limited per client.
+         */
+        get: operations["get_seller_track_record_sellers__seller_id__track_record_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/simulated-custody/collections/force-complete": {
         parameters: {
             query?: never;
@@ -1028,6 +1108,26 @@ export interface paths {
          * @description Accept Pesapal callback notifications and always confirm funding finality through server-side transaction status inquiry. Callback payload fields are never trusted as final state by themselves.
          */
         post: operations["pesapal_collection_callback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payments/mpesa/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Daraja STK callback
+         * @description Where Safaricom posts the M-Pesa Express result (DARAJA_CALLBACK_URL). The callback is unsigned, so it is only a trigger: Vekro confirms the payment with an STK query before locking the order and recording funding. Always answers Accepted, as Daraja expects.
+         */
+        post: operations["daraja_stk_callback_payments_mpesa_callback_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1803,6 +1903,104 @@ export interface components {
             /** Average Dispatch Seconds */
             average_dispatch_seconds: number | null;
         };
+        /** AnchorBatchSummary */
+        AnchorBatchSummary: {
+            /** Batch Id */
+            batch_id: number;
+            /**
+             * Status
+             * @description built, submitted, confirmed, failed_retryable or halted.
+             */
+            status: string;
+            /**
+             * Root
+             * @description 0x-prefixed keccak Merkle root.
+             */
+            root: string;
+            /** First Seq */
+            first_seq: number;
+            /** Last Seq */
+            last_seq: number;
+            /** Leaf Count */
+            leaf_count: number;
+            /**
+             * Tx Hash
+             * @description Latest anchoring transaction hash.
+             */
+            tx_hash?: string | null;
+            /** Attempts */
+            attempts: number;
+            /** Last Error */
+            last_error?: string | null;
+            /** Block Number */
+            block_number?: number | null;
+            /** Submitted At */
+            submitted_at?: string | null;
+            /** Confirmed At */
+            confirmed_at?: string | null;
+        };
+        /** AnchoringStatusResponse */
+        AnchoringStatusResponse: {
+            /**
+             * Enabled
+             * @description Whether the worker is allowed to submit (ANCHOR_ENABLED).
+             */
+            enabled: boolean;
+            /** Chain Id */
+            chain_id: number;
+            /**
+             * Network
+             * @description anvil, base-sepolia or base.
+             */
+            network?: string | null;
+            /** Registry Address */
+            registry_address?: string | null;
+            /**
+             * Anchorer Address
+             * @description Address of the anchoring key. The key itself is never shown.
+             */
+            anchorer_address?: string | null;
+            /**
+             * Halted
+             * @description A batch disagreed with the chain; anchoring has stopped.
+             */
+            halted: boolean;
+            /** Halt Reason */
+            halt_reason?: string | null;
+            last_confirmed?: components["schemas"]["AnchorBatchSummary"] | null;
+            in_flight?: components["schemas"]["AnchorBatchSummary"] | null;
+            /** Confirmed Batches */
+            confirmed_batches: number;
+            /**
+             * Unanchored Events
+             * @description Recorded events not yet in a batch.
+             */
+            unanchored_events: number;
+            /** Oldest Unanchored At */
+            oldest_unanchored_at?: string | null;
+            /**
+             * Payouts Gated
+             * @description Payouts wait for their authorisation to be anchored (ANCHOR_GATE_PAYOUTS).
+             */
+            payouts_gated: boolean;
+            /**
+             * Payouts Waiting For Anchor
+             * @description Queued payouts held until their authorisation is anchored or readable.
+             */
+            payouts_waiting_for_anchor: number;
+            /** Oldest Payout Waiting Since */
+            oldest_payout_waiting_since?: string | null;
+            /**
+             * Payouts Halted
+             * @description Payouts stopped because they disagree with their anchored authorisation.
+             */
+            payouts_halted: number;
+            /**
+             * Server Time
+             * Format: date-time
+             */
+            server_time: string;
+        };
         /**
          * BuyerReconfirmationRequest
          * @description Buyer response after seller remediation action.
@@ -2149,6 +2347,36 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+        };
+        /** EventAnchorResponse */
+        EventAnchorResponse: {
+            /** Batch Id */
+            batch_id: number;
+            /**
+             * Seq
+             * @description Gapless global position of the event.
+             */
+            seq: number;
+            /** Leaf Index */
+            leaf_index: number;
+            /** Leaf Count */
+            leaf_count: number;
+            /**
+             * Batch Root
+             * @description Vekro's copy of the batch root. A verifier reads the root from the registry.
+             */
+            batch_root: string;
+            /** Batch Status */
+            batch_status: string;
+            /** Tx Hash */
+            tx_hash?: string | null;
+            /** Block Number */
+            block_number?: number | null;
+            /**
+             * Proof
+             * @description RFC 6962 inclusion proof, leaf upwards.
+             */
+            proof: components["schemas"]["ProofStepResponse"][];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -2845,6 +3073,49 @@ export interface components {
              */
             code: string;
         };
+        /** ProofStepResponse */
+        ProofStepResponse: {
+            /**
+             * Sibling
+             * @description 0x-prefixed 32-byte sibling hash.
+             */
+            sibling: string;
+            /**
+             * Side
+             * @description Where the sibling sits.
+             * @enum {string}
+             */
+            side: "left" | "right";
+        };
+        /** PublicBatchResponse */
+        PublicBatchResponse: {
+            /** Batch Id */
+            batch_id: number;
+            /** Root */
+            root: string;
+            /** Prev Root */
+            prev_root: string;
+            /** First Seq */
+            first_seq: number;
+            /** Last Seq */
+            last_seq: number;
+            /** Leaf Count */
+            leaf_count: number;
+            /** Status */
+            status: string;
+            /** Tx Hash */
+            tx_hash?: string | null;
+            /** Block Number */
+            block_number?: number | null;
+            /** Confirmed At */
+            confirmed_at?: string | null;
+            /** Chain Id */
+            chain_id: number;
+            /** Network */
+            network?: string | null;
+            /** Registry Address */
+            registry_address: string;
+        };
         /**
          * PublicOrderSummary
          * @description What an order link shows before the buyer verifies their phone: no personal data.
@@ -3136,6 +3407,32 @@ export interface components {
             open_issues: number;
             /** @description The held order whose 24-hour hold ends first, if any. */
             next_release: components["schemas"]["OrderRef"] | null;
+            /**
+             * Server Time
+             * Format: date-time
+             */
+            server_time: string;
+        };
+        /** SellerTrackRecordResponse */
+        SellerTrackRecordResponse: {
+            /** Seller Id */
+            seller_id: string;
+            chain: components["schemas"]["VerificationChainResponse"];
+            /**
+             * Completed Sales
+             * @description Completed sales in Vekro's records (unverified).
+             */
+            completed_sales: number;
+            /**
+             * Recorded Sales
+             * @description Of those, how many have a track-record event.
+             */
+            recorded_sales: number;
+            /**
+             * Sales
+             * @description Newest first, at most 200: each sale's public payload (seller, outcome, amount band, unlinkable sale_ref) with its proof. Count as verified only the sales whose proof matches the registry root and whose payload names this seller.
+             */
+            sales: components["schemas"]["VerificationEventResponse"][];
             /**
              * Server Time
              * Format: date-time
@@ -3509,6 +3806,32 @@ export interface components {
              */
             updated_at: string;
         };
+        /** TransactionVerificationResponse */
+        TransactionVerificationResponse: {
+            /** Version */
+            version: number;
+            /** Transaction Id */
+            transaction_id: string;
+            /** Reference */
+            reference: string;
+            chain: components["schemas"]["VerificationChainResponse"];
+            current: components["schemas"]["VerificationCurrentResponse"];
+            /**
+             * Events
+             * @description The order's chain, oldest first.
+             */
+            events: components["schemas"]["VerificationEventResponse"][];
+            /**
+             * Linked Events
+             * @description Provider events from the global chain that this order's chain links to.
+             */
+            linked_events: components["schemas"]["VerificationEventResponse"][];
+            /**
+             * Server Time
+             * Format: date-time
+             */
+            server_time: string;
+        };
         /**
          * UnreadCountResponse
          * @description Unread in-app notifications, for the bell badge.
@@ -3558,6 +3881,59 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** VerificationChainResponse */
+        VerificationChainResponse: {
+            /** Chain Id */
+            chain_id: number;
+            /** Network */
+            network?: string | null;
+            /**
+             * Registry Address
+             * @description Informational. Verifiers use the registry address they were built with.
+             */
+            registry_address?: string | null;
+        };
+        /** VerificationCurrentResponse */
+        VerificationCurrentResponse: {
+            /**
+             * Status
+             * @description Live transaction status, to compare with the last event.
+             */
+            status: string;
+            /**
+             * Amount
+             * @description Live amount as a 2-place decimal string.
+             */
+            amount: string;
+        };
+        /** VerificationEventResponse */
+        VerificationEventResponse: {
+            /** Event Type */
+            event_type: string;
+            /** Schema Version */
+            schema_version: number;
+            /**
+             * Payload
+             * @description Canonical JSON (RFC 8785), exactly as hashed.
+             */
+            payload: string;
+            /** Salt */
+            salt: string;
+            /** Prev Event Hash */
+            prev_event_hash: string;
+            /**
+             * Leaf Hash
+             * @description keccak256(0x00 || salt || prev_event_hash || payload).
+             */
+            leaf_hash: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** @description Null while the event waits for a batch. */
+            anchor?: components["schemas"]["EventAnchorResponse"] | null;
         };
     };
     responses: never;
@@ -5884,6 +6260,175 @@ export interface operations {
             };
         };
     };
+    admin_anchoring_status_admin_anchoring_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnchoringStatusResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated user is not an admin. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_transaction_verification_transactions__transaction_id__verification_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransactionVerificationResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Transaction not found, or the caller is not a party to it. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_public_batch_anchoring_batches__batch_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicBatchResponse"];
+                };
+            };
+            /** @description No such batch. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too many lookups. See Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_seller_track_record_sellers__seller_id__track_record_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seller_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SellerTrackRecordResponse"];
+                };
+            };
+            /** @description No such seller. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too many lookups. See Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     admin_force_complete_collection_admin_simulated_custody_collections_force_complete_post: {
         parameters: {
             query?: never;
@@ -6130,6 +6675,43 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    daraja_stk_callback_payments_mpesa_callback_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
