@@ -52,7 +52,7 @@ export function toOrder(raw: DetailResponse, receivedAt = Date.now()): Order {
     status: raw.status,
     amount: Number(raw.amount),
     viewerRole: raw.viewer_role,
-    simulated: raw.custody_provider === 'simulated',
+    collection: { rail: raw.collection_rail, mode: raw.payment_mode },
     listing: {
       id: raw.listing.id,
       title: raw.listing.title,

@@ -204,9 +204,9 @@ export function PaymentPage() {
           </button>
         </p>
       </div>
-      {order.simulated && (
+      {order.paymentNote && (
         <p className="type-body-sm rounded-md bg-lake-50 px-4 py-3 text-lake-600">
-          Demo payment: Vekro is in test mode, so no real money moves.
+          {order.paymentNote}
         </p>
       )}
 

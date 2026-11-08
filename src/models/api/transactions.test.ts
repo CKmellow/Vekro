@@ -60,7 +60,7 @@ describe('order mapping', () => {
       status: 'awaiting_payment',
       amount: 52000,
       viewerRole: 'buyer',
-      simulated: true,
+      collection: { rail: 'simulated', mode: 'sandbox' },
       listing: { title: 'iPhone 13, 128GB, Midnight', price: 52000, isSerialized: true },
       buyer: { phoneMasked: '+254 712 *** 678' },
       deadlines: { dispatchBy: null, inspectBy: null },
@@ -77,9 +77,19 @@ describe('order mapping', () => {
 
   it('has no payment for the seller and knows real custody', () => {
     const order = toOrder(
-      orderResponse({ payment: null, viewer_role: 'seller', custody_provider: 'econfirm' }),
+      orderResponse({
+        payment: null,
+        viewer_role: 'seller',
+        custody_provider: 'econfirm',
+        collection_rail: 'econfirm',
+        payment_mode: 'live',
+      }),
     )
-    expect(order).toMatchObject({ payment: null, viewerRole: 'seller', simulated: false })
+    expect(order).toMatchObject({
+      payment: null,
+      viewerRole: 'seller',
+      collection: { rail: 'econfirm', mode: 'live' },
+    })
   })
 })
 

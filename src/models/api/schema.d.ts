@@ -3688,6 +3688,20 @@ export interface components {
              */
             payment_method: "mpesa" | "card";
             /**
+             * Collection Rail
+             * @description The rail that collects the money. daraja and pesapal collect into the merchant's account (collection, not third-party escrow); econfirm is third-party custody; simulated moves no money.
+             * @default simulated
+             * @enum {string}
+             */
+            collection_rail: "simulated" | "daraja" | "pesapal" | "econfirm";
+            /**
+             * Payment Mode
+             * @description sandbox: a test payment, no real money moves. live: real money was collected. Show sandbox payments as tests, never as real money.
+             * @default sandbox
+             * @enum {string}
+             */
+            payment_mode: "sandbox" | "live";
+            /**
              * Created At
              * Format: date-time
              */
@@ -3777,6 +3791,20 @@ export interface components {
              * @enum {string}
              */
             payment_method: "mpesa" | "card";
+            /**
+             * Collection Rail
+             * @description The rail that collects the money. daraja and pesapal collect into the merchant's account (collection, not third-party escrow); econfirm is third-party custody; simulated moves no money.
+             * @default simulated
+             * @enum {string}
+             */
+            collection_rail: "simulated" | "daraja" | "pesapal" | "econfirm";
+            /**
+             * Payment Mode
+             * @description sandbox: a test payment, no real money moves. live: real money was collected. Show sandbox payments as tests, never as real money.
+             * @default sandbox
+             * @enum {string}
+             */
+            payment_mode: "sandbox" | "live";
             /**
              * Created At
              * Format: date-time
@@ -3921,6 +3949,20 @@ export interface components {
              * @enum {string}
              */
             payment_method: "mpesa" | "card";
+            /**
+             * Collection Rail
+             * @description The rail that collects the money. daraja and pesapal collect into the merchant's account (collection, not third-party escrow); econfirm is third-party custody; simulated moves no money.
+             * @default simulated
+             * @enum {string}
+             */
+            collection_rail: "simulated" | "daraja" | "pesapal" | "econfirm";
+            /**
+             * Payment Mode
+             * @description sandbox: a test payment, no real money moves. live: real money was collected. Show sandbox payments as tests, never as real money.
+             * @default sandbox
+             * @enum {string}
+             */
+            payment_mode: "sandbox" | "live";
             /**
              * Created At
              * Format: date-time

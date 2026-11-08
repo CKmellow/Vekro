@@ -49,7 +49,7 @@ describe('B2 payment', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('+254 712 *** 678')).toBeInTheDocument()
     expect(screen.getByText('Waiting for payment')).toBeInTheDocument()
-    expect(screen.getByText(/Demo payment/)).toBeInTheDocument()
+    expect(screen.getByText("Test payment via Vekro's simulator: no real money moves.")).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Resend prompt (0:20)' })).toBeDisabled()
   })
 

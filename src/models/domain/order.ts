@@ -18,6 +18,13 @@ export interface PaymentInstruction {
 export type PaymentFailure =
   'cancelled' | 'wrong_pin' | 'insufficient_funds' | 'timeout' | 'provider_error' | 'declined'
 
+export type CollectionRail = 'simulated' | 'daraja' | 'pesapal' | 'econfirm'
+export interface Collection {
+  rail: CollectionRail
+  /** sandbox: a test payment, no real money moves. live: real money was collected. */
+  mode: 'sandbox' | 'live'
+}
+
 /** How the buyer pays: an M-Pesa prompt, or Pesapal's hosted card page. */
 export type PaymentMethod = 'mpesa' | 'card'
 
@@ -79,8 +86,8 @@ export interface Order {
   /** KES, whole shillings. */
   amount: number
   viewerRole: ViewerRole
-  /** Simulated custody: no real money moves, and the screens say so. */
-  simulated: boolean
+  /** How the money is collected and whether it is real (backend #257); see `paymentNote`. */
+  collection: Collection
   listing: {
     id: string
     title: string
