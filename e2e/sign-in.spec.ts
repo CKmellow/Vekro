@@ -70,6 +70,8 @@ test('a seller resets a forgotten password by SMS code and logs in with the new 
 
   await page.goto('/login')
   await page.getByRole('link', { name: 'Forgot password?' }).click()
+  // The log in page has its own phone field: wait for the reset page before typing.
+  await expect(page).toHaveURL(/\/forgot-password$/)
   await page.getByLabel('Phone number').fill(national)
   const [sent] = await Promise.all([
     page.waitForResponse((r) => r.url().endsWith('/api/auth/password/reset/request-code')),
