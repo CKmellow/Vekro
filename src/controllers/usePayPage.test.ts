@@ -36,3 +36,13 @@ describe('B1 view mapping', () => {
     expect(at('archived')).toBe('withdrawn')
   })
 })
+
+describe('B1 verified sales (#280)', () => {
+  it('shows only sales the browser verified, and nothing when there are none', () => {
+    const listing = toListing(listingResponse())
+    expect(toPayListingView(listing).seller.verified).toBeNull()
+    expect(toPayListingView(listing, 0).seller.verified).toBeNull()
+    expect(toPayListingView(listing, 1).seller.verified).toBe('1 sale verified on the public record')
+    expect(toPayListingView(listing, 9).seller.verified).toBe('9 sales verified on the public record')
+  })
+})

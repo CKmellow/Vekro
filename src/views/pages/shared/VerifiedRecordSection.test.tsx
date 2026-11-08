@@ -7,7 +7,7 @@ import { VERIFIED_ORDER, verificationBundle as bundle, verificationTree } from '
 import { VerifiedRecordSection } from './VerifiedRecordSection'
 
 vi.mock('motion/react', async (original) => ({ ...(await original<object>()), useReducedMotion: () => true }))
-vi.mock('@/models/api/registry', async (original) => ({
+vi.mock('@/models/api/registryConfig', async (original) => ({
   ...(await original<object>()),
   registryConfig: () => ({
     chainId: 84532,

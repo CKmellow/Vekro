@@ -72,6 +72,7 @@ export function toListing(response: ListingResponse): Listing {
     status: response.status,
     views: null,
     seller: {
+      id: response.seller_id,
       name: response.seller.name,
       memberSince: response.seller.member_since,
       completedSales: response.seller.completed_sales,

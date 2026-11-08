@@ -74,3 +74,13 @@ export const changePayout = async (input: { mpesaPhone: string; mpesaAccountName
       },
     }),
   )
+
+export type SellerTrackRecord = Schemas['SellerTrackRecordResponse']
+
+/** A seller's completed sales as public, anchored events with proofs (backend #231). */
+export async function getSellerTrackRecord(
+  sellerId: string,
+  signal?: AbortSignal,
+): Promise<SellerTrackRecord> {
+  return api.get('/sellers/{seller_id}/track-record', { path: { seller_id: sellerId }, signal })
+}
