@@ -2,7 +2,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { CSP, CSP_DIRECTIVES, CSP_HEADER } from './csp'
+import { CSP, CSP_DIRECTIVES, CSP_HEADER, cspFor } from './csp'
 
 // M16 #130: guards for the security pass, so regressions fail CI.
 function sources(dir: string): string[] {
@@ -47,5 +47,15 @@ describe('source rules', () => {
     const client = readFileSync('src/models/api/client.ts', 'utf8')
     expect(client).toContain("credentials: 'include'")
     expect(client).toContain('CSRF_HEADER')
+  })
+})
+
+describe('CSP with the anchoring RPC', () => {
+  it('adds only the RPC origin to connect-src', () => {
+    const policy = cspFor('https://sepolia.base.org/some/path?key=x')
+    expect(policy).toContain("connect-src 'self' https://sepolia.base.org;")
+    expect(policy).not.toContain('key=x')
+    expect(cspFor('not a url')).toBe(CSP)
+    expect(cspFor()).toBe(CSP)
   })
 })
