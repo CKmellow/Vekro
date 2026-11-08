@@ -139,7 +139,9 @@ describe('B2 payment', () => {
       payment: paymentResponse({ kind: 'REDIRECT', redirect_url: 'https://pay.example/checkout/1' }),
     })
     renderPayment()
-    expect(await screen.findByRole('heading', { name: 'Continue to secure card checkout' })).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: 'Continue to secure card checkout' }),
+    ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Continue to secure card checkout' })).toHaveAttribute(
       'href',
       'https://pay.example/checkout/1',

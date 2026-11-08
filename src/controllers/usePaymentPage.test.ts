@@ -32,7 +32,11 @@ describe('B2 variant', () => {
       status: 'failed',
       failure_reason: 'declined',
     })
-    expect(paymentVariant(order({ payment }), SENT)).toEqual({ kind: 'failed', reason: 'declined', card: true })
+    expect(paymentVariant(order({ payment }), SENT)).toEqual({
+      kind: 'failed',
+      reason: 'declined',
+      card: true,
+    })
   })
 
   it('succeeds only on the transaction status, never on the prompt', () => {

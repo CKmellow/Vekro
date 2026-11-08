@@ -16,12 +16,7 @@ export interface PaymentInstruction {
 }
 
 export type PaymentFailure =
-  | 'cancelled'
-  | 'wrong_pin'
-  | 'insufficient_funds'
-  | 'timeout'
-  | 'provider_error'
-  | 'declined'
+  'cancelled' | 'wrong_pin' | 'insufficient_funds' | 'timeout' | 'provider_error' | 'declined'
 
 /** How the buyer pays: an M-Pesa prompt, or Pesapal's hosted card page. */
 export type PaymentMethod = 'mpesa' | 'card'

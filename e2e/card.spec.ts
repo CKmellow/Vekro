@@ -26,8 +26,9 @@ test("a card buyer leaves for Pesapal's page and comes back to a page that never
   const buyer = await buyerContext.newPage()
 
   // Pass the real create call through unchanged, noting the order before the page leaves.
-  const seen: { order?: { id: string; reference: string; payment_method: string; payment: { kind: string } } } =
-    {}
+  const seen: {
+    order?: { id: string; reference: string; payment_method: string; payment: { kind: string } }
+  } = {}
   await buyer.route('**/api/transactions', async (route) => {
     const response = await route.fetch()
     if (route.request().method() === 'POST') seen.order = await response.json()
