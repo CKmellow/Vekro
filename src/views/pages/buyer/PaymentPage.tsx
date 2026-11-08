@@ -205,9 +205,7 @@ export function PaymentPage() {
         </p>
       </div>
       {order.paymentNote && (
-        <p className="type-body-sm rounded-md bg-lake-50 px-4 py-3 text-lake-600">
-          {order.paymentNote}
-        </p>
+        <p className="type-body-sm rounded-md bg-lake-50 px-4 py-3 text-lake-600">{order.paymentNote}</p>
       )}
 
       <div aria-live="polite" className="flex flex-col gap-5">
