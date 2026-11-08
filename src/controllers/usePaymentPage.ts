@@ -7,6 +7,7 @@ import { statusView } from '@/models/domain/stateMeta'
 import { useOrder, useResendPayment } from '@/models/queries/orders'
 import { useNow } from './useNow'
 import { useOnline } from './useOnline'
+import { paymentNote } from '@/models/domain/paymentNote'
 
 const POLL_MS = 3000
 /** Keep polling a little past expiry: a PIN entered at the last second still confirms. */
@@ -113,7 +114,7 @@ export function usePaymentPage(orderId: string) {
           title: order.listing.title,
           sellerName: order.seller.name,
           phoneMasked: order.buyer.phoneMasked,
-          simulated: order.simulated,
+          paymentNote: paymentNote(order),
           status: statusView(order.status, 'buyer'),
           serverOffsetMs: order.serverOffsetMs,
         }

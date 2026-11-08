@@ -204,10 +204,8 @@ export function PaymentPage() {
           </button>
         </p>
       </div>
-      {order.simulated && (
-        <p className="type-body-sm rounded-md bg-lake-50 px-4 py-3 text-lake-600">
-          Demo payment: Vekro is in test mode, so no real money moves.
-        </p>
+      {order.paymentNote && (
+        <p className="type-body-sm rounded-md bg-lake-50 px-4 py-3 text-lake-600">{order.paymentNote}</p>
       )}
 
       <div aria-live="polite" className="flex flex-col gap-5">

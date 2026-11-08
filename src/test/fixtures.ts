@@ -55,6 +55,8 @@ export const orderResponse = (
   status: 'awaiting_payment',
   custody_provider: 'simulated',
   payment_method: 'mpesa',
+  collection_rail: 'simulated',
+  payment_mode: 'sandbox',
   created_at: SENT_AT,
   updated_at: SENT_AT,
   viewer_role: 'buyer',

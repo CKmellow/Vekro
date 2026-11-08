@@ -210,10 +210,8 @@ export function OrderDetailPage() {
         </AnimatePresence>
       </div>
 
-      {order.simulated && (
-        <p className="type-body-sm rounded-md bg-lake-50 px-4 py-3 text-lake-600">
-          Demo order: Vekro is in test mode, so no real money moves.
-        </p>
+      {order.paymentNote && (
+        <p className="type-body-sm rounded-md bg-lake-50 px-4 py-3 text-lake-600">{order.paymentNote}</p>
       )}
 
       <div className="grid gap-4 sm:grid-cols-2">
