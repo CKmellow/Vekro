@@ -17,7 +17,7 @@ export type PaymentVariant =
   | { kind: 'waiting'; expiresAt: string | null; sentAt: string | null }
   | { kind: 'redirect'; url: string }
   | { kind: 'timed_out' }
-  | { kind: 'failed'; reason: PaymentFailure }
+  | { kind: 'failed'; reason: PaymentFailure; card: boolean }
   | { kind: 'not_started' }
   | { kind: 'success' }
 
@@ -28,7 +28,11 @@ export function paymentVariant(order: Order, serverNow: number): PaymentVariant 
   if (!payment) return { kind: 'waiting', expiresAt: null, sentAt: null }
   switch (payment.status) {
     case 'failed':
-      return { kind: 'failed', reason: payment.failureReason ?? 'provider_error' }
+      return {
+        kind: 'failed',
+        reason: payment.failureReason ?? 'provider_error',
+        card: payment.kind === 'REDIRECT',
+      }
     case 'failed_to_initiate':
       return { kind: 'not_started' }
     case 'expired':

@@ -10,7 +10,7 @@ import { PaymentPage } from './PaymentPage'
 
 const ID = orderResponse().id
 const NOW = new Date('2026-10-20T09:00:10Z')
-/** Server time a minute after the prompt: its 30s resend cooldown has passed. */
+/** Server time a minute after the prompt: its resend cooldown has passed. */
 const LATER = '2026-10-20T09:01:10Z'
 
 function serve(...responses: Parameters<typeof orderResponse>[0][]) {
@@ -97,7 +97,7 @@ describe('B2 payment', () => {
   })
 
   it('waits out the cooldown before Try again, including a server 429', async () => {
-    // Cancelled 10s after the prompt: the 30s cooldown still has 20s to run.
+    // Cancelled 10s after the prompt: the resend cooldown is still running.
     serve({
       server_time: NOW.toISOString(),
       payment: paymentResponse({ status: 'failed', failure_reason: 'cancelled' }),
@@ -139,8 +139,10 @@ describe('B2 payment', () => {
       payment: paymentResponse({ kind: 'REDIRECT', redirect_url: 'https://pay.example/checkout/1' }),
     })
     renderPayment()
-    expect(await screen.findByRole('heading', { name: 'Continue to secure checkout' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Continue to secure checkout' })).toHaveAttribute(
+    expect(
+      await screen.findByRole('heading', { name: 'Continue to secure card checkout' }),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Continue to secure card checkout' })).toHaveAttribute(
       'href',
       'https://pay.example/checkout/1',
     )

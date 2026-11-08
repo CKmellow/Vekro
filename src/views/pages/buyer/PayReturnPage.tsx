@@ -26,13 +26,14 @@ export function PayReturnPage() {
             <p role="status" aria-live="polite" className="type-title">
               {page.state === 'confirming'
                 ? 'Confirming your payment…'
-                : page.state === 'slow'
-                  ? 'This is taking longer than usual.'
+                : page.state === 'not_confirmed'
+                  ? "We haven't received confirmation yet."
                   : "The payment didn't go through."}
             </p>
-            {page.state === 'slow' && (
+            {page.state === 'not_confirmed' && (
               <p className="type-body-sm text-emerald-100">
-                We&apos;ll text you as soon as it&apos;s confirmed. You can close this page.
+                If you paid, it can take a minute to reach us. Check again, or track your order: we&apos;ll
+                text you as soon as it&apos;s confirmed.
               </p>
             )}
           </section>
@@ -41,16 +42,21 @@ export function PayReturnPage() {
               We&apos;ll check your payment when you&apos;re back.
             </Banner>
           )}
-          {(page.state === 'slow' || page.state === 'failed') && (
+          {(page.state === 'not_confirmed' || page.state === 'failed') && (
             <ActionDock>
               {page.state === 'failed' ? (
                 <Button fullWidth onClick={page.backToPayment}>
                   Try again
                 </Button>
               ) : (
-                <Button variant="secondary" fullWidth onClick={page.trackOrder}>
-                  Track my order
-                </Button>
+                <>
+                  <Button fullWidth onClick={page.retry} loading={page.retrying}>
+                    Check again
+                  </Button>
+                  <Button variant="secondary" fullWidth onClick={page.trackOrder}>
+                    Track my order
+                  </Button>
+                </>
               )}
             </ActionDock>
           )}

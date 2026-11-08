@@ -14,3 +14,5 @@ src/models/api/schema.d.ts
 .vscode
 src/styles/tokens.css
 src/models/api/schema.d.ts
+# Golden vectors: an exact copy of the backend file (CLAUDE.md), never reformatted.
+src/models/domain/verification/vectors.json

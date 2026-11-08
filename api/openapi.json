@@ -1329,6 +1329,52 @@
         }
       }
     },
+    "/transactions/{transaction_id}/payment/refresh": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Check a card payment now (buyer only)",
+        "description": "For a card order, ask Pesapal for the payment's status now, for example when the buyer lands on the return page before Pesapal's IPN. The result is read from Pesapal, never from the return URL; funding is recorded only for a completed payment of the exact amount. Call it once on the return page, then poll the order.",
+        "operationId": "refresh_transaction_card_payment_transactions__transaction_id__payment_refresh_post",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentInstructionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Authenticated user is not a buyer."
+          },
+          "404": {
+            "description": "Transaction not found, or the caller is not its buyer."
+          },
+          "422": {
+            "description": "Not a card order."
+          }
+        }
+      }
+    },
     "/transactions/{transaction_id}/payment/resend": {
       "post": {
         "tags": [
@@ -2600,8 +2646,10 @@
                   "type": "null"
                 }
               ],
+              "description": "The provider's own reference, or a provider_ref read off an event.",
               "title": "Provider Reference"
-            }
+            },
+            "description": "The provider's own reference, or a provider_ref read off an event."
           },
           {
             "name": "rail_name",
@@ -3121,6 +3169,152 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/pesapal/ipn": {
+      "get": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Pesapal IPN (card checkout)",
+        "description": "Pesapal's IPN for card checkouts (register this URL with ipn_notification_type GET or POST). It is only a trigger: Vekro asks Pesapal for the order's status and records funding only for a COMPLETED payment of the exact amount. An IPN for an order Vekro did not send is refused (status 500) and changes nothing.",
+        "operationId": "pesapal_card_ipn_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PesapalIpnAnswer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Pesapal IPN (card checkout)",
+        "description": "Pesapal's IPN for card checkouts (register this URL with ipn_notification_type GET or POST). It is only a trigger: Vekro asks Pesapal for the order's status and records funding only for a COMPLETED payment of the exact amount. An IPN for an order Vekro did not send is refused (status 500) and changes nothing.",
+        "operationId": "pesapal_card_ipn_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PesapalIpnAnswer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/refunds/manual": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Card refunds waiting for support (admin only)",
+        "description": "Refunds of card-funded orders. Card money sits in the merchant's Pesapal account and is refunded by support in Pesapal (merchant approval, then Pesapal's processing), never over M-Pesa. Each item is marked 'manual refund required' in the order's record.",
+        "operationId": "admin_list_manual_refunds_admin_refunds_manual_get",
+        "parameters": [
+          {
+            "name": "include_completed",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Include Completed"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManualRefundListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/refunds/{attempt_id}/complete": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Mark a card refund as done in Pesapal (admin only)",
+        "description": "Records that support refunded the card payment in Pesapal. It settles the refund like an executed payout (ledger, escrow totals, payout status) and anchors 'manual refund completed'. Idempotent. With ANCHOR_GATE_PAYOUTS it waits until the refund's approval is anchored.",
+        "operationId": "admin_complete_manual_refund_admin_refunds__attempt_id__complete_post",
+        "parameters": [
+          {
+            "name": "attempt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Attempt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteManualRefundRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManualRefundResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No manual refund with this id."
+          },
+          "409": {
+            "description": "Not completable yet: approval not anchored, or not enough held money."
           },
           "422": {
             "description": "Validation Error",
@@ -5427,6 +5621,35 @@
         ],
         "title": "CollectionOutcome"
       },
+      "CompleteManualRefundRequest": {
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Note",
+            "description": "What support did, for the audit trail."
+          },
+          "provider_refund_reference": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Refund Reference",
+            "description": "Pesapal's reference for the refund, if any."
+          }
+        },
+        "type": "object",
+        "required": [
+          "note"
+        ],
+        "title": "CompleteManualRefundRequest"
+      },
       "CreateListingRequest": {
         "properties": {
           "title": {
@@ -5540,6 +5763,16 @@
             ],
             "title": "Amount",
             "description": "Optional. The escrow amount is always the listing price; if sent, it must match the listing price exactly or the request is rejected."
+          },
+          "payment_method": {
+            "type": "string",
+            "enum": [
+              "mpesa",
+              "card"
+            ],
+            "title": "Payment Method",
+            "description": "mpesa: an M-Pesa prompt on the buyer's phone (payment.kind STK_PROMPT). card: Pesapal's hosted card checkout (payment.kind REDIRECT, send the buyer to payment.redirect_url). Card is refused with 422 when it is not configured.",
+            "default": "mpesa"
           }
         },
         "type": "object",
@@ -6532,6 +6765,87 @@
         "title": "LoopCollectionWebhookResponse",
         "description": "Acknowledgement payload for LOOP collection callbacks."
       },
+      "ManualRefundListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ManualRefundResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "ManualRefundListResponse"
+      },
+      "ManualRefundResponse": {
+        "properties": {
+          "attempt_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Attempt Id"
+          },
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Transaction Id"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference",
+            "description": "The order reference, as on Pesapal (merchant reference)."
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Amount"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "queued_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Queued At"
+          },
+          "pesapal_order_tracking_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pesapal Order Tracking Id",
+            "description": "The Pesapal order that took the card payment; refund it in Pesapal."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "completed"
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "attempt_id",
+          "transaction_id",
+          "reference",
+          "amount",
+          "currency",
+          "queued_at",
+          "pesapal_order_tracking_id",
+          "status"
+        ],
+        "title": "ManualRefundResponse"
+      },
       "MarkAllReadResponse": {
         "properties": {
           "updated": {
@@ -6675,7 +6989,7 @@
               }
             ],
             "title": "Provider Reference",
-            "description": "Provider reference for the rail operation."
+            "description": "Keyed provider_ref (HMAC) of the provider's reference, never the raw value: some provider references carry the payer's phone number (#241)."
           },
           "rail_name": {
             "anyOf": [
@@ -6692,7 +7006,7 @@
           "correlation_id": {
             "type": "string",
             "title": "Correlation Id",
-            "description": "Correlation key combining transaction_id, provider_reference, and rail."
+            "description": "Correlation key combining transaction_id, provider_ref, and rail."
           },
           "amount": {
             "anyOf": [
@@ -7286,7 +7600,8 @@
                   "wrong_pin",
                   "insufficient_funds",
                   "timeout",
-                  "provider_error"
+                  "provider_error",
+                  "declined"
                 ]
               },
               {
@@ -7439,6 +7754,36 @@
         ],
         "title": "PesapalCollectionWebhookResponse",
         "description": "Acknowledgement payload for Pesapal collection callbacks."
+      },
+      "PesapalIpnAnswer": {
+        "properties": {
+          "orderNotificationType": {
+            "type": "string",
+            "title": "Ordernotificationtype"
+          },
+          "orderTrackingId": {
+            "type": "string",
+            "title": "Ordertrackingid"
+          },
+          "orderMerchantReference": {
+            "type": "string",
+            "title": "Ordermerchantreference"
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status",
+            "description": "200: received and processed; 500: refused or not processed."
+          }
+        },
+        "type": "object",
+        "required": [
+          "orderNotificationType",
+          "orderTrackingId",
+          "orderMerchantReference",
+          "status"
+        ],
+        "title": "PesapalIpnAnswer",
+        "description": "The acknowledgement Pesapal documents for an IPN call."
       },
       "PhoneCodeRequest": {
         "properties": {
@@ -8478,6 +8823,16 @@
             "description": "Who holds the money. 'econfirm' is real Tier-1 custody; 'simulated' is the Vekro-side simulated ledger and must never be presented as real money.",
             "default": "simulated"
           },
+          "payment_method": {
+            "type": "string",
+            "enum": [
+              "mpesa",
+              "card"
+            ],
+            "title": "Payment Method",
+            "description": "How the buyer pays: mpesa (STK prompt) or card (Pesapal).",
+            "default": "mpesa"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -8624,6 +8979,16 @@
             "title": "Custody Provider",
             "description": "Who holds the money. 'econfirm' is real Tier-1 custody; 'simulated' is the Vekro-side simulated ledger and must never be presented as real money.",
             "default": "simulated"
+          },
+          "payment_method": {
+            "type": "string",
+            "enum": [
+              "mpesa",
+              "card"
+            ],
+            "title": "Payment Method",
+            "description": "How the buyer pays: mpesa (STK prompt) or card (Pesapal).",
+            "default": "mpesa"
           },
           "created_at": {
             "type": "string",
@@ -8885,6 +9250,16 @@
             "title": "Custody Provider",
             "description": "Who holds the money. 'econfirm' is real Tier-1 custody; 'simulated' is the Vekro-side simulated ledger and must never be presented as real money.",
             "default": "simulated"
+          },
+          "payment_method": {
+            "type": "string",
+            "enum": [
+              "mpesa",
+              "card"
+            ],
+            "title": "Payment Method",
+            "description": "How the buyer pays: mpesa (STK prompt) or card (Pesapal).",
+            "default": "mpesa"
           },
           "created_at": {
             "type": "string",
