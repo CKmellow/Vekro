@@ -68,9 +68,9 @@ describe('api client', () => {
         return HttpResponse.json({}, { status: 201 })
       }),
     )
-    await api.post('/transactions', { body: { listing_id: LISTING_ID } })
+    await api.post('/transactions', { body: { listing_id: LISTING_ID, payment_method: 'mpesa' } })
     expect(header).toBe('tok=123')
-    expect(body).toEqual({ listing_id: LISTING_ID })
+    expect(body).toEqual({ listing_id: LISTING_ID, payment_method: 'mpesa' })
   })
 
   it('uploads a file as the raw body with its type and the CSRF header', async () => {

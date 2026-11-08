@@ -8,7 +8,9 @@ import { server } from '@/test/server'
 import { PayReturnPage } from './PayReturnPage'
 
 const ID = orderResponse().id
-const RETURN = `/pay/return?OrderTrackingId=b945e4af-80a5-4ec1-8706-e03f8332fb04&OrderMerchantReference=${ID}`
+// What Pesapal sends back: our `order` and `ref`, plus its own parameters, none of them trusted.
+const RETURN = `/pay/return?order=${ID}&ref=VK-7K3P9Q&OrderTrackingId=b945e4af&OrderMerchantReference=VK-7K3P9Q&OrderNotificationType=CALLBACKURL`
+const CARD = paymentResponse({ kind: 'REDIRECT', redirect_url: 'https://cybqa.pesapal.com/x' })
 
 function renderReturn(url = RETURN) {
   const router = createMemoryRouter(
@@ -22,16 +24,29 @@ function renderReturn(url = RETURN) {
   return { router, ...renderWithProviders(<RouterProvider router={router} />) }
 }
 
-beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: true }))
+let checks = 0
+
+beforeEach(() => {
+  vi.useFakeTimers({ shouldAdvanceTime: true })
+  checks = 0
+  server.use(
+    http.post(`/api/transactions/${ID}/payment/refresh`, () => {
+      checks += 1
+      return HttpResponse.json(CARD)
+    }),
+  )
+})
 afterEach(() => vi.useRealTimers())
 
 describe('/pay/return', () => {
-  it('confirms by polling, never from the redirect, then hands over to B2', async () => {
+  it('asks the backend to check once, confirms only by polling, then hands over to B2', async () => {
     let reads = 0
     server.use(
       http.get(`/api/transactions/${ID}`, () => {
         reads += 1
-        return HttpResponse.json(orderResponse({ status: reads >= 2 ? 'locked' : 'awaiting_payment' }))
+        return HttpResponse.json(
+          orderResponse({ payment: CARD, status: reads >= 2 ? 'locked' : 'awaiting_payment' }),
+        )
       }),
     )
     const { router } = renderReturn()
@@ -40,31 +55,40 @@ describe('/pay/return', () => {
     await act(() => vi.advanceTimersByTimeAsync(3100))
     expect(await screen.findByRole('heading', { name: 'Payment received' })).toBeInTheDocument()
     expect(router.state.location.pathname).toBe(`/order/${ID}/payment`)
+    expect(checks).toBe(1)
   })
 
-  it('says it is taking longer after 90 seconds and offers the tracker', async () => {
-    server.use(http.get(`/api/transactions/${ID}`, () => HttpResponse.json(orderResponse())))
+  it("says it hasn't received confirmation after 90 seconds, and can check again", async () => {
+    server.use(http.get(`/api/transactions/${ID}`, () => HttpResponse.json(orderResponse({ payment: CARD }))))
     const { user, router } = renderReturn()
     await screen.findByText('Confirming your payment…')
     await act(() => vi.advanceTimersByTimeAsync(90_500))
-    expect(await screen.findByText('This is taking longer than usual.')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Track my order' }))
+    expect(await screen.findByText("We haven't received confirmation yet.")).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Check again' }))
+    expect(await screen.findByText('Confirming your payment…')).toBeInTheDocument()
+    expect(checks).toBe(2)
+
+    await act(() => vi.advanceTimersByTimeAsync(90_500))
+    await user.click(await screen.findByRole('button', { name: 'Track my order' }))
     expect(router.state.location.pathname).toBe(`/order/${ID}`)
   })
 
   it('offers Try again when the checkout failed', async () => {
+    const declined = { ...CARD, status: 'failed' as const, failure_reason: 'declined' as const }
     server.use(
-      http.get(`/api/transactions/${ID}`, () =>
-        HttpResponse.json(orderResponse({ payment: paymentResponse({ status: 'failed' }) })),
-      ),
+      // The check answers the order's current prompt, which is the declined one.
+      http.post(`/api/transactions/${ID}/payment/refresh`, () => HttpResponse.json(declined)),
+      http.get(`/api/transactions/${ID}`, () => HttpResponse.json(orderResponse({ payment: declined }))),
     )
     renderReturn()
     expect(await screen.findByText("The payment didn't go through.")).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument()
   })
 
-  it('cannot match a return without our reference', async () => {
-    renderReturn('/pay/return?OrderTrackingId=x')
+  it('cannot match a return without our order', async () => {
+    renderReturn('/pay/return?OrderTrackingId=x&OrderMerchantReference=VK-7K3P9Q')
     expect(await screen.findByRole('heading', { name: "We can't match this payment" })).toBeInTheDocument()
+    expect(checks).toBe(0)
   })
 })

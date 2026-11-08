@@ -21,8 +21,18 @@ describe('B2 variant', () => {
   it('names the failure, defaulting to a provider error', () => {
     const failed = (reason: 'wrong_pin' | null) =>
       paymentVariant(order({ payment: paymentResponse({ status: 'failed', failure_reason: reason }) }), SENT)
-    expect(failed('wrong_pin')).toEqual({ kind: 'failed', reason: 'wrong_pin' })
-    expect(failed(null)).toEqual({ kind: 'failed', reason: 'provider_error' })
+    expect(failed('wrong_pin')).toEqual({ kind: 'failed', reason: 'wrong_pin', card: false })
+    expect(failed(null)).toEqual({ kind: 'failed', reason: 'provider_error', card: false })
+  })
+
+  it('marks a declined card checkout as a card failure', () => {
+    const payment = paymentResponse({
+      kind: 'REDIRECT',
+      redirect_url: 'https://cybqa.pesapal.com/x',
+      status: 'failed',
+      failure_reason: 'declined',
+    })
+    expect(paymentVariant(order({ payment }), SENT)).toEqual({ kind: 'failed', reason: 'declined', card: true })
   })
 
   it('succeeds only on the transaction status, never on the prompt', () => {

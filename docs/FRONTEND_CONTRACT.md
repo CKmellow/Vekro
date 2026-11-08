@@ -23,9 +23,10 @@ Authoritative. Where `docs/PAGES.md` conflicts, this wins. Gap index: [BACKEND_G
 ### B. Payment screen
 
 - Normalize the create/initiate response into `PaymentInstruction = { kind: 'STK_PROMPT' | 'REDIRECT', redirectUrl? }`. A redirect URL means `REDIRECT`, otherwise `STK_PROMPT`. Replace the heuristic with the explicit field when the gap ships.
-- Heading is always "Complete payment". Never name LOOP, Pesapal or Daraja to buyers.
+- Heading is always "Complete payment". Never name LOOP or Daraja to buyers. Pesapal is named for card payments only, because the buyer leaves Vekro for Pesapal's page and must be told so (Cyprian, M22 brief, 2026-11-08).
+- B1 offers a choice: "M-Pesa" (STK prompt) or "Card" (Visa/Mastercard on Pesapal's hosted page). Card sends `payment_method: "card"` and redirects in the same tab to `payment.redirect_url`.
 - STK_PROMPT copy: "Check your phone and enter your M-Pesa PIN", with waiting, resend and timeout states.
-- REDIRECT copy: "Continue to secure checkout". Return page `/pay/return` reads `OrderTrackingId`, shows "Confirming your payment…" and polls. The redirect itself confirms nothing.
+- REDIRECT copy: "Continue to secure card checkout". Return page `/pay/return` reads our `order` parameter (backend #255), asks `POST /transactions/{id}/payment/refresh` once, shows "Confirming your payment…" and polls (3s, 90s). After 90s: "We haven't received confirmation yet" with "Check again". Pesapal's own parameters (`OrderTrackingId`, `OrderMerchantReference`) are ignored. The redirect itself confirms nothing.
 - Success is shown only when the transaction status is `locked`, learned by polling, never from a redirect or callback query param.
 - Polling needs a single-order read (gap P0-1); use a mock until it ships.
 - The client omits `amount`: the server takes the escrow amount from the listing price and rejects a different amount with 422 (gap P0-4, closed 2026-10-15). Never show a user-editable amount.

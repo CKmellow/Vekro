@@ -108,7 +108,7 @@ describe('transactions API', () => {
       }),
     )
     const created = await createOrder('listing-1')
-    expect(body).toEqual({ listing_id: 'listing-1' })
+    expect(body).toEqual({ listing_id: 'listing-1', payment_method: 'mpesa' })
     expect(created).toMatchObject({ id: ORDER_ID, reference: 'VK-7K3P9Q', payment: { status: 'pending' } })
   })
 

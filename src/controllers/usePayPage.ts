@@ -9,6 +9,7 @@ import { ApiError } from '@/models/api/errors'
 import { policySummary, type Listing, type Resolution } from '@/models/domain/listing'
 import { useListing } from '@/models/queries/listings'
 import { useVerifiedSales } from '@/models/queries/trackRecord'
+import type { PaymentMethod } from '@/models/domain/order'
 import { useCreateOrder } from '@/models/queries/orders'
 import { useRegister, useSignIn, useSignOut } from '@/models/queries/session'
 import { paySchema, type PayMode, type PayValues } from '@/models/schemas/auth'
@@ -119,6 +120,7 @@ export function usePayPage(listingId: string) {
   const [formMode, setFormMode] = useState<'register' | 'login'>('register')
   const [notice, setNotice] = useState<string | null>(null)
   const [payError, setPayError] = useState<string | null>(null)
+  const [method, setMethod] = useState<PaymentMethod>('mpesa')
   const form = useForm<PayValues>({
     resolver: zodResolver(paySchema),
     defaultValues: { mode: 'register', phone: '', name: '', password: '', terms: false },
@@ -190,10 +192,17 @@ export function usePayPage(listingId: string) {
     }
   }
 
-  /** POST /transactions with the listing only; 201 and 202 both continue to B2 (contract B). */
+  /**
+   * POST /transactions with the listing and the chosen method; 201 and 202 both continue (contract
+   * B). Card goes straight to Pesapal's hosted page in this tab; if that cannot start, B2 explains.
+   */
   async function startPayment() {
     try {
-      const order = await createOrder.mutateAsync(listingId)
+      const order = await createOrder.mutateAsync({ listingId, method })
+      if (order.payment.kind === 'REDIRECT' && order.payment.redirectUrl) {
+        window.location.assign(order.payment.redirectUrl)
+        return
+      }
       navigate(`/order/${order.id}/payment`)
     } catch (error) {
       const kind = error instanceof ApiError ? error.kind : null
@@ -250,6 +259,8 @@ export function usePayPage(listingId: string) {
           }
         : null,
     canPay,
+    method,
+    setMethod,
     onPay,
     payError,
     paying: register.isPending || signIn.isPending || createOrder.isPending,
@@ -257,4 +268,4 @@ export function usePayPage(listingId: string) {
     setTermsOpen,
   }
 }
-export type { PayValues }
+export type { PaymentMethod, PayValues }

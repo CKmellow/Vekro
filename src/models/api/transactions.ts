@@ -7,6 +7,7 @@ import type {
   OrderListFilter,
   OrderSummary,
   PaymentInstruction,
+  PaymentMethod,
   SellerSummary,
 } from '@/models/domain/order'
 import type { TransactionStatus } from '@/models/domain/stateMeta'
@@ -167,8 +168,8 @@ export async function getOrder(id: string, signal?: AbortSignal): Promise<Order>
  * Starts the escrow payment for a listing. The amount is never sent: the server takes the listing price
  * (contract B). A 202 (the prompt failed to start) still returns the order, with a failed_to_initiate payment.
  */
-export async function createOrder(listingId: string): Promise<CreatedOrder> {
-  const raw = await api.post('/transactions', { body: { listing_id: listingId } })
+export async function createOrder(listingId: string, method: PaymentMethod = 'mpesa'): Promise<CreatedOrder> {
+  const raw = await api.post('/transactions', { body: { listing_id: listingId, payment_method: method } })
   return {
     id: raw.id,
     reference: raw.reference,
@@ -180,6 +181,17 @@ export async function createOrder(listingId: string): Promise<CreatedOrder> {
 /** Sends a new STK prompt. Rejects with kind `rate_limited` (and `retryAfterSeconds`) inside the cooldown. */
 export async function resendPayment(orderId: string): Promise<PaymentInstruction> {
   const raw = await api.post('/transactions/{transaction_id}/payment/resend', {
+    path: { transaction_id: orderId },
+  })
+  return toPaymentInstruction(raw)
+}
+
+/**
+ * Card orders: ask the backend to check the payment with Pesapal now (the buyer is back before
+ * Pesapal's notification). The answer is only the current prompt; success still comes from polling.
+ */
+export async function refreshCardPayment(orderId: string): Promise<PaymentInstruction> {
+  const raw = await api.post('/transactions/{transaction_id}/payment/refresh', {
     path: { transaction_id: orderId },
   })
   return toPaymentInstruction(raw)

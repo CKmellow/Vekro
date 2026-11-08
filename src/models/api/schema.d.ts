@@ -490,6 +490,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/transactions/{transaction_id}/payment/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check a card payment now (buyer only)
+         * @description For a card order, ask Pesapal for the payment's status now, for example when the buyer lands on the return page before Pesapal's IPN. The result is read from Pesapal, never from the return URL; funding is recorded only for a completed payment of the exact amount. Call it once on the return page, then poll the order.
+         */
+        post: operations["refresh_transaction_card_payment_transactions__transaction_id__payment_refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/transactions/{transaction_id}/payment/resend": {
         parameters: {
             query?: never;
@@ -1128,6 +1148,70 @@ export interface paths {
          * @description Where Safaricom posts the M-Pesa Express result (DARAJA_CALLBACK_URL). The callback is unsigned, so it is only a trigger: Vekro confirms the payment with an STK query before locking the order and recording funding. Always answers Accepted, as Daraja expects.
          */
         post: operations["daraja_stk_callback_payments_mpesa_callback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payments/pesapal/ipn": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Pesapal IPN (card checkout)
+         * @description Pesapal's IPN for card checkouts (register this URL with ipn_notification_type GET or POST). It is only a trigger: Vekro asks Pesapal for the order's status and records funding only for a COMPLETED payment of the exact amount. An IPN for an order Vekro did not send is refused (status 500) and changes nothing.
+         */
+        get: operations["pesapal_card_ipn_get"];
+        put?: never;
+        /**
+         * Pesapal IPN (card checkout)
+         * @description Pesapal's IPN for card checkouts (register this URL with ipn_notification_type GET or POST). It is only a trigger: Vekro asks Pesapal for the order's status and records funding only for a COMPLETED payment of the exact amount. An IPN for an order Vekro did not send is refused (status 500) and changes nothing.
+         */
+        post: operations["pesapal_card_ipn_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/refunds/manual": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Card refunds waiting for support (admin only)
+         * @description Refunds of card-funded orders. Card money sits in the merchant's Pesapal account and is refunded by support in Pesapal (merchant approval, then Pesapal's processing), never over M-Pesa. Each item is marked 'manual refund required' in the order's record.
+         */
+        get: operations["admin_list_manual_refunds_admin_refunds_manual_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/refunds/{attempt_id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark a card refund as done in Pesapal (admin only)
+         * @description Records that support refunded the card payment in Pesapal. It settles the refund like an executed payout (ledger, escrow totals, payout status) and anchors 'manual refund completed'. Idempotent. With ANCHOR_GATE_PAYOUTS it waits until the refund's approval is anchored.
+         */
+        post: operations["admin_complete_manual_refund_admin_refunds__attempt_id__complete_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2036,6 +2120,19 @@ export interface components {
          * @enum {string}
          */
         CollectionOutcome: "SUCCEEDED" | "FAILED_DEFINITE" | "UNKNOWN";
+        /** CompleteManualRefundRequest */
+        CompleteManualRefundRequest: {
+            /**
+             * Note
+             * @description What support did, for the audit trail.
+             */
+            note: string;
+            /**
+             * Provider Refund Reference
+             * @description Pesapal's reference for the refund, if any.
+             */
+            provider_refund_reference?: string | null;
+        };
         /**
          * CreateListingRequest
          * @description Payload used by sellers to create listings.
@@ -2101,6 +2198,13 @@ export interface components {
              * @description Optional. The escrow amount is always the listing price; if sent, it must match the listing price exactly or the request is rejected.
              */
             amount?: number | string | null;
+            /**
+             * Payment Method
+             * @description mpesa: an M-Pesa prompt on the buyer's phone (payment.kind STK_PROMPT). card: Pesapal's hosted card checkout (payment.kind REDIRECT, send the buyer to payment.redirect_url). Card is refused with 422 when it is not configured.
+             * @default mpesa
+             * @enum {string}
+             */
+            payment_method: "mpesa" | "card";
         };
         /** DeviceSessionResponse */
         DeviceSessionResponse: {
@@ -2589,6 +2693,48 @@ export interface components {
              */
             detail: string;
         };
+        /** ManualRefundListResponse */
+        ManualRefundListResponse: {
+            /** Items */
+            items: components["schemas"]["ManualRefundResponse"][];
+        };
+        /** ManualRefundResponse */
+        ManualRefundResponse: {
+            /**
+             * Attempt Id
+             * Format: uuid
+             */
+            attempt_id: string;
+            /**
+             * Transaction Id
+             * Format: uuid
+             */
+            transaction_id: string;
+            /**
+             * Reference
+             * @description The order reference, as on Pesapal (merchant reference).
+             */
+            reference: string;
+            /** Amount */
+            amount: string;
+            /** Currency */
+            currency: string;
+            /**
+             * Queued At
+             * Format: date-time
+             */
+            queued_at: string;
+            /**
+             * Pesapal Order Tracking Id
+             * @description The Pesapal order that took the card payment; refund it in Pesapal.
+             */
+            pesapal_order_tracking_id: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending" | "completed";
+        };
         /**
          * MarkAllReadResponse
          * @description How many notifications were marked read, and what is still unread (always 0).
@@ -2661,7 +2807,7 @@ export interface components {
             attempt_id?: string | null;
             /**
              * Provider Reference
-             * @description Provider reference for the rail operation.
+             * @description Keyed provider_ref (HMAC) of the provider's reference, never the raw value: some provider references carry the payer's phone number (#241).
              */
             provider_reference?: string | null;
             /**
@@ -2671,7 +2817,7 @@ export interface components {
             rail_name?: string | null;
             /**
              * Correlation Id
-             * @description Correlation key combining transaction_id, provider_reference, and rail.
+             * @description Correlation key combining transaction_id, provider_ref, and rail.
              */
             correlation_id: string;
             /**
@@ -2954,7 +3100,7 @@ export interface components {
              * Failure Reason
              * @description Why the prompt failed, when status is failed.
              */
-            failure_reason?: ("cancelled" | "wrong_pin" | "insufficient_funds" | "timeout" | "provider_error") | null;
+            failure_reason?: ("cancelled" | "wrong_pin" | "insufficient_funds" | "timeout" | "provider_error" | "declined") | null;
             /**
              * Sent At
              * Format: date-time
@@ -3023,6 +3169,23 @@ export interface components {
              * @description Human-readable processing summary.
              */
             detail: string;
+        };
+        /**
+         * PesapalIpnAnswer
+         * @description The acknowledgement Pesapal documents for an IPN call.
+         */
+        PesapalIpnAnswer: {
+            /** Ordernotificationtype */
+            orderNotificationType: string;
+            /** Ordertrackingid */
+            orderTrackingId: string;
+            /** Ordermerchantreference */
+            orderMerchantReference: string;
+            /**
+             * Status
+             * @description 200: received and processed; 500: refused or not processed.
+             */
+            status: number;
         };
         /**
          * PhoneCodeRequest
@@ -3518,6 +3681,13 @@ export interface components {
              */
             custody_provider: "econfirm" | "simulated";
             /**
+             * Payment Method
+             * @description How the buyer pays: mpesa (STK prompt) or card (Pesapal).
+             * @default mpesa
+             * @enum {string}
+             */
+            payment_method: "mpesa" | "card";
+            /**
              * Created At
              * Format: date-time
              */
@@ -3600,6 +3770,13 @@ export interface components {
              * @enum {string}
              */
             custody_provider: "econfirm" | "simulated";
+            /**
+             * Payment Method
+             * @description How the buyer pays: mpesa (STK prompt) or card (Pesapal).
+             * @default mpesa
+             * @enum {string}
+             */
+            payment_method: "mpesa" | "card";
             /**
              * Created At
              * Format: date-time
@@ -3737,6 +3914,13 @@ export interface components {
              * @enum {string}
              */
             custody_provider: "econfirm" | "simulated";
+            /**
+             * Payment Method
+             * @description How the buyer pays: mpesa (STK prompt) or card (Pesapal).
+             * @default mpesa
+             * @enum {string}
+             */
+            payment_method: "mpesa" | "card";
             /**
              * Created At
              * Format: date-time
@@ -5120,6 +5304,56 @@ export interface operations {
             };
         };
     };
+    refresh_transaction_card_payment_transactions__transaction_id__payment_refresh_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentInstructionResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated user is not a buyer. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Transaction not found, or the caller is not its buyer. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a card order. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     resend_transaction_payment_prompt_transactions__transaction_id__payment_resend_post: {
         parameters: {
             query?: never;
@@ -6214,6 +6448,7 @@ export interface operations {
         parameters: {
             query?: {
                 transaction_id?: string | null;
+                /** @description The provider's own reference, or a provider_ref read off an event. */
                 provider_reference?: string | null;
                 rail_name?: string | null;
                 action?: string | null;
@@ -6703,6 +6938,126 @@ export interface operations {
                         [key: string]: unknown;
                     };
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    pesapal_card_ipn_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PesapalIpnAnswer"];
+                };
+            };
+        };
+    };
+    pesapal_card_ipn_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PesapalIpnAnswer"];
+                };
+            };
+        };
+    };
+    admin_list_manual_refunds_admin_refunds_manual_get: {
+        parameters: {
+            query?: {
+                include_completed?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManualRefundListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    admin_complete_manual_refund_admin_refunds__attempt_id__complete_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompleteManualRefundRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManualRefundResponse"];
+                };
+            };
+            /** @description No manual refund with this id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not completable yet: approval not anchored, or not enough held money. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
