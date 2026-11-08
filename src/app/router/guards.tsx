@@ -2,9 +2,7 @@ import { Navigate, Outlet, useLocation } from 'react-router'
 import { useSession, type Role } from '@/controllers/useSession'
 import { ErrorPage, LoadingPage, NoPermissionPage, OfflinePage } from '@/views/pages/shared/system'
 
-const LOGIN: Record<'seller' | 'admin', string> = { seller: '/login', admin: '/admin/login' }
-
-/** Gate a route subtree to one role. Anonymous users go to that area's login with a return URL. */
+/** Gate a route subtree to one role. Anonymous users go to the one log in page with a return URL. */
 export function RequireRole({ allow: role }: { allow: Extract<Role, 'seller' | 'admin'> }) {
   const session = useSession()
   const location = useLocation()
@@ -15,8 +13,19 @@ export function RequireRole({ allow: role }: { allow: Extract<Role, 'seller' | '
   if (session.status === 'anonymous') {
     const params = new URLSearchParams({ returnTo: `${location.pathname}${location.search}` })
     if (session.expired) params.set('reason', 'expired')
-    return <Navigate to={`${LOGIN[role]}?${params}`} replace />
+    return <Navigate to={`/login?${params}`} replace />
   }
   if (session.role !== role) return <NoPermissionPage area={role} />
   return <Outlet />
+}
+
+/**
+ * The old log in addresses (/admin/login, /buyer/sign-in) live on in SMS links and bookmarks: send
+ * them to the one log in page, keeping returnTo and reason; buyers start on the SMS code.
+ */
+export function ToLogIn({ method }: { method?: 'code' }) {
+  const location = useLocation()
+  const params = new URLSearchParams(location.search)
+  if (method) params.set('method', method)
+  return <Navigate to={`/login?${params}`} replace />
 }

@@ -1,71 +1,39 @@
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { useNavigate, useSearchParams } from 'react-router'
-import { toE164 } from '@/lib/phone'
-import { safeReturnTo } from '@/lib/returnTo'
-import { ApiError } from '@/models/api/errors'
-import { useSignIn, useSignOut } from '@/models/queries/session'
-import { logInSchema, type LogInValues } from '@/models/schemas/auth'
+import { destinationFor } from '@/models/domain/roleHome'
+import { usePhoneSignIn } from './usePhoneSignIn'
 import { useSession } from './useSession'
 
-export type LogInBanner = 'expired' | 'reset' | 'wrong-role' | 'wrong-details' | 'offline' | 'server' | null
-
-const HOME = { seller: '/seller', admin: '/admin' } as const
+export type LogInBanner = 'expired' | 'reset' | 'wrong-details' | 'offline' | 'server' | null
+export type LogInMethod = 'password' | 'code'
 
 /**
- * S2 seller log in, and A1 for the support console (`role: 'admin'`). Returns to the page the person was
- * sent away from, inside their own area only. A wrong-role login at the console is signed out again.
+ * One log in for everyone (Cyprian, 2026-11-07): phone and password for buyers, sellers and admins
+ * (usePasswordLogIn), or an SMS code for buyers. Each role lands in its own area, or back on the
+ * page it was sent away from when that page is in its area. Someone already signed in goes there.
  */
-export function useLogIn(role: 'seller' | 'admin' = 'seller') {
+export function useLogIn() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const session = useSession()
-  const signIn = useSignIn()
-  const signOut = useSignOut()
+  const returnTo = params.get('returnTo')
+  const [method, setMethod] = useState<LogInMethod>(params.get('method') === 'code' ? 'code' : 'password')
   const [banner, setBanner] = useState<LogInBanner>(
     params.get('reason') === 'expired' ? 'expired' : params.get('reason') === 'reset' ? 'reset' : null,
   )
-  const [lockedUntil, setLockedUntil] = useState<string | null>(null)
-  const form = useForm<LogInValues>({
-    resolver: zodResolver(logInSchema),
-    defaultValues: { phone: '', password: '' },
-    mode: 'onTouched',
-  })
-
-  const wrongRole = session.status === 'authenticated' && session.role !== role
-
-  const onSubmit = form.handleSubmit(async (values) => {
-    setBanner(null)
-    try {
-      const user = await signIn.mutateAsync({ phone: toE164(values.phone), password: values.password })
-      if (user.role !== role) {
-        if (role === 'admin') await signOut.mutateAsync().catch(() => undefined)
-        return setBanner('wrong-role')
-      }
-      const back = safeReturnTo(params.get('returnTo'), HOME[role])
-      navigate(back.startsWith(HOME[role]) ? back : HOME[role], { replace: true })
-    } catch (error) {
-      if (!(error instanceof ApiError)) return setBanner('server')
-      if (error.kind === 'rate_limited') {
-        // Retry-After is relative, so the device clock is fine for this one countdown.
-        setLockedUntil(new Date(Date.now() + (error.retryAfterSeconds ?? 300) * 1000).toISOString())
-      } else if (error.kind === 'unauthorized') {
-        setBanner('wrong-details')
-        form.setValue('password', '')
-        form.setFocus('password')
-      } else if (error.kind === 'network') setBanner('offline')
-      else setBanner('server')
-    }
-  })
+  const code = usePhoneSignIn(() => navigate(destinationFor('buyer', returnTo), { replace: true }))
 
   return {
-    form,
-    onSubmit,
-    submitting: signIn.isPending,
-    banner: wrongRole && !banner ? 'wrong-role' : banner,
-    lockedUntil,
-    lockTotalMs: 5 * 60_000,
-    onUnlock: () => setLockedUntil(null),
+    method,
+    setMethod: (next: LogInMethod) => {
+      setMethod(next)
+      if (banner !== 'expired') setBanner(null)
+    },
+    banner,
+    onBanner: setBanner,
+    returnTo,
+    code,
+    /** Already signed in: where to go. */
+    redirect: session.status === 'authenticated' ? destinationFor(session.role, returnTo) : null,
   }
 }

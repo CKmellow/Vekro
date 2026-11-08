@@ -55,17 +55,21 @@ describe('router', () => {
     ).toBeInTheDocument()
   })
 
-  it('lazy-loads public buyer routes without a session', async () => {
+  it('sends the old buyer sign-in address to the one log in, on the SMS code', async () => {
     signedInAs(null)
-    renderAt('/buyer/sign-in')
-    expect(await screen.findByRole('heading', { name: 'See all your orders' })).toBeInTheDocument()
+    const { router } = renderAt('/buyer/sign-in?returnTo=%2Forder%2Fabc')
+    await screen.findByRole('heading', { name: 'Log in to Vekro' })
+    expect(router.state.location.pathname).toBe('/login')
+    const params = new URLSearchParams(router.state.location.search)
+    expect([params.get('method'), params.get('returnTo')]).toEqual(['code', '/order/abc'])
   })
 
-  it('sends signed-out visitors from my orders to buyer sign-in', async () => {
+  it('sends signed-out visitors from my orders to the log in, on the SMS code', async () => {
     signedInAs(null)
     const { router } = renderAt('/buyer/orders')
-    await screen.findByRole('heading', { name: 'See all your orders' })
-    expect(router.state.location.pathname).toBe('/buyer/sign-in')
+    await screen.findByRole('heading', { name: 'Log in to Vekro' })
+    expect(router.state.location.pathname).toBe('/login')
+    expect(new URLSearchParams(router.state.location.search).get('method')).toBe('code')
   })
 
   it('shows visitors the landing page at /', async () => {
@@ -118,7 +122,7 @@ describe('router', () => {
     vi.restoreAllMocks()
   })
 
-  it('sends anonymous users to the seller login with a return URL', async () => {
+  it('sends anonymous users to the log in with a return URL', async () => {
     signedInAs(null)
     const { router } = renderAt('/seller/orders?segment=held')
     await screen.findByRole('heading', { name: 'Log in to Vekro' })
@@ -139,11 +143,19 @@ describe('router', () => {
     expect(new URLSearchParams(router.state.location.search).get('returnTo')).toBe('/seller')
   })
 
-  it('sends anonymous users to the admin login for console routes', async () => {
+  it('sends anonymous users from console routes to the one log in', async () => {
     signedInAs(null)
-    const { router } = renderAt('/admin')
-    await screen.findByRole('heading', { name: 'Vekro Support Console' })
-    expect(router.state.location.pathname).toBe('/admin/login')
+    const { router } = renderAt('/admin/transactions')
+    await screen.findByRole('heading', { name: 'Log in to Vekro' })
+    expect(router.state.location.pathname).toBe('/login')
+    expect(new URLSearchParams(router.state.location.search).get('returnTo')).toBe('/admin/transactions')
+  })
+
+  it('sends the old console log in address to the one log in', async () => {
+    signedInAs(null)
+    const { router } = renderAt('/admin/login?reason=expired')
+    await screen.findByText('Your session expired. Log in again.')
+    expect(router.state.location.pathname).toBe('/login')
   })
 
   it('lets a seller into seller routes', async () => {

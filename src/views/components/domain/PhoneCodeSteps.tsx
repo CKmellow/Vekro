@@ -18,7 +18,16 @@ const BANNERS: Record<Exclude<SignInBanner, null>, { tone: 'danger' | 'escalatio
  * Phone step, then the 6-digit SMS code (B8 and the B3 phone gate). The steps slide (220ms, instant
  * under reduced motion); a wrong code shakes the cells and puts the cursor back in the first one.
  */
-export function PhoneCodeSteps({ flow, sendLabel = 'Send code' }: { flow: PhoneSignIn; sendLabel?: string }) {
+export function PhoneCodeSteps({
+  flow,
+  sendLabel = 'Send code',
+  onUsePassword,
+}: {
+  flow: PhoneSignIn
+  sendLabel?: string
+  /** On the log in page a seller number switches to the password form instead of leaving. */
+  onUsePassword?: () => void
+}) {
   const reduce = useReducedMotion()
   const cells = useRef<HTMLDivElement>(null)
 
@@ -42,11 +51,19 @@ export function PhoneCodeSteps({ flow, sendLabel = 'Send code' }: { flow: PhoneS
           tone={BANNERS[flow.banner].tone}
           title={BANNERS[flow.banner].title}
           action={
-            flow.banner === 'seller' ? (
+            flow.banner !== 'seller' ? undefined : onUsePassword ? (
+              <button
+                type="button"
+                onClick={onUsePassword}
+                className="type-body-md min-h-11 font-semibold text-primary"
+              >
+                Use my password
+              </button>
+            ) : (
               <Link to="/login" className="type-body-md font-semibold text-primary">
-                Seller log in
+                Log in with a password
               </Link>
-            ) : undefined
+            )
           }
         />
       )}

@@ -153,6 +153,6 @@ await seller.post('/listings', standard('Leather sandals', '2800', 'fashion'))
 
 console.log(`Seeded ${orders.length} orders on ${API}. Log in with password ${'*'.repeat(PASSWORD.length)}:`)
 console.log('  Seller  +254 722 118 904 (Amina Gadgets)   /login')
-console.log('  Buyer   +254 712 345 678 (Brian Otieno)    /buyer/sign-in')
-console.log('  Admin   the number given to app.cli create-admin   /admin/login')
+console.log('  Buyer   +254 712 345 678 (Brian Otieno)    /login (Text me a code)')
+console.log('  Admin   the number given to app.cli create-admin   /login')
 for (const o of orders) console.log(`  ${o.reference}  ${o.title}`)

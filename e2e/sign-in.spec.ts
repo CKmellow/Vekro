@@ -5,8 +5,10 @@ import { freshPhone, paidOrder, signUpVia } from './support'
 // request-code response carries the code.
 test('a buyer signs in with an SMS code and no password', async ({ page }) => {
   const national = freshPhone()
+  // The old address still works: it lands on the one log in, on the SMS code.
   await page.goto('/buyer/sign-in')
-  await expect(page.getByRole('heading', { name: 'See all your orders' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Log in to Vekro' })).toBeVisible()
+  await expect(page.getByRole('radio', { name: 'Text me a code' })).toBeChecked()
 
   await page.getByLabel('Phone number').fill(national)
   const [sent] = await Promise.all([
@@ -68,6 +70,8 @@ test('a seller resets a forgotten password by SMS code and logs in with the new 
 
   await page.goto('/login')
   await page.getByRole('link', { name: 'Forgot password?' }).click()
+  // The log in page has its own phone field: wait for the reset page before typing.
+  await expect(page).toHaveURL(/\/forgot-password$/)
   await page.getByLabel('Phone number').fill(national)
   const [sent] = await Promise.all([
     page.waitForResponse((r) => r.url().endsWith('/api/auth/password/reset/request-code')),
