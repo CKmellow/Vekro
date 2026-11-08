@@ -8,6 +8,7 @@ import { maskPhone, toE164 } from '@/lib/phone'
 import { ApiError } from '@/models/api/errors'
 import { policySummary, type Listing, type Resolution } from '@/models/domain/listing'
 import { useListing } from '@/models/queries/listings'
+import { useVerifiedSales } from '@/models/queries/trackRecord'
 import { useCreateOrder } from '@/models/queries/orders'
 import { useRegister, useSignIn, useSignOut } from '@/models/queries/session'
 import { paySchema, type PayMode, type PayValues } from '@/models/schemas/auth'
@@ -21,7 +22,13 @@ export interface PayListingView {
   photoUrls: string[]
   isSerialized: boolean
   description: string
-  seller: { name: string; initials: string; meta: string }
+  seller: {
+    name: string
+    initials: string
+    meta: string
+    /** "12 sales verified on the public record": only sales this browser checked (#280). */
+    verified: string | null
+  }
   promise: { title: string; line: string }
   /** For a link meant for one buyer. */
   reservedFor: string | null
@@ -48,7 +55,7 @@ export function initials(name: string): string {
 }
 
 /** What the buyer sees on B1, from the public listing. No invented data: no area, badge or fake counts. */
-export function toPayListingView(listing: Listing): PayListingView {
+export function toPayListingView(listing: Listing, verifiedSales: number | null = null): PayListingView {
   const { completedSales, memberSince } = listing.seller
   const since = `On Vekro since ${monthYear.format(new Date(memberSince))}`
   const resolution = listing.policy.resolution
@@ -63,6 +70,10 @@ export function toPayListingView(listing: Listing): PayListingView {
     seller: {
       name: listing.seller.name,
       initials: initials(listing.seller.name),
+      verified:
+        verifiedSales && verifiedSales > 0
+          ? `${verifiedSales} ${verifiedSales === 1 ? 'sale' : 'sales'} verified on the public record`
+          : null,
       meta:
         completedSales > 0
           ? `${completedSales} ${completedSales === 1 ? 'sale' : 'sales'} · ${since}`
@@ -94,6 +105,7 @@ export type PayIdentity =
 /** B1: the public listing, the pay card form and the Pay action (docs/PAGES.md B1, FRONTEND_CONTRACT A and B). */
 export function usePayPage(listingId: string) {
   const listing = useListing(listingId)
+  const verifiedSales = useVerifiedSales(listing.data?.seller.id)
   const online = useOnline()
   const session = useSession()
   const register = useRegister()
@@ -214,7 +226,7 @@ export function usePayPage(listingId: string) {
 
   return {
     state,
-    listing: listing.data ? toPayListingView(listing.data) : null,
+    listing: listing.data ? toPayListingView(listing.data, verifiedSales.data?.verified ?? null) : null,
     retry: () => void listing.refetch(),
     online,
     form,

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { createRootReader, registryConfig, type RegistryConfig } from '@/models/api/registry'
+import { createRootReader } from '@/models/api/registry'
+import { registryConfig, type RegistryConfig } from '@/models/api/registryConfig'
 import { getVerification, type VerificationBundle } from '@/models/api/transactions'
 import { verifyBundle, type RootOf, type VerificationReport } from '@/models/domain/verification/verify'
 

@@ -45,6 +45,7 @@ export interface Listing {
 }
 
 export interface ListingSeller {
+  id: string
   name: string
   memberSince: string
   completedSales: number

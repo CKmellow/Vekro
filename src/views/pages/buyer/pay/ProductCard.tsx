@@ -1,4 +1,4 @@
-import { Eye, Package, ScanBarcode } from 'lucide-react'
+import { Eye, Package, ScanBarcode, ShieldCheck } from 'lucide-react'
 import { useReducedMotion } from 'motion/react'
 import { useRef, useState } from 'react'
 import type { PayListingView } from '@/controllers/usePayPage'
@@ -99,9 +99,15 @@ export function ProductCard({ listing, dimmed = false }: { listing: PayListingVi
             {listing.seller.initials}
           </span>
           <div className="min-w-0">
-            {/* No "verified" badge: the backend has no seller verification to back it. */}
             <p className="type-body-md font-semibold text-text">{listing.seller.name}</p>
             <p className="type-body-sm text-text-muted">{listing.seller.meta}</p>
+            {/* Not a "verified seller" badge: only a count of sales this browser checked itself. */}
+            {listing.seller.verified && (
+              <p className="type-body-sm flex items-center gap-1 font-semibold text-primary">
+                <ShieldCheck aria-hidden="true" className="size-4" />
+                {listing.seller.verified}
+              </p>
+            )}
           </div>
         </div>
         <MoneyText amount={listing.price} countUp className="type-amount text-text" />
