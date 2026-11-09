@@ -220,7 +220,7 @@ export function OrderTrackerPage() {
                 <Card>
                   <MoneyPath
                     buyer={{ title: 'You' }}
-                    vault={{ title: 'Vekro vault' }}
+                    vault={{ title: order.holder }}
                     seller={{ title: order.sellerName }}
                     position={order.moneyAt}
                   />

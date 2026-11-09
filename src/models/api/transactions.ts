@@ -188,6 +188,18 @@ export async function resendPayment(orderId: string): Promise<PaymentInstruction
 }
 
 /**
+ * Pay by card instead (backend #280): switch an unpaid M-Pesa order to Pesapal's card checkout.
+ * Rejects with `conflict` while an M-Pesa prompt is still open (with `retryAfterSeconds`) or when the
+ * order moved on, and with `server` (503) when card payments are off.
+ */
+export async function payByCard(orderId: string): Promise<PaymentInstruction> {
+  const raw = await api.post('/transactions/{transaction_id}/payment/card', {
+    path: { transaction_id: orderId },
+  })
+  return toPaymentInstruction(raw)
+}
+
+/**
  * Card orders: ask the backend to check the payment with Pesapal now (the buyer is back before
  * Pesapal's notification). The answer is only the current prompt; success still comes from polling.
  */

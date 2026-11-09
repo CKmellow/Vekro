@@ -129,7 +129,7 @@ export function InspectionPage() {
         </div>
         <MoneyPath
           buyer={{ title: 'You' }}
-          vault={{ title: 'Vekro vault' }}
+          vault={{ title: order.holder }}
           seller={{ title: order.sellerName }}
           position="seller"
         />
@@ -213,7 +213,7 @@ export function InspectionPage() {
         </div>
         <MoneyPath
           buyer={{ title: 'You' }}
-          vault={{ title: 'Vekro vault' }}
+          vault={{ title: order.holder }}
           seller={{ title: order.sellerName }}
           position="buyer"
         />

@@ -510,6 +510,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/transactions/{transaction_id}/payment/card": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pay by card instead (buyer only)
+         * @description Switch an unpaid M-Pesa order to a Pesapal card checkout and return the REDIRECT instruction. Allowed only while the order awaits payment and no M-Pesa prompt is open: a prompt still inside its lifetime answers 409 with Retry-After; an older pending one is first checked with M-Pesa (if it was paid, the order is locked and the switch refused). The switch is recorded on the order's public record. From then on the order is paid by card only; resend restarts a failed card checkout.
+         */
+        post: operations["pay_transaction_by_card_instead_transactions__transaction_id__payment_card_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/transactions/{transaction_id}/payment/resend": {
         parameters: {
             query?: never;
@@ -5574,6 +5594,79 @@ export interface operations {
             };
             /** @description Not a card order. */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    pay_transaction_by_card_instead_transactions__transaction_id__payment_card_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentInstructionResponse"];
+                };
+            };
+            /** @description Switched, but Pesapal refused the checkout (failed_to_initiate); POST /payment/resend starts a new one. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated user is not a buyer. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Transaction not found, or the caller is not its buyer. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not awaiting payment, already a card order, an eConfirm order, or an M-Pesa prompt is still open (with a Retry-After header). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Card payments are not available right now. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

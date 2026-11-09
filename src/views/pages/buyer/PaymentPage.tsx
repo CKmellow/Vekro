@@ -1,4 +1,4 @@
-import { ChevronDown, Copy, ExternalLink, X } from 'lucide-react'
+import { ChevronDown, Copy, CreditCard, ExternalLink, X } from 'lucide-react'
 import { m, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router'
@@ -164,12 +164,14 @@ export function PaymentPage() {
       ? (variant.card ? CARD_FAILURES : FAILURES)[variant.reason]
       : variant.kind === 'timed_out'
         ? FAILURES.timeout
-        : variant.kind === 'not_started'
-          ? ([
-              "We couldn't send the M-Pesa request.",
-              'Nothing was charged. Send a new request to try again.',
-            ] as const)
-          : null
+        : variant.kind === 'not_started' && order.card
+          ? (["We couldn't start the card checkout.", 'Nothing was charged. Try again in a minute.'] as const)
+          : variant.kind === 'not_started'
+            ? ([
+                "We couldn't send the M-Pesa request.",
+                'Nothing was charged. Send a new request to try again.',
+              ] as const)
+            : null
 
   return (
     <div className="flex flex-col gap-5">
@@ -186,11 +188,7 @@ export function PaymentPage() {
           amount={order.amount}
           status={failed ? NOT_THROUGH : order.status}
           ring={ring}
-          hint={
-            variant.kind === 'success'
-              ? 'Held until you confirm delivery'
-              : 'Your money goes into the Vekro vault, not to the seller.'
-          }
+          hint={variant.kind === 'success' ? 'Held until you confirm delivery' : order.payingHint}
         />
         <p className="type-body-sm flex items-center justify-end gap-1 text-text-muted">
           Order reference <span className="type-mono text-text">{order.reference}</span>
@@ -219,7 +217,7 @@ export function PaymentPage() {
             </div>
             <MoneyPath
               buyer={{ title: 'You' }}
-              vault={{ title: 'Vekro vault', detail: 'Held safely' }}
+              vault={{ title: order.holder, detail: 'Held safely' }}
               seller={{ title: order.sellerName }}
               position="vault"
             />
@@ -295,7 +293,10 @@ export function PaymentPage() {
             loading={page.resending}
             disabled={page.resendInSeconds > 0}
           >
-            {withWait(variant.kind === 'failed' ? 'Try again' : 'Send a new request', page.resendInSeconds)}
+            {withWait(
+              variant.kind === 'failed' || order.card ? 'Try again' : 'Send a new request',
+              page.resendInSeconds,
+            )}
           </Button>
         ) : (
           <Button
@@ -308,7 +309,13 @@ export function PaymentPage() {
             {withWait('Resend prompt', page.resendInSeconds)}
           </Button>
         )}
-        {variant.kind !== 'success' && variant.kind !== 'redirect' && (
+        {page.canPayByCard && (
+          <Button variant="secondary" fullWidth onClick={page.payByCard} loading={page.switchingToCard}>
+            <CreditCard aria-hidden="true" className="size-5" />
+            Pay by card instead
+          </Button>
+        )}
+        {variant.kind !== 'success' && variant.kind !== 'redirect' && !order.card && (
           <Button variant="ghost" fullWidth onClick={page.changeNumber}>
             Change phone number
           </Button>

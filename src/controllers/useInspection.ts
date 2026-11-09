@@ -8,6 +8,7 @@ import { useListing } from '@/models/queries/listings'
 import { DOOR_REJECT_REASONS } from '@/models/domain/listing'
 import { useGiveCode, useOrder, useRejectAtDoor } from '@/models/queries/orders'
 import { useOnline } from './useOnline'
+import { moneyHolder } from '@/models/domain/paymentNote'
 
 const POLL_MS = 15_000
 const BEFORE_DOOR = new Set(['initiated', 'awaiting_payment', 'locked', 'out_for_delivery', 'dispatched'])
@@ -117,6 +118,7 @@ export function useInspection(orderId: string) {
           amount: order.amount,
           isSerialized: order.listing.isSerialized,
           sellerName: order.seller.name,
+          holder: moneyHolder(order.collection.rail),
           serverOffsetMs: order.serverOffsetMs,
         }
       : null,

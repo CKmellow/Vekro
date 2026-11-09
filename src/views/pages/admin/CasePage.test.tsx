@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { toast } from '@/lib/toast'
-import { adminCaseDetailResponse } from '@/test/fixtures'
+import { adminCaseDetailResponse, orderResponse } from '@/test/fixtures'
 import { renderWithProviders } from '@/test/render'
 import { server } from '@/test/server'
 import { CasePage } from './CasePage'
@@ -141,10 +141,20 @@ describe('A3 case detail and decision', () => {
         },
       }),
     )
+    // A card order: the money path names Pesapal, never the Vekro vault (#290).
+    server.use(
+      http.get('/api/transactions/:id', () =>
+        HttpResponse.json(
+          orderResponse({ viewer_role: 'admin', payment_method: 'card', collection_rail: 'pesapal' }),
+        ),
+      ),
+    )
     renderPage()
     expect(await screen.findByRole('heading', { name: 'Decided' })).toBeInTheDocument()
     expect(screen.getByText(/By Wanjiru Support · 24 Oct 2026, 14:36/)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Review decision' })).not.toBeInTheDocument()
+    expect(await screen.findByText('Held by Pesapal')).toBeInTheDocument()
+    expect(screen.queryByText('Vekro vault')).not.toBeInTheDocument()
   })
 
   it("says when the case doesn't exist", async () => {

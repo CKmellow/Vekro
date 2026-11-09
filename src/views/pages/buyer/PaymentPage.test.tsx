@@ -148,4 +148,109 @@ describe('B2 payment', () => {
     )
     expect(screen.queryByRole('button', { name: /Resend/ })).not.toBeInTheDocument()
   })
+
+  describe('pay by card instead (#290)', () => {
+    const CHECKOUT = paymentResponse({
+      kind: 'REDIRECT',
+      redirect_url: 'https://cybqa.pesapal.com/checkout/2',
+      expires_at: '2026-10-20T09:30:10Z',
+    })
+
+    it('is not offered while the M-Pesa prompt is open on the phone', async () => {
+      serve({ server_time: NOW.toISOString() })
+      renderPayment()
+      await screen.findByText('Check your phone and enter your M-Pesa PIN')
+      expect(screen.queryByRole('button', { name: 'Pay by card instead' })).not.toBeInTheDocument()
+      expect(screen.getByText('Your money goes into the Vekro vault, not to the seller.')).toBeInTheDocument()
+    })
+
+    it('switches a failed M-Pesa order to the card checkout, held by Pesapal', async () => {
+      let switched = 0
+      serve(
+        { server_time: LATER, payment: paymentResponse({ status: 'failed', failure_reason: 'cancelled' }) },
+        { server_time: LATER, payment_method: 'card', collection_rail: 'pesapal', payment: CHECKOUT },
+      )
+      server.use(
+        http.post(`/api/transactions/${ID}/payment/card`, () => {
+          switched += 1
+          return HttpResponse.json(CHECKOUT)
+        }),
+      )
+      const { user } = renderPayment()
+      await screen.findByText('You cancelled the M-Pesa request.')
+      await user.click(screen.getByRole('button', { name: 'Pay by card instead' }))
+      expect(await screen.findByRole('link', { name: 'Continue to secure card checkout' })).toHaveAttribute(
+        'href',
+        'https://cybqa.pesapal.com/checkout/2',
+      )
+      expect(switched).toBe(1)
+      expect(
+        screen.getByText('Your card payment will be held by Pesapal, not paid to the seller.'),
+      ).toBeInTheDocument()
+      expect(screen.queryByText(/Vekro vault/)).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'Pay by card instead' })).not.toBeInTheDocument()
+    })
+
+    it('says the M-Pesa request is still open when the server refuses with Retry-After', async () => {
+      serve({ server_time: LATER, payment: paymentResponse({ status: 'expired' }) })
+      server.use(
+        http.post(`/api/transactions/${ID}/payment/card`, () =>
+          HttpResponse.json(
+            { detail: 'Your M-Pesa prompt is still open.' },
+            { status: 409, headers: { 'Retry-After': '30' } },
+          ),
+        ),
+      )
+      const { user } = renderPayment()
+      await user.click(await screen.findByRole('button', { name: 'Pay by card instead' }))
+      await vi.waitFor(() =>
+        expect(toast.current().map((t) => t.message)).toContain(
+          'Your M-Pesa request is still open. Finish or cancel it on your phone, then try again.',
+        ),
+      )
+    })
+
+    it('explains when card payments are off', async () => {
+      serve({ server_time: LATER, payment: paymentResponse({ status: 'failed_to_initiate' }) })
+      server.use(
+        http.post(`/api/transactions/${ID}/payment/card`, () =>
+          HttpResponse.json({ detail: 'Card payments are not available right now.' }, { status: 503 }),
+        ),
+      )
+      const { user } = renderPayment()
+      await user.click(await screen.findByRole('button', { name: 'Pay by card instead' }))
+      await vi.waitFor(() =>
+        expect(toast.current().map((t) => t.message)).toContain('Card payments are not available right now.'),
+      )
+    })
+
+    it('names Pesapal on the money path once a card order is paid', async () => {
+      serve({
+        status: 'locked',
+        server_time: LATER,
+        payment_method: 'card',
+        collection_rail: 'pesapal',
+        payment: CHECKOUT,
+      })
+      renderPayment()
+      expect(await screen.findByRole('heading', { name: 'Payment received' })).toBeInTheDocument()
+      expect(screen.getByText('Held by Pesapal')).toBeInTheDocument()
+      expect(screen.queryByText(/Vekro vault/)).not.toBeInTheDocument()
+    })
+
+    it('speaks card when the switched checkout failed to start', async () => {
+      serve({
+        server_time: LATER,
+        payment_method: 'card',
+        collection_rail: 'pesapal',
+        payment: paymentResponse({ kind: 'REDIRECT', status: 'failed_to_initiate', redirect_url: null }),
+      })
+      renderPayment()
+      expect(await screen.findByText("We couldn't start the card checkout.")).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Try again' })).toBeEnabled()
+      expect(screen.queryByText(/M-Pesa/)).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'Change phone number' })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'Pay by card instead' })).not.toBeInTheDocument()
+    })
+  })
 })

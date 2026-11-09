@@ -11,7 +11,7 @@ import { useOrder, usePublicOrder } from '@/models/queries/orders'
 import { useOnline } from './useOnline'
 import { usePhoneSignIn } from './usePhoneSignIn'
 import { useSession } from './useSession'
-import { paymentNote } from '@/models/domain/paymentNote'
+import { moneyHolder, paymentNote } from '@/models/domain/paymentNote'
 
 const ACTIVE_POLL_MS = 15_000
 
@@ -244,6 +244,7 @@ export function useOrderTracker(orderId: string) {
             price: order.listing.price,
             sellerName: order.seller.name,
             paymentNote: paymentNote(order),
+            holder: moneyHolder(order.collection.rail),
             serverOffsetMs: order.serverOffsetMs,
             moneyAt: moneyAt(order.status),
             next: nextStep(order),
