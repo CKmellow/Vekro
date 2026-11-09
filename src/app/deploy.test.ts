@@ -1,16 +1,40 @@
 /// <reference types="node" />
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { CSP_HEADER } from './csp'
+import { CSP_HEADER, CSP_HEADER_PLACEHOLDER, cspFor, cspHeaderFor, renderNginxTemplate } from './csp'
 
 // M17 #134: the served headers match the app's CSP, and the shell is never cached.
+// #294: the build fills in the header, so the anchoring RPC origin reaches it too.
 const nginx = readFileSync('deploy/nginx.conf.template', 'utf8')
+const headersOf = (conf: string) =>
+  [...conf.matchAll(/add_header Content-Security-Policy "([^"]+)"/g)].map((m) => m[1] ?? '')
 
 describe('deploy/nginx.conf.template', () => {
-  it('sends the same CSP header the app is built for, on every location', () => {
-    const headers = [...nginx.matchAll(/add_header Content-Security-Policy "([^"]+)"/g)].map((m) => m[1])
+  it('takes its CSP header from the build on every location, never a hard-coded policy', () => {
+    const headers = headersOf(nginx)
+    expect(headers.length).toBeGreaterThanOrEqual(4)
+    for (const header of headers) expect(header).toBe(CSP_HEADER_PLACEHOLDER)
+    expect(nginx).not.toContain('connect-src')
+  })
+
+  it('renders the same header as the app without an anchoring RPC', () => {
+    const headers = headersOf(renderNginxTemplate(nginx))
     expect(headers.length).toBeGreaterThanOrEqual(4)
     for (const header of headers) expect(header).toBe(CSP_HEADER)
+  })
+
+  it('adds the anchoring RPC origin to connect-src, matching the meta policy', () => {
+    const rendered = renderNginxTemplate(nginx, 'https://sepolia.base.org/')
+    expect(rendered).not.toContain(CSP_HEADER_PLACEHOLDER)
+    for (const header of headersOf(rendered)) {
+      expect(header).toBe(cspHeaderFor('https://sepolia.base.org'))
+      expect(header).toContain("connect-src 'self' https://sepolia.base.org;")
+      expect(header.startsWith(cspFor('https://sepolia.base.org'))).toBe(true)
+    }
+    // Only the origin: a path (for example a keyed RPC URL) never reaches the header.
+    expect(renderNginxTemplate(nginx, 'https://rpc.example/v2/key')).toContain(
+      "connect-src 'self' https://rpc.example;",
+    )
   })
 
   it('proxies the API on the same site and keeps the shell and service worker fresh', () => {
@@ -19,8 +43,22 @@ describe('deploy/nginx.conf.template', () => {
     expect(nginx).toMatch(/location \/assets\/[\s\S]*?immutable/)
     expect(nginx).toContain('Strict-Transport-Security')
   })
+})
 
-  it('builds with the API on /api', () => {
-    expect(readFileSync('Dockerfile', 'utf8')).toContain('VITE_API_BASE_URL=/api')
+describe('web image', () => {
+  const dockerfile = readFileSync('Dockerfile', 'utf8')
+  const deploy = readFileSync('.github/workflows/deploy.yml', 'utf8')
+
+  it('builds with the API on /api and serves the rendered nginx template', () => {
+    expect(dockerfile).toContain('VITE_API_BASE_URL=/api')
+    expect(dockerfile).toContain('COPY --from=build /app/.deploy/default.conf.template')
+    expect(dockerfile).not.toContain('COPY deploy/nginx.conf.template')
+  })
+
+  it('takes the anchoring registry as build arguments from repository variables', () => {
+    for (const name of ['VITE_ANCHOR_CHAIN_ID', 'VITE_ANCHOR_REGISTRY_ADDRESS', 'VITE_ANCHOR_RPC_URL']) {
+      expect(dockerfile).toContain(`${name}=`)
+      expect(deploy).toContain(`${name}=\${{ vars.${name} }}`)
+    }
   })
 })

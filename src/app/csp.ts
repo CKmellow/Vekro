@@ -40,5 +40,21 @@ export function cspFor(anchorRpcUrl?: string): string {
 
 export const CSP = cspFor()
 
-/** Header-only additions for the deployment (M17 #134). */
-export const CSP_HEADER = `${CSP}; frame-ancestors 'none'; upgrade-insecure-requests`
+/** The header for a build: the same policy plus what a meta tag can't carry (M17 #134). */
+export function cspHeaderFor(anchorRpcUrl?: string): string {
+  return `${cspFor(anchorRpcUrl)}; frame-ancestors 'none'; upgrade-insecure-requests`
+}
+
+export const CSP_HEADER = cspHeaderFor()
+
+/** Where deploy/nginx.conf.template takes the header (#294). */
+export const CSP_HEADER_PLACEHOLDER = '__CSP_HEADER__'
+
+/**
+ * The nginx template with this build's CSP header filled in (#294). The build writes it to
+ * .deploy/default.conf.template and the web image serves it, so the header always matches the
+ * <meta> CSP, RPC origin included.
+ */
+export function renderNginxTemplate(template: string, anchorRpcUrl?: string): string {
+  return template.split(CSP_HEADER_PLACEHOLDER).join(cspHeaderFor(anchorRpcUrl))
+}
