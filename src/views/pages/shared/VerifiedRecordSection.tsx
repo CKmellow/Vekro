@@ -3,10 +3,19 @@ import { VerifiedRecordPanel } from '../../components/domain/VerifiedRecordPanel
 
 /**
  * The "Verified record" panel for one order (B3 and S6); nothing when no registry is configured.
- * `version` changes with each order step, so the record is checked again after it.
+ * `version` changes with each order step, so the record is checked again after it. `buyer` adds the
+ * line that their held money is counted in Vekro's published total.
  */
-export function VerifiedRecordSection({ orderId, version }: { orderId: string; version: string }) {
-  const record = useVerifiedRecord(orderId, version)
+export function VerifiedRecordSection({
+  orderId,
+  version,
+  buyer = false,
+}: {
+  orderId: string
+  version: string
+  buyer?: boolean
+}) {
+  const record = useVerifiedRecord(orderId, version, { buyer })
   if (!record) return null
   return (
     <VerifiedRecordPanel
@@ -16,6 +25,7 @@ export function VerifiedRecordSection({ orderId, version }: { orderId: string; v
       network={record.network}
       registry={record.registry}
       batches={record.batches}
+      heldMoney={record.heldMoney}
       detailsOpen={record.detailsOpen}
       onDetailsOpenChange={record.setDetailsOpen}
       onRetry={record.retry}

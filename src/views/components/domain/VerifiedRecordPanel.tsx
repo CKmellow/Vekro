@@ -14,6 +14,12 @@ import { Sheet } from '../ui/Sheet'
 
 export type RecordState = 'checking' | 'verified' | 'pending' | 'tampered' | 'unavailable'
 
+export interface HeldMoney {
+  state: 'included' | 'pending' | 'tampered' | 'unavailable'
+  amount: string
+  total: string
+}
+
 export interface VerifiedRecordPanelProps {
   state: RecordState
   /** Steps sealed on the public record, of all recorded. */
@@ -22,6 +28,8 @@ export interface VerifiedRecordPanelProps {
   network: string
   registry: string
   batches: { id: number; block: number | null; txUrl: string | null }[]
+  /** Buyer only: their held money in Vekro's published total; null hides the line. */
+  heldMoney?: HeldMoney | null
   detailsOpen: boolean
   onDetailsOpenChange: (open: boolean) => void
   onRetry: () => void
@@ -61,6 +69,16 @@ const LOOK: Record<RecordState, { Icon: LucideIcon; title: string; tone: string;
   },
 }
 
+function heldMoneyLine({ state, amount, total }: HeldMoney): string {
+  if (state === 'included')
+    return `Your ${amount} is included in Vekro's published total of held money (${total}).`
+  if (state === 'pending')
+    return `Your ${amount} is in Vekro's latest total of held money. It is published within a few minutes.`
+  if (state === 'tampered')
+    return `Your ${amount} could not be matched to Vekro's published total of held money. Contact Vekro support.`
+  return "Vekro's published total of held money can't be checked right now. Your money is not affected."
+}
+
 function body(state: RecordState, sealed: number, total: number): string {
   if (state === 'verified') return 'Every step of this order is sealed on a public record and checks out.'
   if (state === 'pending')
@@ -87,6 +105,16 @@ export function VerifiedRecordPanel(p: VerifiedRecordPanelProps) {
           <p className="type-body-sm text-text-muted">{body(p.state, p.sealed, p.total)}</p>
         </div>
       </div>
+      {p.heldMoney && (
+        <p
+          className={cn(
+            'type-body-sm rounded-md bg-sand-50 px-3 py-2',
+            p.heldMoney.state === 'tampered' ? 'text-coral-600' : 'text-ink-600',
+          )}
+        >
+          {heldMoneyLine(p.heldMoney)}
+        </p>
+      )}
       <div className="flex flex-wrap gap-2">
         {p.state === 'unavailable' && (
           <Button variant="secondary" onClick={p.onRetry}>

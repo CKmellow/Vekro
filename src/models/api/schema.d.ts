@@ -990,6 +990,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/transactions/{transaction_id}/liabilities-proof": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Proof the order's held money is counted in Vekro's published total (buyer, admin)
+         * @description The order's leaf, salt and Merkle sum proof in the latest liabilities snapshot, the snapshot's root and total, and the anchored liabilities_snapshot event with its batch proof. The browser checks the leaf is this order's (order_commit), folds the proof (no negative or overflowing sums), compares the root and total with the anchored payload, and reads the batch root from the AnchorRegistry. 404 when the order is not held now.
+         */
+        get: operations["get_liabilities_proof_transactions__transaction_id__liabilities_proof_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/anchoring/batches/{batch_id}": {
         parameters: {
             query?: never;
@@ -1212,6 +1232,26 @@ export interface paths {
          * @description Records that support refunded the card payment in Pesapal. It settles the refund like an executed payout (ledger, escrow totals, payout status) and anchors 'manual refund completed'. Idempotent. With ANCHOR_GATE_PAYOUTS it waits until the refund's approval is anchored.
          */
         post: operations["admin_complete_manual_refund_admin_refunds__attempt_id__complete_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ussd/africastalking/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Africa's Talking USSD callback
+         * @description Africa's Talking posts every step of a USSD session here (form-encoded sessionId, serviceCode, phoneNumber, networkCode, text). The requests are unsigned, so the path carries USSD_CALLBACK_TOKEN; USSD_ALLOWED_IPS optionally limits callers. Answers text/plain CON or END screens of at most 160 characters (docs/ussd.md).
+         */
+        post: operations["africastalking_ussd_ussd_africastalking__token__post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1469,6 +1509,26 @@ export interface paths {
          */
         put: operations["put_preferences_me_notification_preferences_put"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/account/ussd-pin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set or change the USSD PIN
+         * @description The 4-digit PIN asked for before sensitive actions over USSD (*384*…#). Needs the account password. Three wrong PINs over USSD lock USSD actions for 15 minutes.
+         */
+        post: operations["post_ussd_pin_account_ussd_pin_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2079,6 +2139,19 @@ export interface components {
              * @description Payouts stopped because they disagree with their anchored authorisation.
              */
             payouts_halted: number;
+            /** @description The latest liabilities snapshot (what Vekro owes buyers). */
+            liabilities?: components["schemas"]["LiabilitiesStatus"] | null;
+            /**
+             * Reserves
+             * @description The latest reserves reconciliation per provider.
+             */
+            reserves?: components["schemas"]["ReservesStatus"][];
+            /**
+             * Reserves Shortfall
+             * @description A provider attests less than Vekro owes: investigate now.
+             * @default false
+             */
+            reserves_shortfall: boolean;
             /**
              * Server Time
              * Format: date-time
@@ -2486,6 +2559,48 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * LiabilitiesProofResponse
+         * @description Proof that this order's held amount is counted in Vekro's anchored total (M24 B2).
+         */
+        LiabilitiesProofResponse: {
+            /** Snapshot Id */
+            snapshot_id: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            root: components["schemas"]["SumNodeResponse"];
+            /**
+             * Total
+             * @description KES held for all buyers at the snapshot.
+             */
+            total: string;
+            /** Leaf Count */
+            leaf_count: number;
+            leaf: components["schemas"]["SumLeafResponse"];
+            /** Proof */
+            proof: components["schemas"]["SumProofStepResponse"][];
+            /** @description The liabilities_snapshot event in the global chain, with its batch proof; null until anchoring is on. */
+            anchor: components["schemas"]["VerificationEventResponse"] | null;
+        };
+        /** LiabilitiesStatus */
+        LiabilitiesStatus: {
+            /** Snapshot Id */
+            snapshot_id: number;
+            /** Total */
+            total: string;
+            /** Leaf Count */
+            leaf_count: number;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Anchored */
+            anchored: boolean;
         };
         /**
          * ListingListResponse
@@ -3392,6 +3507,29 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /**
+         * ReservesStatus
+         * @description The latest reserves reconciliation for one custody provider (M24 B2).
+         */
+        ReservesStatus: {
+            /** Provider */
+            provider: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "covered" | "shortfall" | "incomplete" | "unavailable" | "not_applicable";
+            /** Method */
+            method: string;
+            /** Liability Total */
+            liability_total: string;
+            /** Attested Total */
+            attested_total: string | null;
+            /** Difference */
+            difference: string | null;
+            /** At */
+            at: string;
+        };
         /** ResetCodeRequest */
         ResetCodeRequest: {
             /** Phone */
@@ -3601,6 +3739,40 @@ export interface components {
              * Format: date-time
              */
             server_time: string;
+        };
+        /** SumLeafResponse */
+        SumLeafResponse: {
+            /** Salt */
+            salt: string;
+            /**
+             * Order Commit
+             * @description keccak256("vekro-liability-order:" + the order id): recompute it to check the leaf is this order's.
+             */
+            order_commit: string;
+            /** Amount Cents */
+            amount_cents: string;
+        };
+        /** SumNodeResponse */
+        SumNodeResponse: {
+            /** Hash */
+            hash: string;
+            /**
+             * Sum
+             * @description Cents, as a decimal string (may exceed 2**53).
+             */
+            sum: string;
+        };
+        /** SumProofStepResponse */
+        SumProofStepResponse: {
+            /** Sibling Hash */
+            sibling_hash: string;
+            /** Sibling Sum */
+            sibling_sum: string;
+            /**
+             * Side
+             * @enum {string}
+             */
+            side: "left" | "right";
         };
         /**
          * TimelineEventResponse
@@ -4095,6 +4267,19 @@ export interface components {
          * @enum {string}
          */
         UserRole: "buyer" | "seller" | "admin";
+        /** UssdPinRequest */
+        UssdPinRequest: {
+            /**
+             * Pin
+             * @description 4 digits, for sensitive actions over USSD.
+             */
+            pin: string;
+            /**
+             * Password
+             * @description The account password.
+             */
+            password: string;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -6616,6 +6801,51 @@ export interface operations {
             };
         };
     };
+    get_liabilities_proof_transactions__transaction_id__liabilities_proof_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LiabilitiesProofResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the caller's order, or no held money for it in the latest snapshot. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_public_batch_anchoring_batches__batch_id__get: {
         parameters: {
             query?: never;
@@ -7096,6 +7326,44 @@ export interface operations {
             };
             /** @description Not completable yet: approval not anchored, or not enough held money. */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    africastalking_ussd_ussd_africastalking__token__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Wrong token, caller not allowed, or USSD is off. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7793,6 +8061,44 @@ export interface operations {
                 content?: never;
             };
             /** @description Not a seller. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_ussd_pin_account_ussd_pin_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UssdPinRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong password. */
             403: {
                 headers: {
                     [name: string]: unknown;

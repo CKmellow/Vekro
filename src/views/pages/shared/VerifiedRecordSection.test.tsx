@@ -3,7 +3,12 @@ import { http, HttpResponse } from 'msw'
 import { describe, expect, it, vi } from 'vitest'
 import { renderWithProviders } from '@/test/render'
 import { server } from '@/test/server'
-import { VERIFIED_ORDER, verificationBundle as bundle, verificationTree } from '@/test/verification'
+import {
+  liabilitiesProof,
+  VERIFIED_ORDER,
+  verificationBundle as bundle,
+  verificationTree,
+} from '@/test/verification'
 import { VerifiedRecordSection } from './VerifiedRecordSection'
 
 vi.mock('motion/react', async (original) => ({ ...(await original<object>()), useReducedMotion: () => true }))
@@ -20,13 +25,25 @@ vi.mock('@/models/api/registryConfig', async (original) => ({
 const ORDER = VERIFIED_ORDER
 const tree = verificationTree
 
-function serve(record: object, root: string | null) {
+const LIABILITIES_BATCH = 9
+
+/** Serves a KES 6,500 held-money proof for ORDER; returns the root its batch must have. */
+function serveLiabilities(total = '6500.00') {
+  const { proof, batchRoot } = liabilitiesProof(ORDER, LIABILITIES_BATCH, total)
+  server.use(http.get(`/api/transactions/${ORDER}/liabilities-proof`, () => HttpResponse.json(proof)))
+  return batchRoot
+}
+
+function serve(record: object, root: string | null, liabilitiesRoot: string | null = null) {
   server.use(
     http.get(`/api/transactions/${ORDER}/verification`, () => HttpResponse.json(record)),
     http.post('https://rpc.test/', async ({ request }) => {
-      const { method } = (await request.json()) as { method: string }
+      const { method, params } = (await request.json()) as { method: string; params: [{ data?: string }] }
       if (root === null) return HttpResponse.error()
-      return HttpResponse.json({ jsonrpc: '2.0', id: 1, result: method === 'eth_chainId' ? '0x14a34' : root })
+      if (method === 'eth_chainId') return HttpResponse.json({ jsonrpc: '2.0', id: 1, result: '0x14a34' })
+      const batch = parseInt(params[0].data?.slice(-64) ?? '0', 16)
+      const result = batch === LIABILITIES_BATCH ? liabilitiesRoot : root
+      return HttpResponse.json({ jsonrpc: '2.0', id: 1, result })
     }),
   )
 }
@@ -78,5 +95,56 @@ describe('Verified record', () => {
     renderWithProviders(<VerifiedRecordSection orderId={ORDER} version="Settled" />)
     expect(await screen.findByText(/Your order and your money are not affected/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument()
+  })
+
+  it("tells the buyer their held money is in Vekro's published total", async () => {
+    const liabilitiesRoot = serveLiabilities()
+    serve(bundle(), tree.root, liabilitiesRoot)
+    renderWithProviders(<VerifiedRecordSection orderId={ORDER} version="Held" buyer />)
+    expect(
+      await screen.findByText(
+        "Your KES 6,500 is included in Vekro's published total of held money (KES 6,500).",
+      ),
+    ).toBeInTheDocument()
+  })
+
+  it('warns the buyer when the published total does not match', async () => {
+    const liabilitiesRoot = serveLiabilities('1.00')
+    serve(bundle(), tree.root, liabilitiesRoot)
+    renderWithProviders(<VerifiedRecordSection orderId={ORDER} version="Held" buyer />)
+    expect(await screen.findByText(/could not be matched to Vekro's published total/)).toBeInTheDocument()
+  })
+
+  it('says the total is published shortly while its seal is pending', async () => {
+    serveLiabilities()
+    serve(bundle(), tree.root, `0x${'00'.repeat(32)}`)
+    renderWithProviders(<VerifiedRecordSection orderId={ORDER} version="Held" buyer />)
+    expect(await screen.findByText(/It is published within a few minutes/)).toBeInTheDocument()
+  })
+
+  it('shows no held-money line without a proof', async () => {
+    server.use(
+      http.get(`/api/transactions/${ORDER}/liabilities-proof`, () =>
+        HttpResponse.json({ detail: 'Not found' }, { status: 404 }),
+      ),
+    )
+    serve(bundle(), tree.root)
+    renderWithProviders(<VerifiedRecordSection orderId={ORDER} version="Settled" buyer />)
+    expect(await screen.findByRole('heading', { name: 'Tamper-evident record' })).toBeInTheDocument()
+    expect(screen.queryByText(/published total of held money/)).not.toBeInTheDocument()
+  })
+
+  it('never asks for the held-money proof on the seller view', async () => {
+    let asked = false
+    server.use(
+      http.get(`/api/transactions/${ORDER}/liabilities-proof`, () => {
+        asked = true
+        return HttpResponse.json({ detail: 'Not found' }, { status: 404 })
+      }),
+    )
+    serve(bundle(), tree.root)
+    renderWithProviders(<VerifiedRecordSection orderId={ORDER} version="Held" />)
+    expect(await screen.findByRole('heading', { name: 'Tamper-evident record' })).toBeInTheDocument()
+    expect(asked).toBe(false)
   })
 })

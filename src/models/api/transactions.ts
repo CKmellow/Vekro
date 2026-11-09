@@ -13,6 +13,7 @@ import type {
 import type { TransactionStatus } from '@/models/domain/stateMeta'
 import { photoUrl, toPolicy } from './adapters/listings'
 import { api, type Schemas } from './client'
+import { ApiError } from './errors'
 
 type PaymentResponse = Schemas['PaymentInstructionResponse']
 type DetailResponse = Schemas['TransactionDetailResponse']
@@ -322,6 +323,25 @@ export async function getPublicOrder(key: string, signal?: AbortSignal): Promise
 export type VerificationBundle = Schemas['TransactionVerificationResponse']
 
 /** The order's tamper-evident record: data only; the browser decides (domain/verification). */
+/**
+ * The buyer's proof that this order's held money is in Vekro's published total (backend #261).
+ * Null when there is none: the order is not held now, or the viewer is not its buyer.
+ */
+export async function getLiabilitiesProof(
+  id: string,
+  signal?: AbortSignal,
+): Promise<Schemas['LiabilitiesProofResponse'] | null> {
+  try {
+    return await api.get('/transactions/{transaction_id}/liabilities-proof', {
+      path: { transaction_id: id },
+      signal,
+    })
+  } catch (error) {
+    if (error instanceof ApiError && error.kind === 'not_found') return null
+    throw error
+  }
+}
+
 export async function getVerification(id: string, signal?: AbortSignal): Promise<VerificationBundle> {
   return api.get('/transactions/{transaction_id}/verification', { path: { transaction_id: id }, signal })
 }
