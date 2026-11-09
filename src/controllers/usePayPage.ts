@@ -8,6 +8,8 @@ import { maskPhone, toE164 } from '@/lib/phone'
 import { ApiError } from '@/models/api/errors'
 import { policySummary, type Listing, type Resolution } from '@/models/domain/listing'
 import { useListing } from '@/models/queries/listings'
+import { useVerifiedSales } from '@/models/queries/trackRecord'
+import type { PaymentMethod } from '@/models/domain/order'
 import { useCreateOrder } from '@/models/queries/orders'
 import { useRegister, useSignIn, useSignOut } from '@/models/queries/session'
 import { paySchema, type PayMode, type PayValues } from '@/models/schemas/auth'
@@ -21,7 +23,13 @@ export interface PayListingView {
   photoUrls: string[]
   isSerialized: boolean
   description: string
-  seller: { name: string; initials: string; meta: string }
+  seller: {
+    name: string
+    initials: string
+    meta: string
+    /** "12 sales verified on the public record": only sales this browser checked (#280). */
+    verified: string | null
+  }
   promise: { title: string; line: string }
   /** For a link meant for one buyer. */
   reservedFor: string | null
@@ -48,7 +56,7 @@ export function initials(name: string): string {
 }
 
 /** What the buyer sees on B1, from the public listing. No invented data: no area, badge or fake counts. */
-export function toPayListingView(listing: Listing): PayListingView {
+export function toPayListingView(listing: Listing, verifiedSales: number | null = null): PayListingView {
   const { completedSales, memberSince } = listing.seller
   const since = `On Vekro since ${monthYear.format(new Date(memberSince))}`
   const resolution = listing.policy.resolution
@@ -63,6 +71,10 @@ export function toPayListingView(listing: Listing): PayListingView {
     seller: {
       name: listing.seller.name,
       initials: initials(listing.seller.name),
+      verified:
+        verifiedSales && verifiedSales > 0
+          ? `${verifiedSales} ${verifiedSales === 1 ? 'sale' : 'sales'} verified on the public record`
+          : null,
       meta:
         completedSales > 0
           ? `${completedSales} ${completedSales === 1 ? 'sale' : 'sales'} · ${since}`
@@ -94,6 +106,7 @@ export type PayIdentity =
 /** B1: the public listing, the pay card form and the Pay action (docs/PAGES.md B1, FRONTEND_CONTRACT A and B). */
 export function usePayPage(listingId: string) {
   const listing = useListing(listingId)
+  const verifiedSales = useVerifiedSales(listing.data?.seller.id)
   const online = useOnline()
   const session = useSession()
   const register = useRegister()
@@ -107,6 +120,7 @@ export function usePayPage(listingId: string) {
   const [formMode, setFormMode] = useState<'register' | 'login'>('register')
   const [notice, setNotice] = useState<string | null>(null)
   const [payError, setPayError] = useState<string | null>(null)
+  const [method, setMethod] = useState<PaymentMethod>('mpesa')
   const form = useForm<PayValues>({
     resolver: zodResolver(paySchema),
     defaultValues: { mode: 'register', phone: '', name: '', password: '', terms: false },
@@ -178,10 +192,17 @@ export function usePayPage(listingId: string) {
     }
   }
 
-  /** POST /transactions with the listing only; 201 and 202 both continue to B2 (contract B). */
+  /**
+   * POST /transactions with the listing and the chosen method; 201 and 202 both continue (contract
+   * B). Card goes straight to Pesapal's hosted page in this tab; if that cannot start, B2 explains.
+   */
   async function startPayment() {
     try {
-      const order = await createOrder.mutateAsync(listingId)
+      const order = await createOrder.mutateAsync({ listingId, method })
+      if (order.payment.kind === 'REDIRECT' && order.payment.redirectUrl) {
+        window.location.assign(order.payment.redirectUrl)
+        return
+      }
       navigate(`/order/${order.id}/payment`)
     } catch (error) {
       const kind = error instanceof ApiError ? error.kind : null
@@ -214,7 +235,7 @@ export function usePayPage(listingId: string) {
 
   return {
     state,
-    listing: listing.data ? toPayListingView(listing.data) : null,
+    listing: listing.data ? toPayListingView(listing.data, verifiedSales.data?.verified ?? null) : null,
     retry: () => void listing.refetch(),
     online,
     form,
@@ -238,6 +259,8 @@ export function usePayPage(listingId: string) {
           }
         : null,
     canPay,
+    method,
+    setMethod,
     onPay,
     payError,
     paying: register.isPending || signIn.isPending || createOrder.isPending,
@@ -245,4 +268,4 @@ export function usePayPage(listingId: string) {
     setTermsOpen,
   }
 }
-export type { PayValues }
+export type { PaymentMethod, PayValues }

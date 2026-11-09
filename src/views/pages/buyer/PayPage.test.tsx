@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { createMemoryRouter, RouterProvider } from 'react-router'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { listingResponse, paymentResponse } from '@/test/fixtures'
 import { renderWithProviders } from '@/test/render'
 import { server } from '@/test/server'
@@ -241,8 +241,41 @@ describe('B1 order summary and pay', () => {
       const { user, router } = renderPay()
       await pressPay(user)
       expect(await screen.findByRole('heading', { name: 'Complete payment' })).toBeInTheDocument()
-      expect(posts).toEqual([{ listing_id: ID }])
+      expect(posts).toEqual([{ listing_id: ID, payment_method: 'mpesa' }])
       expect(router.state.location.pathname).toBe('/order/order-1/payment')
+    })
+
+    it("pays by card on Pesapal's page in the same tab, saying so first", async () => {
+      const assign = vi.fn()
+      vi.stubGlobal('location', { ...window.location, assign })
+      const checkout = 'https://cybqa.pesapal.com/pesapaliframe/PesapalIframe3/Index?OrderTrackingId=t-1'
+      const posts = acceptOrders([], () =>
+        HttpResponse.json(
+          { ...ORDER, payment: paymentResponse({ kind: 'REDIRECT', redirect_url: checkout }) },
+          { status: 201 },
+        ),
+      )
+      const { user, router } = renderPay()
+      await user.click(await screen.findByRole('radio', { name: /Card/ }))
+      expect(screen.getByText(/leave Vekro for Pesapal's secure card page/)).toBeInTheDocument()
+      await user.click(await screen.findByRole('checkbox'))
+      await user.click(screen.getByRole('button', { name: 'Pay KES 52,000 by card' }))
+
+      await vi.waitFor(() => expect(assign).toHaveBeenCalledWith(checkout))
+      expect(posts).toEqual([{ listing_id: ID, payment_method: 'card' }])
+      expect(router.state.location.pathname).not.toBe('/order/order-1/payment')
+      vi.unstubAllGlobals()
+    })
+
+    it('explains when card payments are not available', async () => {
+      acceptOrders([], () =>
+        HttpResponse.json({ detail: 'Card payments are not available right now.' }, { status: 422 }),
+      )
+      const { user } = renderPay()
+      await user.click(await screen.findByRole('radio', { name: /Card/ }))
+      await user.click(await screen.findByRole('checkbox'))
+      await user.click(screen.getByRole('button', { name: 'Pay KES 52,000 by card' }))
+      expect(await screen.findByText('Card payments are not available right now.')).toBeInTheDocument()
     })
 
     it('continues to B2 when the prompt failed to start (202)', async () => {

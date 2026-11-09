@@ -12,7 +12,7 @@ import {
   Truck,
 } from 'lucide-react'
 import { AnimatePresence, m, useReducedMotion } from 'motion/react'
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { useOrderTracker, type NextStep } from '@/controllers/useOrderTracker'
 import { cn } from '@/lib/cn'
@@ -32,6 +32,9 @@ import { MoneyText } from '../../components/ui/MoneyText'
 import { Skeleton, SkeletonGroup } from '../../components/ui/Skeleton'
 import { Tabs } from '../../components/ui/Tabs'
 import { TimelinePanel } from './timeline/TimelinePanel'
+
+// Checked after the page shows: the verifier and its hashing load on their own.
+const VerifiedRecordSection = lazy(() => import('../shared/VerifiedRecordSection'))
 
 const TONES: Record<NextStep['tone'], { box: string; icon: string }> = {
   emerald: { box: 'bg-emerald-50', icon: 'text-emerald-700' },
@@ -145,7 +148,7 @@ export function OrderTrackerPage() {
         body="Check the link in your SMS, or log in with the phone you paid with."
         action={
           <Link
-            to={`/buyer/sign-in?returnTo=${encodeURIComponent(`/order/${orderId}`)}`}
+            to={`/login?method=code&returnTo=${encodeURIComponent(`/order/${orderId}`)}`}
             className="type-title text-primary"
           >
             Sign in
@@ -217,7 +220,7 @@ export function OrderTrackerPage() {
                 <Card>
                   <MoneyPath
                     buyer={{ title: 'You' }}
-                    vault={{ title: 'Vekro vault' }}
+                    vault={{ title: order.holder }}
                     seller={{ title: order.sellerName }}
                     position={order.moneyAt}
                   />
@@ -225,9 +228,9 @@ export function OrderTrackerPage() {
                 <div aria-live="polite">
                   <NextStepCard step={order.next} offsetMs={order.serverOffsetMs} />
                 </div>
-                {order.simulated && (
+                {order.paymentNote && (
                   <p className="type-body-sm rounded-md bg-lake-50 px-4 py-3 text-lake-600">
-                    Demo order: Vekro is in test mode, so no real money moves.
+                    {order.paymentNote}
                   </p>
                 )}
                 <Card className="flex items-center gap-4">
@@ -250,6 +253,9 @@ export function OrderTrackerPage() {
                     />
                   </Card>
                 )}
+                <Suspense fallback={null}>
+                  <VerifiedRecordSection orderId={order.id} version={order.status.label} buyer />
+                </Suspense>
                 <p className="type-body-sm text-center">
                   <Link to="/help" className="font-semibold text-primary">
                     Get help

@@ -15,7 +15,9 @@ import {
 import { useState, type ReactNode } from 'react'
 import { Link, NavLink } from 'react-router'
 import { cn } from '@/lib/cn'
+import { useTheme } from '@/controllers/useTheme'
 import { Sheet } from '../components/ui/Sheet'
+import { ThemeSwitch } from '../components/ui/ThemeSwitch'
 import { VekroMark } from '../components/ui/VekroMark'
 
 export interface SellerLayoutProps {
@@ -67,6 +69,7 @@ export function SellerLayout({
   children,
 }: SellerLayoutProps) {
   const [moreOpen, setMoreOpen] = useState(false)
+  const theme = useTheme()
   const items: Item[] = [
     { to: '/seller', label: 'Dashboard', Icon: LayoutGrid, end: true },
     { to: '/seller/orders', label: 'Orders', Icon: ShoppingBag, badge: ordersNeedingAction },
@@ -106,7 +109,7 @@ export function SellerLayout({
               className={({ isActive }) =>
                 cn(
                   'type-body-md flex min-h-11 items-center gap-3 rounded-sm px-3 font-semibold transition-colors',
-                  isActive ? 'bg-emerald-700 text-sand-0' : 'text-emerald-100 hover:bg-emerald-900',
+                  isActive ? 'bg-primary text-on-primary' : 'text-emerald-100 hover:bg-emerald-900',
                 )
               }
             >
@@ -124,6 +127,12 @@ export function SellerLayout({
             <Plus aria-hidden="true" className="size-5" />
             Create listing
           </Link>
+          <ThemeSwitch
+            tone="vault"
+            value={theme.preference}
+            onChange={theme.setPreference}
+            className="self-start"
+          />
           <div className="flex items-center gap-3 border-t border-emerald-800 px-2 pt-4">
             <span className="grid size-9 place-items-center rounded-full bg-emerald-800 text-body-sm font-bold">
               {initials(name)}
@@ -213,6 +222,10 @@ export function SellerLayout({
               ),
           )}
         </ul>
+        <div className="mt-4 flex items-center justify-between border-t border-border px-2 pt-4">
+          <span className="type-body-md text-ink-600">Theme</span>
+          <ThemeSwitch value={theme.preference} onChange={theme.setPreference} />
+        </div>
       </Sheet>
     </div>
   )

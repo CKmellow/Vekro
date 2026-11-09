@@ -2,7 +2,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { CSP, CSP_DIRECTIVES, CSP_HEADER } from './csp'
+import { CSP, CSP_DIRECTIVES, CSP_HEADER, cspFor } from './csp'
 
 // M16 #130: guards for the security pass, so regressions fail CI.
 function sources(dir: string): string[] {
@@ -33,8 +33,12 @@ describe('source rules', () => {
     expect(using(/dangerouslySetInnerHTML|\.innerHTML\s*=/)).toEqual([])
   })
 
-  it('keeps sessions out of browser storage: only the listing draft uses localStorage', () => {
-    expect(using(/localStorage|sessionStorage|indexedDB/)).toEqual(['src/models/domain/listingDraftStore.ts'])
+  it('keeps sessions out of browser storage: only the listing draft and the theme use localStorage', () => {
+    // The theme choice (M25, #292, Cyprian 2026-11-09) is a per-device display preference, never a session.
+    expect(using(/localStorage|sessionStorage|indexedDB/)).toEqual([
+      'src/lib/theme.ts',
+      'src/models/domain/listingDraftStore.ts',
+    ])
     expect(using(/document\.cookie/)).toEqual(['src/models/api/csrf.ts'])
   })
 
@@ -47,5 +51,15 @@ describe('source rules', () => {
     const client = readFileSync('src/models/api/client.ts', 'utf8')
     expect(client).toContain("credentials: 'include'")
     expect(client).toContain('CSRF_HEADER')
+  })
+})
+
+describe('CSP with the anchoring RPC', () => {
+  it('adds only the RPC origin to connect-src', () => {
+    const policy = cspFor('https://sepolia.base.org/some/path?key=x')
+    expect(policy).toContain("connect-src 'self' https://sepolia.base.org;")
+    expect(policy).not.toContain('key=x')
+    expect(cspFor('not a url')).toBe(CSP)
+    expect(cspFor()).toBe(CSP)
   })
 })

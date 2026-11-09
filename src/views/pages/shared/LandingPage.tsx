@@ -245,7 +245,7 @@ export function LandingPage() {
       <section className="bg-vault">
         <div className="mx-auto flex max-w-300 flex-col items-start gap-6 px-5 py-16 sm:flex-row sm:items-center sm:justify-between lg:px-6">
           <h2 className="type-display-lg text-sand-0">Ready to sell with confidence?</h2>
-          <Link to="/register" className={`${cta} bg-sand-0 text-emerald-900 hover:bg-sand-100`}>
+          <Link to="/register" className={`${cta} bg-sand-0 text-emerald-900 hover:brightness-95`}>
             Start selling
           </Link>
         </div>

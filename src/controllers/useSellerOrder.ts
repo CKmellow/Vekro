@@ -12,6 +12,7 @@ import { useOrder } from '@/models/queries/orders'
 import { useOnline } from './useOnline'
 import { useOrderTransition } from './useOrderTransition'
 import { moneyAt } from './useOrderTracker'
+import { moneyHolder, paymentNote } from '@/models/domain/paymentNote'
 
 const ACTIVE_POLL_MS = 15_000
 
@@ -239,7 +240,8 @@ export function useSellerOrder() {
             ring: meta.ring,
             moneyAt: moneyAt(order.status),
             serverOffsetMs: order.serverOffsetMs,
-            simulated: order.simulated,
+            paymentNote: paymentNote(order),
+            holder: moneyHolder(order.collection.rail),
             buyer: order.buyer,
             item: {
               listingId: order.listing.id,

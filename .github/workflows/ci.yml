@@ -62,6 +62,13 @@ jobs:
       # A throwaway support admin for the console e2e (created below with the backend's CLI).
       E2E_ADMIN_PHONE: '+254700000001'
       E2E_ADMIN_PASSWORD: ci-admin-password-1
+      # Card e2e (M22): Pesapal's public sandbox demo merchant, kept in repository secrets. Without
+      # them the card spec skips; with them the backend talks to Pesapal's sandbox for real and only
+      # the browser's trip to Pesapal's page is stubbed (e2e/card.spec.ts).
+      PESAPAL_CONSUMER_KEY: ${{ secrets.PESAPAL_SANDBOX_CONSUMER_KEY }}
+      PESAPAL_CONSUMER_SECRET: ${{ secrets.PESAPAL_SANDBOX_CONSUMER_SECRET }}
+      PESAPAL_BASE_URL: https://cybqa.pesapal.com/pesapalv3
+      FRONTEND_URL: http://localhost:4173
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -80,6 +87,13 @@ jobs:
           pip install -r requirements.txt
           alembic upgrade head
           VEKRO_ADMIN_PASSWORD="$E2E_ADMIN_PASSWORD" python -m app.cli create-admin --phone "$E2E_ADMIN_PHONE" --name "CI Support"
+          if [ -n "$PESAPAL_CONSUMER_KEY" ]; then
+            touch ../pesapal.env
+            python -m app.services.custody.pesapal_ipn_registration \
+              --callback-url http://127.0.0.1:8000/payments/pesapal/ipn --notification-type GET --env-file ../pesapal.env
+            export PESAPAL_IPN_ID="$(sed -n 's/^PESAPAL_IPN_ID=//p' ../pesapal.env)" PESAPAL_ENABLED=true
+            echo "E2E_CARD=1" >> "$GITHUB_ENV"
+          fi
           nohup uvicorn app.main:app --host 127.0.0.1 --port 8000 > ../backend.log 2>&1 &
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/health && exit 0; sleep 1; done
           cat ../backend.log; exit 1

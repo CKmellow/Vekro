@@ -8,7 +8,7 @@ import { StatusPage } from './StatusPage'
 
 /** Actions that always lead to a built page, for visitors outside the seller area. */
 const PUBLIC_ACTIONS = {
-  primary: { label: 'Seller log in', to: '/login' },
+  primary: { label: 'Log in', to: '/login' },
   secondary: { label: 'Start selling', to: '/register' },
 }
 

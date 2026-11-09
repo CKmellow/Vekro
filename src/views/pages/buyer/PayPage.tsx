@@ -3,14 +3,14 @@ import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { useState, type ReactNode } from 'react'
 import { Controller } from 'react-hook-form'
 import { useParams } from 'react-router'
-import { usePayPage } from '@/controllers/usePayPage'
+import { type PaymentMethod, usePayPage } from '@/controllers/usePayPage'
 import { cn } from '@/lib/cn'
 import { duration, ease, spring } from '@/lib/motion'
 import { ActionDock } from '../../components/ui/ActionDock'
 import { Banner } from '../../components/ui/Banner'
 import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'
-import { Checkbox } from '../../components/ui/Choice'
+import { Checkbox, RadioCardGroup, type RadioOption } from '../../components/ui/Choice'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { MoneyText } from '../../components/ui/MoneyText'
 import { Sheet } from '../../components/ui/Sheet'
@@ -129,6 +129,11 @@ function HowItWorks() {
     </Card>
   )
 }
+
+const PAYMENT_METHODS: RadioOption<PaymentMethod>[] = [
+  { value: 'mpesa', title: 'M-Pesa', description: 'A prompt on your phone; enter your M-Pesa PIN.' },
+  { value: 'card', title: 'Card', description: "Visa or Mastercard, on Pesapal's secure page." },
+]
 
 /** B1 Order summary and pay (design/B1-order-summary). Route /pay/:listingId. */
 export function PayPage() {
@@ -282,11 +287,28 @@ export function PayPage() {
                 />
               </Card>
             </Reveal>
+            <Card className="flex flex-col gap-3">
+              <RadioCardGroup<PaymentMethod>
+                legend="How do you want to pay?"
+                name="payment-method"
+                value={page.method}
+                onChange={page.setMethod}
+                options={PAYMENT_METHODS}
+              />
+              {page.method === 'card' && (
+                <p className="type-body-sm text-ink-600">
+                  You&apos;ll leave Vekro for Pesapal&apos;s secure card page to enter your card, then come
+                  back here. Vekro never sees your card number.
+                </p>
+              )}
+            </Card>
             <ActionDock note="Secured by Vekro Escrow">
               {page.payError && <Banner tone="danger" title={page.payError} />}
               <Button type="submit" fullWidth disabled={!page.canPay} loading={page.paying}>
                 <Lock aria-hidden="true" className="size-5" />
-                Pay {listing.priceLabel} with M-Pesa
+                {page.method === 'card'
+                  ? `Pay ${listing.priceLabel} by card`
+                  : `Pay ${listing.priceLabel} with M-Pesa`}
               </Button>
               {!page.online && (
                 <p role="status" className="type-body-sm text-center text-coral-600">

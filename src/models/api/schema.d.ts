@@ -490,6 +490,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/transactions/{transaction_id}/payment/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check a card payment now (buyer only)
+         * @description For a card order, ask Pesapal for the payment's status now, for example when the buyer lands on the return page before Pesapal's IPN. The result is read from Pesapal, never from the return URL; funding is recorded only for a completed payment of the exact amount. Call it once on the return page, then poll the order.
+         */
+        post: operations["refresh_transaction_card_payment_transactions__transaction_id__payment_refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/transactions/{transaction_id}/payment/card": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pay by card instead (buyer only)
+         * @description Switch an unpaid M-Pesa order to a Pesapal card checkout and return the REDIRECT instruction. Allowed only while the order awaits payment and no M-Pesa prompt is open: a prompt still inside its lifetime answers 409 with Retry-After; an older pending one is first checked with M-Pesa (if it was paid, the order is locked and the switch refused). The switch is recorded on the order's public record. From then on the order is paid by card only; resend restarts a failed card checkout.
+         */
+        post: operations["pay_transaction_by_card_instead_transactions__transaction_id__payment_card_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/transactions/{transaction_id}/payment/resend": {
         parameters: {
             query?: never;
@@ -930,6 +970,106 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/anchoring/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Anchoring worker status (admin only)
+         * @description Whether anchoring is enabled, the chain and registry, the last confirmed batch, the batch in flight, how many recorded events still wait for a batch, and whether anchoring has halted because the chain disagreed with the database. Never shows the anchoring key.
+         */
+        get: operations["admin_anchoring_status_admin_anchoring_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/transactions/{transaction_id}/verification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Verification data for an order (buyer, seller or admin)
+         * @description Everything needed to check the order's tamper-evident record independently: each event's canonical payload, salt, hashes and Merkle proof in chain order, and the live status and amount. Data only: the verdict is the verifier's, after reading each batch root from the AnchorRegistry. See docs/frontend-verification-contract.md.
+         */
+        get: operations["get_transaction_verification_transactions__transaction_id__verification_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/transactions/{transaction_id}/liabilities-proof": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Proof the order's held money is counted in Vekro's published total (buyer, admin)
+         * @description The order's leaf, salt and Merkle sum proof in the latest liabilities snapshot, the snapshot's root and total, and the anchored liabilities_snapshot event with its batch proof. The browser checks the leaf is this order's (order_commit), folds the proof (no negative or overflowing sums), compares the root and total with the anchored payload, and reads the batch root from the AnchorRegistry. 404 when the order is not held now.
+         */
+        get: operations["get_liabilities_proof_transactions__transaction_id__liabilities_proof_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/anchoring/batches/{batch_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * An anchored batch (public)
+         * @description A batch's root, sequence range, status and anchoring transaction. No personal data. Rate-limited per client.
+         */
+        get: operations["get_public_batch_anchoring_batches__batch_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sellers/{seller_id}/track-record": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A seller's verifiable track record (public)
+         * @description Each completed sale as a public, anchored event (seller, outcome, amount band; no buyer or order) with its Merkle proof, so anyone can check the count against the AnchorRegistry. Rate-limited per client.
+         */
+        get: operations["get_seller_track_record_sellers__seller_id__track_record_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/simulated-custody/collections/force-complete": {
         parameters: {
             query?: never;
@@ -1028,6 +1168,110 @@ export interface paths {
          * @description Accept Pesapal callback notifications and always confirm funding finality through server-side transaction status inquiry. Callback payload fields are never trusted as final state by themselves.
          */
         post: operations["pesapal_collection_callback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payments/mpesa/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Daraja STK callback
+         * @description Where Safaricom posts the M-Pesa Express result (DARAJA_CALLBACK_URL). The callback is unsigned, so it is only a trigger: Vekro confirms the payment with an STK query before locking the order and recording funding. Always answers Accepted, as Daraja expects.
+         */
+        post: operations["daraja_stk_callback_payments_mpesa_callback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payments/pesapal/ipn": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Pesapal IPN (card checkout)
+         * @description Pesapal's IPN for card checkouts (register this URL with ipn_notification_type GET or POST). It is only a trigger: Vekro asks Pesapal for the order's status and records funding only for a COMPLETED payment of the exact amount. An IPN for an order Vekro did not send is refused (status 500) and changes nothing.
+         */
+        get: operations["pesapal_card_ipn_get"];
+        put?: never;
+        /**
+         * Pesapal IPN (card checkout)
+         * @description Pesapal's IPN for card checkouts (register this URL with ipn_notification_type GET or POST). It is only a trigger: Vekro asks Pesapal for the order's status and records funding only for a COMPLETED payment of the exact amount. An IPN for an order Vekro did not send is refused (status 500) and changes nothing.
+         */
+        post: operations["pesapal_card_ipn_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/refunds/manual": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Card refunds waiting for support (admin only)
+         * @description Refunds of card-funded orders. Card money sits in the merchant's Pesapal account and is refunded by support in Pesapal (merchant approval, then Pesapal's processing), never over M-Pesa. Each item is marked 'manual refund required' in the order's record.
+         */
+        get: operations["admin_list_manual_refunds_admin_refunds_manual_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/refunds/{attempt_id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark a card refund as done in Pesapal (admin only)
+         * @description Records that support refunded the card payment in Pesapal. It settles the refund like an executed payout (ledger, escrow totals, payout status) and anchors 'manual refund completed'. Idempotent. With ANCHOR_GATE_PAYOUTS it waits until the refund's approval is anchored.
+         */
+        post: operations["admin_complete_manual_refund_admin_refunds__attempt_id__complete_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ussd/africastalking/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Africa's Talking USSD callback
+         * @description Africa's Talking posts every step of a USSD session here (form-encoded sessionId, serviceCode, phoneNumber, networkCode, text). The requests are unsigned, so the path carries USSD_CALLBACK_TOKEN; USSD_ALLOWED_IPS optionally limits callers. Answers text/plain CON or END screens of at most 160 characters (docs/ussd.md).
+         */
+        post: operations["africastalking_ussd_ussd_africastalking__token__post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1285,6 +1529,26 @@ export interface paths {
          */
         put: operations["put_preferences_me_notification_preferences_put"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/account/ussd-pin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set or change the USSD PIN
+         * @description The 4-digit PIN asked for before sensitive actions over USSD (*384*…#). Needs the account password. Three wrong PINs over USSD lock USSD actions for 15 minutes.
+         */
+        post: operations["post_ussd_pin_account_ussd_pin_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1803,6 +2067,117 @@ export interface components {
             /** Average Dispatch Seconds */
             average_dispatch_seconds: number | null;
         };
+        /** AnchorBatchSummary */
+        AnchorBatchSummary: {
+            /** Batch Id */
+            batch_id: number;
+            /**
+             * Status
+             * @description built, submitted, confirmed, failed_retryable or halted.
+             */
+            status: string;
+            /**
+             * Root
+             * @description 0x-prefixed keccak Merkle root.
+             */
+            root: string;
+            /** First Seq */
+            first_seq: number;
+            /** Last Seq */
+            last_seq: number;
+            /** Leaf Count */
+            leaf_count: number;
+            /**
+             * Tx Hash
+             * @description Latest anchoring transaction hash.
+             */
+            tx_hash?: string | null;
+            /** Attempts */
+            attempts: number;
+            /** Last Error */
+            last_error?: string | null;
+            /** Block Number */
+            block_number?: number | null;
+            /** Submitted At */
+            submitted_at?: string | null;
+            /** Confirmed At */
+            confirmed_at?: string | null;
+        };
+        /** AnchoringStatusResponse */
+        AnchoringStatusResponse: {
+            /**
+             * Enabled
+             * @description Whether the worker is allowed to submit (ANCHOR_ENABLED).
+             */
+            enabled: boolean;
+            /** Chain Id */
+            chain_id: number;
+            /**
+             * Network
+             * @description anvil, base-sepolia or base.
+             */
+            network?: string | null;
+            /** Registry Address */
+            registry_address?: string | null;
+            /**
+             * Anchorer Address
+             * @description Address of the anchoring key. The key itself is never shown.
+             */
+            anchorer_address?: string | null;
+            /**
+             * Halted
+             * @description A batch disagreed with the chain; anchoring has stopped.
+             */
+            halted: boolean;
+            /** Halt Reason */
+            halt_reason?: string | null;
+            last_confirmed?: components["schemas"]["AnchorBatchSummary"] | null;
+            in_flight?: components["schemas"]["AnchorBatchSummary"] | null;
+            /** Confirmed Batches */
+            confirmed_batches: number;
+            /**
+             * Unanchored Events
+             * @description Recorded events not yet in a batch.
+             */
+            unanchored_events: number;
+            /** Oldest Unanchored At */
+            oldest_unanchored_at?: string | null;
+            /**
+             * Payouts Gated
+             * @description Payouts wait for their authorisation to be anchored (ANCHOR_GATE_PAYOUTS).
+             */
+            payouts_gated: boolean;
+            /**
+             * Payouts Waiting For Anchor
+             * @description Queued payouts held until their authorisation is anchored or readable.
+             */
+            payouts_waiting_for_anchor: number;
+            /** Oldest Payout Waiting Since */
+            oldest_payout_waiting_since?: string | null;
+            /**
+             * Payouts Halted
+             * @description Payouts stopped because they disagree with their anchored authorisation.
+             */
+            payouts_halted: number;
+            /** @description The latest liabilities snapshot (what Vekro owes buyers). */
+            liabilities?: components["schemas"]["LiabilitiesStatus"] | null;
+            /**
+             * Reserves
+             * @description The latest reserves reconciliation per provider.
+             */
+            reserves?: components["schemas"]["ReservesStatus"][];
+            /**
+             * Reserves Shortfall
+             * @description A provider attests less than Vekro owes: investigate now.
+             * @default false
+             */
+            reserves_shortfall: boolean;
+            /**
+             * Server Time
+             * Format: date-time
+             */
+            server_time: string;
+        };
         /**
          * BuyerReconfirmationRequest
          * @description Buyer response after seller remediation action.
@@ -1838,6 +2213,19 @@ export interface components {
          * @enum {string}
          */
         CollectionOutcome: "SUCCEEDED" | "FAILED_DEFINITE" | "UNKNOWN";
+        /** CompleteManualRefundRequest */
+        CompleteManualRefundRequest: {
+            /**
+             * Note
+             * @description What support did, for the audit trail.
+             */
+            note: string;
+            /**
+             * Provider Refund Reference
+             * @description Pesapal's reference for the refund, if any.
+             */
+            provider_refund_reference?: string | null;
+        };
         /**
          * CreateListingRequest
          * @description Payload used by sellers to create listings.
@@ -1903,6 +2291,13 @@ export interface components {
              * @description Optional. The escrow amount is always the listing price; if sent, it must match the listing price exactly or the request is rejected.
              */
             amount?: number | string | null;
+            /**
+             * Payment Method
+             * @description mpesa: an M-Pesa prompt on the buyer's phone (payment.kind STK_PROMPT). card: Pesapal's hosted card checkout (payment.kind REDIRECT, send the buyer to payment.redirect_url). Card is refused with 422 when it is not configured.
+             * @default mpesa
+             * @enum {string}
+             */
+            payment_method: "mpesa" | "card";
         };
         /** DeviceSessionResponse */
         DeviceSessionResponse: {
@@ -2150,10 +2545,82 @@ export interface components {
              */
             created_at: string;
         };
+        /** EventAnchorResponse */
+        EventAnchorResponse: {
+            /** Batch Id */
+            batch_id: number;
+            /**
+             * Seq
+             * @description Gapless global position of the event.
+             */
+            seq: number;
+            /** Leaf Index */
+            leaf_index: number;
+            /** Leaf Count */
+            leaf_count: number;
+            /**
+             * Batch Root
+             * @description Vekro's copy of the batch root. A verifier reads the root from the registry.
+             */
+            batch_root: string;
+            /** Batch Status */
+            batch_status: string;
+            /** Tx Hash */
+            tx_hash?: string | null;
+            /** Block Number */
+            block_number?: number | null;
+            /**
+             * Proof
+             * @description RFC 6962 inclusion proof, leaf upwards.
+             */
+            proof: components["schemas"]["ProofStepResponse"][];
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * LiabilitiesProofResponse
+         * @description Proof that this order's held amount is counted in Vekro's anchored total (M24 B2).
+         */
+        LiabilitiesProofResponse: {
+            /** Snapshot Id */
+            snapshot_id: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            root: components["schemas"]["SumNodeResponse"];
+            /**
+             * Total
+             * @description KES held for all buyers at the snapshot.
+             */
+            total: string;
+            /** Leaf Count */
+            leaf_count: number;
+            leaf: components["schemas"]["SumLeafResponse"];
+            /** Proof */
+            proof: components["schemas"]["SumProofStepResponse"][];
+            /** @description The liabilities_snapshot event in the global chain, with its batch proof; null until anchoring is on. */
+            anchor: components["schemas"]["VerificationEventResponse"] | null;
+        };
+        /** LiabilitiesStatus */
+        LiabilitiesStatus: {
+            /** Snapshot Id */
+            snapshot_id: number;
+            /** Total */
+            total: string;
+            /** Leaf Count */
+            leaf_count: number;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Anchored */
+            anchored: boolean;
         };
         /**
          * ListingListResponse
@@ -2361,6 +2828,48 @@ export interface components {
              */
             detail: string;
         };
+        /** ManualRefundListResponse */
+        ManualRefundListResponse: {
+            /** Items */
+            items: components["schemas"]["ManualRefundResponse"][];
+        };
+        /** ManualRefundResponse */
+        ManualRefundResponse: {
+            /**
+             * Attempt Id
+             * Format: uuid
+             */
+            attempt_id: string;
+            /**
+             * Transaction Id
+             * Format: uuid
+             */
+            transaction_id: string;
+            /**
+             * Reference
+             * @description The order reference, as on Pesapal (merchant reference).
+             */
+            reference: string;
+            /** Amount */
+            amount: string;
+            /** Currency */
+            currency: string;
+            /**
+             * Queued At
+             * Format: date-time
+             */
+            queued_at: string;
+            /**
+             * Pesapal Order Tracking Id
+             * @description The Pesapal order that took the card payment; refund it in Pesapal.
+             */
+            pesapal_order_tracking_id: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending" | "completed";
+        };
         /**
          * MarkAllReadResponse
          * @description How many notifications were marked read, and what is still unread (always 0).
@@ -2433,7 +2942,7 @@ export interface components {
             attempt_id?: string | null;
             /**
              * Provider Reference
-             * @description Provider reference for the rail operation.
+             * @description Keyed provider_ref (HMAC) of the provider's reference, never the raw value: some provider references carry the payer's phone number (#241).
              */
             provider_reference?: string | null;
             /**
@@ -2443,7 +2952,7 @@ export interface components {
             rail_name?: string | null;
             /**
              * Correlation Id
-             * @description Correlation key combining transaction_id, provider_reference, and rail.
+             * @description Correlation key combining transaction_id, provider_ref, and rail.
              */
             correlation_id: string;
             /**
@@ -2726,7 +3235,7 @@ export interface components {
              * Failure Reason
              * @description Why the prompt failed, when status is failed.
              */
-            failure_reason?: ("cancelled" | "wrong_pin" | "insufficient_funds" | "timeout" | "provider_error") | null;
+            failure_reason?: ("cancelled" | "wrong_pin" | "insufficient_funds" | "timeout" | "provider_error" | "declined") | null;
             /**
              * Sent At
              * Format: date-time
@@ -2797,6 +3306,23 @@ export interface components {
             detail: string;
         };
         /**
+         * PesapalIpnAnswer
+         * @description The acknowledgement Pesapal documents for an IPN call.
+         */
+        PesapalIpnAnswer: {
+            /** Ordernotificationtype */
+            orderNotificationType: string;
+            /** Ordertrackingid */
+            orderTrackingId: string;
+            /** Ordermerchantreference */
+            orderMerchantReference: string;
+            /**
+             * Status
+             * @description 200: received and processed; 500: refused or not processed.
+             */
+            status: number;
+        };
+        /**
          * PhoneCodeRequest
          * @description Ask for a one-time sign-in code by SMS.
          */
@@ -2844,6 +3370,49 @@ export interface components {
              * @description The 6-digit code from the SMS.
              */
             code: string;
+        };
+        /** ProofStepResponse */
+        ProofStepResponse: {
+            /**
+             * Sibling
+             * @description 0x-prefixed 32-byte sibling hash.
+             */
+            sibling: string;
+            /**
+             * Side
+             * @description Where the sibling sits.
+             * @enum {string}
+             */
+            side: "left" | "right";
+        };
+        /** PublicBatchResponse */
+        PublicBatchResponse: {
+            /** Batch Id */
+            batch_id: number;
+            /** Root */
+            root: string;
+            /** Prev Root */
+            prev_root: string;
+            /** First Seq */
+            first_seq: number;
+            /** Last Seq */
+            last_seq: number;
+            /** Leaf Count */
+            leaf_count: number;
+            /** Status */
+            status: string;
+            /** Tx Hash */
+            tx_hash?: string | null;
+            /** Block Number */
+            block_number?: number | null;
+            /** Confirmed At */
+            confirmed_at?: string | null;
+            /** Chain Id */
+            chain_id: number;
+            /** Network */
+            network?: string | null;
+            /** Registry Address */
+            registry_address: string;
         };
         /**
          * PublicOrderSummary
@@ -2957,6 +3526,29 @@ export interface components {
             evidence?: {
                 [key: string]: unknown;
             };
+        };
+        /**
+         * ReservesStatus
+         * @description The latest reserves reconciliation for one custody provider (M24 B2).
+         */
+        ReservesStatus: {
+            /** Provider */
+            provider: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "covered" | "shortfall" | "incomplete" | "unavailable" | "not_applicable";
+            /** Method */
+            method: string;
+            /** Liability Total */
+            liability_total: string;
+            /** Attested Total */
+            attested_total: string | null;
+            /** Difference */
+            difference: string | null;
+            /** At */
+            at: string;
         };
         /** ResetCodeRequest */
         ResetCodeRequest: {
@@ -3142,6 +3734,66 @@ export interface components {
              */
             server_time: string;
         };
+        /** SellerTrackRecordResponse */
+        SellerTrackRecordResponse: {
+            /** Seller Id */
+            seller_id: string;
+            chain: components["schemas"]["VerificationChainResponse"];
+            /**
+             * Completed Sales
+             * @description Completed sales in Vekro's records (unverified).
+             */
+            completed_sales: number;
+            /**
+             * Recorded Sales
+             * @description Of those, how many have a track-record event.
+             */
+            recorded_sales: number;
+            /**
+             * Sales
+             * @description Newest first, at most 200: each sale's public payload (seller, outcome, amount band, unlinkable sale_ref) with its proof. Count as verified only the sales whose proof matches the registry root and whose payload names this seller.
+             */
+            sales: components["schemas"]["VerificationEventResponse"][];
+            /**
+             * Server Time
+             * Format: date-time
+             */
+            server_time: string;
+        };
+        /** SumLeafResponse */
+        SumLeafResponse: {
+            /** Salt */
+            salt: string;
+            /**
+             * Order Commit
+             * @description keccak256("vekro-liability-order:" + the order id): recompute it to check the leaf is this order's.
+             */
+            order_commit: string;
+            /** Amount Cents */
+            amount_cents: string;
+        };
+        /** SumNodeResponse */
+        SumNodeResponse: {
+            /** Hash */
+            hash: string;
+            /**
+             * Sum
+             * @description Cents, as a decimal string (may exceed 2**53).
+             */
+            sum: string;
+        };
+        /** SumProofStepResponse */
+        SumProofStepResponse: {
+            /** Sibling Hash */
+            sibling_hash: string;
+            /** Sibling Sum */
+            sibling_sum: string;
+            /**
+             * Side
+             * @enum {string}
+             */
+            side: "left" | "right";
+        };
         /**
          * TimelineEventResponse
          * @description One step in an order's history, in plain words.
@@ -3220,6 +3872,27 @@ export interface components {
              * @enum {string}
              */
             custody_provider: "econfirm" | "simulated";
+            /**
+             * Payment Method
+             * @description How the buyer pays: mpesa (STK prompt) or card (Pesapal).
+             * @default mpesa
+             * @enum {string}
+             */
+            payment_method: "mpesa" | "card";
+            /**
+             * Collection Rail
+             * @description The rail that collects the money. daraja and pesapal collect into the merchant's account (collection, not third-party escrow); econfirm is third-party custody; simulated moves no money.
+             * @default simulated
+             * @enum {string}
+             */
+            collection_rail: "simulated" | "daraja" | "pesapal" | "econfirm";
+            /**
+             * Payment Mode
+             * @description sandbox: a test payment, no real money moves. live: real money was collected. Show sandbox payments as tests, never as real money.
+             * @default sandbox
+             * @enum {string}
+             */
+            payment_mode: "sandbox" | "live";
             /**
              * Created At
              * Format: date-time
@@ -3303,6 +3976,27 @@ export interface components {
              * @enum {string}
              */
             custody_provider: "econfirm" | "simulated";
+            /**
+             * Payment Method
+             * @description How the buyer pays: mpesa (STK prompt) or card (Pesapal).
+             * @default mpesa
+             * @enum {string}
+             */
+            payment_method: "mpesa" | "card";
+            /**
+             * Collection Rail
+             * @description The rail that collects the money. daraja and pesapal collect into the merchant's account (collection, not third-party escrow); econfirm is third-party custody; simulated moves no money.
+             * @default simulated
+             * @enum {string}
+             */
+            collection_rail: "simulated" | "daraja" | "pesapal" | "econfirm";
+            /**
+             * Payment Mode
+             * @description sandbox: a test payment, no real money moves. live: real money was collected. Show sandbox payments as tests, never as real money.
+             * @default sandbox
+             * @enum {string}
+             */
+            payment_mode: "sandbox" | "live";
             /**
              * Created At
              * Format: date-time
@@ -3441,6 +4135,27 @@ export interface components {
              */
             custody_provider: "econfirm" | "simulated";
             /**
+             * Payment Method
+             * @description How the buyer pays: mpesa (STK prompt) or card (Pesapal).
+             * @default mpesa
+             * @enum {string}
+             */
+            payment_method: "mpesa" | "card";
+            /**
+             * Collection Rail
+             * @description The rail that collects the money. daraja and pesapal collect into the merchant's account (collection, not third-party escrow); econfirm is third-party custody; simulated moves no money.
+             * @default simulated
+             * @enum {string}
+             */
+            collection_rail: "simulated" | "daraja" | "pesapal" | "econfirm";
+            /**
+             * Payment Mode
+             * @description sandbox: a test payment, no real money moves. live: real money was collected. Show sandbox payments as tests, never as real money.
+             * @default sandbox
+             * @enum {string}
+             */
+            payment_mode: "sandbox" | "live";
+            /**
              * Created At
              * Format: date-time
              */
@@ -3509,6 +4224,32 @@ export interface components {
              */
             updated_at: string;
         };
+        /** TransactionVerificationResponse */
+        TransactionVerificationResponse: {
+            /** Version */
+            version: number;
+            /** Transaction Id */
+            transaction_id: string;
+            /** Reference */
+            reference: string;
+            chain: components["schemas"]["VerificationChainResponse"];
+            current: components["schemas"]["VerificationCurrentResponse"];
+            /**
+             * Events
+             * @description The order's chain, oldest first.
+             */
+            events: components["schemas"]["VerificationEventResponse"][];
+            /**
+             * Linked Events
+             * @description Provider events from the global chain that this order's chain links to.
+             */
+            linked_events: components["schemas"]["VerificationEventResponse"][];
+            /**
+             * Server Time
+             * Format: date-time
+             */
+            server_time: string;
+        };
         /**
          * UnreadCountResponse
          * @description Unread in-app notifications, for the bell badge.
@@ -3546,6 +4287,19 @@ export interface components {
          * @enum {string}
          */
         UserRole: "buyer" | "seller" | "admin";
+        /** UssdPinRequest */
+        UssdPinRequest: {
+            /**
+             * Pin
+             * @description 4 digits, for sensitive actions over USSD.
+             */
+            pin: string;
+            /**
+             * Password
+             * @description The account password.
+             */
+            password: string;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -3558,6 +4312,59 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** VerificationChainResponse */
+        VerificationChainResponse: {
+            /** Chain Id */
+            chain_id: number;
+            /** Network */
+            network?: string | null;
+            /**
+             * Registry Address
+             * @description Informational. Verifiers use the registry address they were built with.
+             */
+            registry_address?: string | null;
+        };
+        /** VerificationCurrentResponse */
+        VerificationCurrentResponse: {
+            /**
+             * Status
+             * @description Live transaction status, to compare with the last event.
+             */
+            status: string;
+            /**
+             * Amount
+             * @description Live amount as a 2-place decimal string.
+             */
+            amount: string;
+        };
+        /** VerificationEventResponse */
+        VerificationEventResponse: {
+            /** Event Type */
+            event_type: string;
+            /** Schema Version */
+            schema_version: number;
+            /**
+             * Payload
+             * @description Canonical JSON (RFC 8785), exactly as hashed.
+             */
+            payload: string;
+            /** Salt */
+            salt: string;
+            /** Prev Event Hash */
+            prev_event_hash: string;
+            /**
+             * Leaf Hash
+             * @description keccak256(0x00 || salt || prev_event_hash || payload).
+             */
+            leaf_hash: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** @description Null while the event waits for a batch. */
+            anchor?: components["schemas"]["EventAnchorResponse"] | null;
         };
     };
     responses: never;
@@ -4744,6 +5551,129 @@ export interface operations {
             };
         };
     };
+    refresh_transaction_card_payment_transactions__transaction_id__payment_refresh_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentInstructionResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated user is not a buyer. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Transaction not found, or the caller is not its buyer. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a card order. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    pay_transaction_by_card_instead_transactions__transaction_id__payment_card_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentInstructionResponse"];
+                };
+            };
+            /** @description Switched, but Pesapal refused the checkout (failed_to_initiate); POST /payment/resend starts a new one. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated user is not a buyer. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Transaction not found, or the caller is not its buyer. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not awaiting payment, already a card order, an eConfirm order, or an M-Pesa prompt is still open (with a Retry-After header). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Card payments are not available right now. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     resend_transaction_payment_prompt_transactions__transaction_id__payment_resend_post: {
         parameters: {
             query?: never;
@@ -5838,6 +6768,7 @@ export interface operations {
         parameters: {
             query?: {
                 transaction_id?: string | null;
+                /** @description The provider's own reference, or a provider_ref read off an event. */
                 provider_reference?: string | null;
                 rail_name?: string | null;
                 action?: string | null;
@@ -5881,6 +6812,220 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+        };
+    };
+    admin_anchoring_status_admin_anchoring_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnchoringStatusResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated user is not an admin. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_transaction_verification_transactions__transaction_id__verification_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransactionVerificationResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Transaction not found, or the caller is not a party to it. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_liabilities_proof_transactions__transaction_id__liabilities_proof_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LiabilitiesProofResponse"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the caller's order, or no held money for it in the latest snapshot. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_public_batch_anchoring_batches__batch_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicBatchResponse"];
+                };
+            };
+            /** @description No such batch. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too many lookups. See Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_seller_track_record_sellers__seller_id__track_record_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seller_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SellerTrackRecordResponse"];
+                };
+            };
+            /** @description No such seller. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too many lookups. See Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -6130,6 +7275,201 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    daraja_stk_callback_payments_mpesa_callback_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    pesapal_card_ipn_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PesapalIpnAnswer"];
+                };
+            };
+        };
+    };
+    pesapal_card_ipn_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PesapalIpnAnswer"];
+                };
+            };
+        };
+    };
+    admin_list_manual_refunds_admin_refunds_manual_get: {
+        parameters: {
+            query?: {
+                include_completed?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManualRefundListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    admin_complete_manual_refund_admin_refunds__attempt_id__complete_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompleteManualRefundRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManualRefundResponse"];
+                };
+            };
+            /** @description No manual refund with this id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not completable yet: approval not anchored, or not enough held money. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    africastalking_ussd_ussd_africastalking__token__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Wrong token, caller not allowed, or USSD is off. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
@@ -6814,6 +8154,44 @@ export interface operations {
                 content?: never;
             };
             /** @description Not a seller. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_ussd_pin_account_ussd_pin_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UssdPinRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong password. */
             403: {
                 headers: {
                     [name: string]: unknown;

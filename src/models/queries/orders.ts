@@ -17,9 +17,11 @@ import {
   sellerReceived,
   sellerResolution,
   rejectAtDoor,
+  payByCard,
+  refreshCardPayment,
   resendPayment,
 } from '@/models/api/transactions'
-import type { DisputeCategory, Order, OrderListFilter } from '@/models/domain/order'
+import type { DisputeCategory, Order, OrderListFilter, PaymentMethod } from '@/models/domain/order'
 
 export const orderKeys = {
   all: ['orders'] as const,
@@ -100,7 +102,36 @@ export function useOrder(id: string, options: OrderOptions = {}) {
 
 /** POST /transactions for a listing. */
 export function useCreateOrder() {
-  return useMutation({ mutationFn: (listingId: string) => createOrder(listingId) })
+  return useMutation({
+    mutationFn: ({ listingId, method }: { listingId: string; method: PaymentMethod }) =>
+      createOrder(listingId, method),
+  })
+}
+
+/** Card orders: check the payment now; the cached order picks up the prompt it returns. */
+export function useRefreshCardPayment(orderId: string) {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: () => refreshCardPayment(orderId),
+    onSuccess: (payment) => {
+      client.setQueryData<Order>(orderKeys.detail(orderId), (order) =>
+        order ? { ...order, payment } : order,
+      )
+    },
+  })
+}
+
+/** Pay by card instead: the cached order becomes a card order with its checkout at once. */
+export function usePayByCard(orderId: string) {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: () => payByCard(orderId),
+    onSuccess: (payment) => {
+      client.setQueryData<Order>(orderKeys.detail(orderId), (order) =>
+        order ? { ...order, payment, collection: { ...order.collection, rail: 'pesapal' } } : order,
+      )
+    },
+  })
 }
 
 /** Resend the STK prompt; the cached order picks up the new prompt at once. */

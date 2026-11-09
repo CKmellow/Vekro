@@ -64,7 +64,7 @@ export function ImageUploader({
           >
             <img src={photo.previewUrl} alt={photo.name} className="size-full object-cover" />
             {i === 0 && (
-              <span className="type-label absolute top-2 left-2 rounded-full bg-emerald-700 px-2 py-0.5 text-sand-0">
+              <span className="type-label absolute top-2 left-2 rounded-full bg-primary px-2 py-0.5 text-on-primary">
                 Cover
               </span>
             )}

@@ -1,4 +1,4 @@
-import { ChevronDown, Copy, ExternalLink, X } from 'lucide-react'
+import { ChevronDown, Copy, CreditCard, ExternalLink, X } from 'lucide-react'
 import { m, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router'
@@ -23,6 +23,18 @@ const FAILURES: Record<Extract<PaymentVariant, { kind: 'failed' }>['reason'], [s
   insufficient_funds: ["There wasn't enough in M-Pesa.", 'Top up M-Pesa and try again.'],
   timeout: ['The M-Pesa request expired.', 'Nothing was charged. Send a new request to try again.'],
   provider_error: ["M-Pesa didn't go through.", "This is on M-Pesa's side. Try again in a minute."],
+  declined: ['The payment was declined.', 'Nothing was charged. Try again or pay another way.'],
+}
+
+/** Card payments (Pesapal's hosted page) fail in card terms, never M-Pesa ones. */
+const CARD_FAILURES: Record<Extract<PaymentVariant, { kind: 'failed' }>['reason'], [string, string]> = {
+  ...FAILURES,
+  cancelled: ['You cancelled the card payment.', 'Nothing was charged.'],
+  declined: ['Your card was declined.', 'Nothing was charged. Try again with another card.'],
+  provider_error: [
+    "The card payment didn't go through.",
+    "We couldn't confirm it with Pesapal. Contact support if you were charged.",
+  ],
 }
 
 /** "Resend prompt (0:18)" while the server cooldown runs. */
@@ -149,15 +161,17 @@ export function PaymentPage() {
   const ring: LockRingState = variant.kind === 'success' ? 'locked' : 'open'
   const failure =
     variant.kind === 'failed'
-      ? FAILURES[variant.reason]
+      ? (variant.card ? CARD_FAILURES : FAILURES)[variant.reason]
       : variant.kind === 'timed_out'
         ? FAILURES.timeout
-        : variant.kind === 'not_started'
-          ? ([
-              "We couldn't send the M-Pesa request.",
-              'Nothing was charged. Send a new request to try again.',
-            ] as const)
-          : null
+        : variant.kind === 'not_started' && order.card
+          ? (["We couldn't start the card checkout.", 'Nothing was charged. Try again in a minute.'] as const)
+          : variant.kind === 'not_started'
+            ? ([
+                "We couldn't send the M-Pesa request.",
+                'Nothing was charged. Send a new request to try again.',
+              ] as const)
+            : null
 
   return (
     <div className="flex flex-col gap-5">
@@ -174,11 +188,7 @@ export function PaymentPage() {
           amount={order.amount}
           status={failed ? NOT_THROUGH : order.status}
           ring={ring}
-          hint={
-            variant.kind === 'success'
-              ? 'Held until you confirm delivery'
-              : 'Your money goes into the Vekro vault, not to the seller.'
-          }
+          hint={variant.kind === 'success' ? 'Held until you confirm delivery' : order.payingHint}
         />
         <p className="type-body-sm flex items-center justify-end gap-1 text-text-muted">
           Order reference <span className="type-mono text-text">{order.reference}</span>
@@ -192,10 +202,8 @@ export function PaymentPage() {
           </button>
         </p>
       </div>
-      {order.simulated && (
-        <p className="type-body-sm rounded-md bg-lake-50 px-4 py-3 text-lake-600">
-          Demo payment: Vekro is in test mode, so no real money moves.
-        </p>
+      {order.paymentNote && (
+        <p className="type-body-sm rounded-md bg-lake-50 px-4 py-3 text-lake-600">{order.paymentNote}</p>
       )}
 
       <div aria-live="polite" className="flex flex-col gap-5">
@@ -209,7 +217,7 @@ export function PaymentPage() {
             </div>
             <MoneyPath
               buyer={{ title: 'You' }}
-              vault={{ title: 'Vekro vault', detail: 'Held safely' }}
+              vault={{ title: order.holder, detail: 'Held safely' }}
               seller={{ title: order.sellerName }}
               position="vault"
             />
@@ -250,9 +258,10 @@ export function PaymentPage() {
 
         {variant.kind === 'redirect' && (
           <div>
-            <h2 className="type-headline text-text">Continue to secure checkout</h2>
+            <h2 className="type-headline text-text">Continue to secure card checkout</h2>
             <p className="type-body-md text-ink-600">
-              You&apos;ll pay {amount} on a secure page, then come back here automatically.
+              You&apos;ll pay {amount} by card on Pesapal&apos;s secure page, then come back here
+              automatically. Vekro never sees your card number.
             </p>
           </div>
         )}
@@ -274,7 +283,7 @@ export function PaymentPage() {
             href={variant.url}
             className="type-title inline-flex h-13 w-full items-center justify-center gap-2 rounded-md bg-primary text-on-primary"
           >
-            Continue to secure checkout
+            Continue to secure card checkout
             <ExternalLink aria-hidden="true" className="size-5" />
           </a>
         ) : failed ? (
@@ -284,7 +293,10 @@ export function PaymentPage() {
             loading={page.resending}
             disabled={page.resendInSeconds > 0}
           >
-            {withWait(variant.kind === 'failed' ? 'Try again' : 'Send a new request', page.resendInSeconds)}
+            {withWait(
+              variant.kind === 'failed' || order.card ? 'Try again' : 'Send a new request',
+              page.resendInSeconds,
+            )}
           </Button>
         ) : (
           <Button
@@ -297,7 +309,13 @@ export function PaymentPage() {
             {withWait('Resend prompt', page.resendInSeconds)}
           </Button>
         )}
-        {variant.kind !== 'success' && variant.kind !== 'redirect' && (
+        {page.canPayByCard && (
+          <Button variant="secondary" fullWidth onClick={page.payByCard} loading={page.switchingToCard}>
+            <CreditCard aria-hidden="true" className="size-5" />
+            Pay by card instead
+          </Button>
+        )}
+        {variant.kind !== 'success' && variant.kind !== 'redirect' && !order.card && (
           <Button variant="ghost" fullWidth onClick={page.changeNumber}>
             Change phone number
           </Button>

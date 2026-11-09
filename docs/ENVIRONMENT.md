@@ -11,6 +11,9 @@ How to configure the frontend, and the backend settings it depends on. Copy `.en
 | `VITE_SUPPORT_WHATSAPP` | browser (X3) | empty | WhatsApp number | Empty hides "WhatsApp support". |
 | `VITE_SUPPORT_EMAIL` | browser (X3) | empty | support address | Empty hides "Email support" and "Report a problem with this page". |
 | `VITE_SUPPORT_HOURS` | browser (X3) | empty | `Every day, 8:00 to 20:00 EAT` | Shown under the contact buttons. |
+| `VITE_ANCHOR_CHAIN_ID` | browser (B3, S6) | empty, or `31337` with Anvil | `84532` (Base Sepolia) or `8453` (Base) | The public chain the "Verified record" panel checks orders on. The panel is hidden unless all three anchor variables are set. |
+| `VITE_ANCHOR_REGISTRY_ADDRESS` | browser (B3, S6) | empty, or `0x5FbDB2315678afecb367f032d93F642f64180aa3` with Anvil | from the backend's `contracts/deployments/<network>.json` | Pinned at build time and never taken from the API, so the server cannot choose the roots it is checked against. |
+| `VITE_ANCHOR_RPC_URL` | browser (B3, S6), CSP | empty, or `http://127.0.0.1:8545` | a public RPC, e.g. `https://sepolia.base.org` | Its origin is added to the CSP `connect-src` at build time. |
 | `VEKRO_API_TARGET` | Vite dev server | `http://127.0.0.1:8000` | not used | Where the dev server proxies `/api`. |
 | `OPENAPI_URL` | `npm run api:sync` | `http://127.0.0.1:8000/openapi.json` | not used | Or `npm run api:sync -- --file path/to/openapi.json`. |
 | `STITCH_API_KEY` | design tooling | your key, in `.env` | not used | Never committed or printed. |

@@ -26,7 +26,7 @@ export function useShell() {
     openReturns: status ? (status.return_in_transit ?? 0) + (status.return_received ?? 0) : undefined,
     onSellerSearch: (q: string) => navigate(`/seller/orders?q=${encodeURIComponent(q.trim())}`),
     onAdminSignOut: () =>
-      signOut.mutate(undefined, { onSettled: () => navigate('/admin/login', { replace: true }) }),
+      signOut.mutate(undefined, { onSettled: () => navigate('/login', { replace: true }) }),
     onAdminSearch: (q: string) => navigate(`/admin/transactions?q=${encodeURIComponent(q.trim())}`),
   }
 }

@@ -11,7 +11,10 @@ const BUDGETS = {
   'B3 order tracker (the SMS link)': { entries: page('OrderTrackerPage'), max: 230 * KB },
   'B1 pay (the Trust Link)': { entries: page('PayPage'), max: 265 * KB },
   'B4 inspection (at the door)': { entries: page('InspectionPage'), max: 230 * KB },
-  'B8 sign in': { entries: page('BuyerSignInPage'), max: 200 * KB },
+  'log in (every role)': {
+    entries: ['index.html', 'src/views/pages/shared/LogInPage.tsx'],
+    max: 210 * KB,
+  },
   'landing and help': { entries: ['index.html', 'src/app/router/screens/shared.ts'], max: 210 * KB },
 }
 
@@ -29,7 +32,12 @@ function files(entries) {
   const walk = (key) => {
     if (seen.has(key)) return
     seen.add(key)
-    const chunk = manifest[key]
+    // A lazily imported page can be keyed by its chunk name ("_LogInPage-<hash>.js") instead of its path.
+    const base = key
+      .split('/')
+      .pop()
+      ?.replace(/\.tsx?$/, '')
+    const chunk = manifest[key] ?? Object.entries(manifest).find(([k]) => k.startsWith(`_${base}-`))?.[1]
     if (!chunk) throw new Error(`Not in the manifest: ${key}`)
     out.add(chunk.file)
     for (const css of chunk.css ?? []) out.add(css)

@@ -16,7 +16,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { AnimatePresence, m, useReducedMotion } from 'motion/react'
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useSellerOrder, type ActionPanel, type PayoutLine } from '@/controllers/useSellerOrder'
 import { cn } from '@/lib/cn'
@@ -36,6 +36,9 @@ import { Skeleton, SkeletonGroup } from '../../components/ui/Skeleton'
 import { Tabs } from '../../components/ui/Tabs'
 import { TimelinePanel } from '../buyer/timeline/TimelinePanel'
 import { TransitionDialog } from './orders/TransitionDialog'
+
+// Checked after the page shows: the verifier and its hashing load on their own.
+const VerifiedRecordSection = lazy(() => import('../shared/VerifiedRecordSection'))
 
 const PANEL_TONE: Record<ActionPanel['tone'], { box: string; icon: string }> = {
   sand: { box: 'bg-sand-100', icon: 'text-ink-600' },
@@ -164,7 +167,7 @@ export function OrderDetailPage() {
       <Card>
         <MoneyPath
           buyer={{ title: 'Buyer', detail: order.buyer.name }}
-          vault={{ title: 'Vekro vault' }}
+          vault={{ title: order.holder }}
           seller={{ title: 'You' }}
           position={order.moneyAt}
         />
@@ -207,10 +210,8 @@ export function OrderDetailPage() {
         </AnimatePresence>
       </div>
 
-      {order.simulated && (
-        <p className="type-body-sm rounded-md bg-lake-50 px-4 py-3 text-lake-600">
-          Demo order: Vekro is in test mode, so no real money moves.
-        </p>
+      {order.paymentNote && (
+        <p className="type-body-sm rounded-md bg-lake-50 px-4 py-3 text-lake-600">{order.paymentNote}</p>
       )}
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -343,7 +344,12 @@ export function OrderDetailPage() {
             ]}
           />
         </div>
-        <div className="lg:col-span-4">{payoutCard}</div>
+        <div className="flex flex-col gap-4 lg:col-span-4">
+          {payoutCard}
+          <Suspense fallback={null}>
+            <VerifiedRecordSection orderId={order.id} version={order.status.label} />
+          </Suspense>
+        </div>
       </div>
 
       {action && (

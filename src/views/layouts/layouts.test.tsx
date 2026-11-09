@@ -1,17 +1,37 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
+import { themeStore } from '@/lib/theme'
 import { AdminLayout } from './AdminLayout'
 import { BuyerLayout } from './BuyerLayout'
 
 const at = (path: string, ui: React.ReactNode) =>
   render(<MemoryRouter initialEntries={[path]}>{ui}</MemoryRouter>)
 
+afterEach(() => {
+  localStorage.clear()
+  themeStore.reset()
+  document.documentElement.classList.remove('dark')
+})
+
 describe('BuyerLayout', () => {
   it('shows the escrow promise in the header and one main column', () => {
     at('/order/1', <BuyerLayout>Tracker</BuyerLayout>)
     expect(screen.getByRole('banner')).toHaveTextContent('Protected by Vekro Escrow')
     expect(screen.getByRole('main')).toHaveTextContent('Tracker')
+  })
+
+  it('lets the buyer pick a theme, remembered on this device (M25, #292)', async () => {
+    at('/order/1', <BuyerLayout>Tracker</BuyerLayout>)
+    const group = screen.getByRole('group', { name: 'Theme' })
+    expect(screen.getByRole('radio', { name: 'Same as device' })).toBeChecked()
+    await userEvent.click(screen.getByRole('radio', { name: 'Dark' }))
+    expect(document.documentElement).toHaveClass('dark')
+    expect(localStorage.getItem('vekro.theme')).toBe('dark')
+    await userEvent.click(screen.getByRole('radio', { name: 'Light' }))
+    expect(document.documentElement).not.toHaveClass('dark')
+    expect(group).toBeInTheDocument()
   })
 })
 

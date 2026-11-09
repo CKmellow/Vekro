@@ -36,3 +36,25 @@ describe('design tokens', () => {
     expect(tokens).toBe(exportTokens())
   })
 })
+
+describe('dark mode (M25, #292)', () => {
+  const dark = readFileSync('src/styles/dark.css', 'utf8')
+  const declared = (css: string) =>
+    new Map([...css.matchAll(/(--[\w-]+):\s*([^;]+);/g)].map((m) => [m[1], m[2]]))
+  const light = declared(tokens + theme)
+
+  it('redefines the roles from DESIGN.md dark roles', () => {
+    expect(dark).toContain('--color-background: var(--color-dark-background);')
+    expect(dark).toContain('--color-surface: var(--color-dark-surface);')
+    expect(dark).toContain('--color-text: var(--color-dark-text);')
+  })
+
+  it('gives fixed screens (the admin console) exactly the light values back', () => {
+    const block = dark.split('html.dark .theme-fixed {')[1]?.split('}')[0] ?? ''
+    const restored = declared(block)
+    expect(restored.size).toBeGreaterThan(20)
+    for (const [name, value] of restored) expect(value, name).toBe(light.get(name))
+    const overridden = declared(dark.split('html.dark {')[1]?.split('\n}')[0] ?? '')
+    for (const name of overridden.keys()) expect(restored.has(name), name).toBe(true)
+  })
+})

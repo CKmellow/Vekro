@@ -2,6 +2,8 @@ import { Menu, X } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { cn } from '@/lib/cn'
+import { useTheme } from '@/controllers/useTheme'
+import { ThemeSwitch } from '../components/ui/ThemeSwitch'
 import { VekroMark } from '../components/ui/VekroMark'
 
 const NAV = [
@@ -13,6 +15,7 @@ const NAV = [
 export function PublicLayout({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const theme = useTheme()
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
     onScroll()
@@ -103,11 +106,11 @@ export function PublicLayout({ children }: { children: ReactNode }) {
             <Link to="/register" className="hover:text-text">
               Start selling
             </Link>
-            <Link to="/admin/login" className="type-body-sm hover:text-text">
-              Support console
-            </Link>
           </nav>
-          <p className="type-body-sm text-text-muted">© 2026 Vekro</p>
+          <div className="flex items-center gap-4">
+            <ThemeSwitch value={theme.preference} onChange={theme.setPreference} />
+            <p className="type-body-sm text-text-muted">© 2026 Vekro</p>
+          </div>
         </div>
       </footer>
     </div>

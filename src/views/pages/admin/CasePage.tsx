@@ -202,7 +202,7 @@ export function CasePage() {
               <div className="rounded-md bg-surface p-4 text-text [color-scheme:light]">
                 <MoneyPath
                   buyer={{ title: 'Buyer' }}
-                  vault={{ title: 'Vekro vault' }}
+                  vault={{ title: c.decided.holder }}
                   seller={{ title: 'Seller' }}
                   position={c.decided.moneyAt}
                 />

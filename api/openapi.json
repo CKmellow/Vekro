@@ -76,11 +76,11 @@
           "401": {
             "description": "Invalid phone or password."
           },
-          "422": {
-            "description": "Request payload failed validation."
-          },
           "429": {
             "description": "Too many login attempts or account temporarily locked."
+          },
+          "422": {
+            "description": "Request payload failed validation."
           }
         }
       }
@@ -114,11 +114,11 @@
               }
             }
           },
-          "422": {
-            "description": "Invalid phone number."
-          },
           "429": {
             "description": "Too soon after the last code, too many codes, or locked after wrong tries. See Retry-After."
+          },
+          "422": {
+            "description": "Invalid phone number."
           }
         }
       }
@@ -1059,11 +1059,11 @@
           "404": {
             "description": "Listing not found."
           },
-          "422": {
-            "description": "Business-rule or payload validation failed."
-          },
           "503": {
             "description": "Payment initiation failed before a partial-success response could be returned."
+          },
+          "422": {
+            "description": "Business-rule or payload validation failed."
           }
         }
       },
@@ -1315,6 +1315,114 @@
           },
           "404": {
             "description": "Transaction not found, or the caller is not a party to it."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/{transaction_id}/payment/refresh": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Check a card payment now (buyer only)",
+        "description": "For a card order, ask Pesapal for the payment's status now, for example when the buyer lands on the return page before Pesapal's IPN. The result is read from Pesapal, never from the return URL; funding is recorded only for a completed payment of the exact amount. Call it once on the return page, then poll the order.",
+        "operationId": "refresh_transaction_card_payment_transactions__transaction_id__payment_refresh_post",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentInstructionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Authenticated user is not a buyer."
+          },
+          "404": {
+            "description": "Transaction not found, or the caller is not its buyer."
+          },
+          "422": {
+            "description": "Not a card order."
+          }
+        }
+      }
+    },
+    "/transactions/{transaction_id}/payment/card": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Pay by card instead (buyer only)",
+        "description": "Switch an unpaid M-Pesa order to a Pesapal card checkout and return the REDIRECT instruction. Allowed only while the order awaits payment and no M-Pesa prompt is open: a prompt still inside its lifetime answers 409 with Retry-After; an older pending one is first checked with M-Pesa (if it was paid, the order is locked and the switch refused). The switch is recorded on the order's public record. From then on the order is paid by card only; resend restarts a failed card checkout.",
+        "operationId": "pay_transaction_by_card_instead_transactions__transaction_id__payment_card_post",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentInstructionResponse"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Switched, but Pesapal refused the checkout (failed_to_initiate); POST /payment/resend starts a new one."
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Authenticated user is not a buyer."
+          },
+          "404": {
+            "description": "Transaction not found, or the caller is not its buyer."
+          },
+          "409": {
+            "description": "Not awaiting payment, already a card order, an eConfirm order, or an M-Pesa prompt is still open (with a Retry-After header)."
+          },
+          "503": {
+            "description": "Card payments are not available right now."
           },
           "422": {
             "description": "Validation Error",
@@ -2424,7 +2532,7 @@
               "anyOf": [
                 {
                   "type": "number",
-                  "minimum": 0
+                  "minimum": 0.0
                 },
                 {
                   "type": "string",
@@ -2445,7 +2553,7 @@
               "anyOf": [
                 {
                   "type": "number",
-                  "minimum": 0
+                  "minimum": 0.0
                 },
                 {
                   "type": "string",
@@ -2600,8 +2708,10 @@
                   "type": "null"
                 }
               ],
+              "description": "The provider's own reference, or a provider_ref read off an event.",
               "title": "Provider Reference"
-            }
+            },
+            "description": "The provider's own reference, or a provider_ref read off an event."
           },
           {
             "name": "rail_name",
@@ -2677,6 +2787,234 @@
           },
           "403": {
             "description": "Authenticated user is not an admin."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/anchoring/status": {
+      "get": {
+        "tags": [
+          "Admin Anchoring"
+        ],
+        "summary": "Anchoring worker status (admin only)",
+        "description": "Whether anchoring is enabled, the chain and registry, the last confirmed batch, the batch in flight, how many recorded events still wait for a batch, and whether anchoring has halted because the chain disagreed with the database. Never shows the anchoring key.",
+        "operationId": "admin_anchoring_status_admin_anchoring_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnchoringStatusResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Authenticated user is not an admin."
+          }
+        }
+      }
+    },
+    "/transactions/{transaction_id}/verification": {
+      "get": {
+        "tags": [
+          "Verification"
+        ],
+        "summary": "Verification data for an order (buyer, seller or admin)",
+        "description": "Everything needed to check the order's tamper-evident record independently: each event's canonical payload, salt, hashes and Merkle proof in chain order, and the live status and amount. Data only: the verdict is the verifier's, after reading each batch root from the AnchorRegistry. See docs/frontend-verification-contract.md.",
+        "operationId": "get_transaction_verification_transactions__transaction_id__verification_get",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionVerificationResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "404": {
+            "description": "Transaction not found, or the caller is not a party to it."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/{transaction_id}/liabilities-proof": {
+      "get": {
+        "tags": [
+          "Verification"
+        ],
+        "summary": "Proof the order's held money is counted in Vekro's published total (buyer, admin)",
+        "description": "The order's leaf, salt and Merkle sum proof in the latest liabilities snapshot, the snapshot's root and total, and the anchored liabilities_snapshot event with its batch proof. The browser checks the leaf is this order's (order_commit), folds the proof (no negative or overflowing sums), compares the root and total with the anchored payload, and reads the batch root from the AnchorRegistry. 404 when the order is not held now.",
+        "operationId": "get_liabilities_proof_transactions__transaction_id__liabilities_proof_get",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiabilitiesProofResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "404": {
+            "description": "Not the caller's order, or no held money for it in the latest snapshot."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/anchoring/batches/{batch_id}": {
+      "get": {
+        "tags": [
+          "Verification"
+        ],
+        "summary": "An anchored batch (public)",
+        "description": "A batch's root, sequence range, status and anchoring transaction. No personal data. Rate-limited per client.",
+        "operationId": "get_public_batch_anchoring_batches__batch_id__get",
+        "parameters": [
+          {
+            "name": "batch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Batch Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicBatchResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such batch."
+          },
+          "429": {
+            "description": "Too many lookups. See Retry-After."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sellers/{seller_id}/track-record": {
+      "get": {
+        "tags": [
+          "Verification"
+        ],
+        "summary": "A seller's verifiable track record (public)",
+        "description": "Each completed sale as a public, anchored event (seller, outcome, amount band; no buyer or order) with its Merkle proof, so anyone can check the count against the AnchorRegistry. Rate-limited per client.",
+        "operationId": "get_seller_track_record_sellers__seller_id__track_record_get",
+        "parameters": [
+          {
+            "name": "seller_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Seller Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SellerTrackRecordResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such seller."
+          },
+          "429": {
+            "description": "Too many lookups. See Retry-After."
           },
           "422": {
             "description": "Validation Error",
@@ -2854,11 +3192,11 @@
           "401": {
             "description": "Callback signature is missing, invalid, or outside the replay window."
           },
-          "422": {
-            "description": "Callback payload was not valid JSON object content."
-          },
           "503": {
             "description": "LOOP collection rail is unavailable."
+          },
+          "422": {
+            "description": "Callback payload was not valid JSON object content."
           }
         }
       }
@@ -2911,6 +3249,244 @@
         }
       }
     },
+    "/payments/mpesa/callback": {
+      "post": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Daraja STK callback",
+        "description": "Where Safaricom posts the M-Pesa Express result (DARAJA_CALLBACK_URL). The callback is unsigned, so it is only a trigger: Vekro confirms the payment with an STK query before locking the order and recording funding. Always answers Accepted, as Daraja expects.",
+        "operationId": "daraja_stk_callback_payments_mpesa_callback_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Daraja Stk Callback Payments Mpesa Callback Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/pesapal/ipn": {
+      "get": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Pesapal IPN (card checkout)",
+        "description": "Pesapal's IPN for card checkouts (register this URL with ipn_notification_type GET or POST). It is only a trigger: Vekro asks Pesapal for the order's status and records funding only for a COMPLETED payment of the exact amount. An IPN for an order Vekro did not send is refused (status 500) and changes nothing.",
+        "operationId": "pesapal_card_ipn_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PesapalIpnAnswer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Pesapal IPN (card checkout)",
+        "description": "Pesapal's IPN for card checkouts (register this URL with ipn_notification_type GET or POST). It is only a trigger: Vekro asks Pesapal for the order's status and records funding only for a COMPLETED payment of the exact amount. An IPN for an order Vekro did not send is refused (status 500) and changes nothing.",
+        "operationId": "pesapal_card_ipn_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PesapalIpnAnswer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/refunds/manual": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Card refunds waiting for support (admin only)",
+        "description": "Refunds of card-funded orders. Card money sits in the merchant's Pesapal account and is refunded by support in Pesapal (merchant approval, then Pesapal's processing), never over M-Pesa. Each item is marked 'manual refund required' in the order's record.",
+        "operationId": "admin_list_manual_refunds_admin_refunds_manual_get",
+        "parameters": [
+          {
+            "name": "include_completed",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Include Completed"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManualRefundListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/refunds/{attempt_id}/complete": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Mark a card refund as done in Pesapal (admin only)",
+        "description": "Records that support refunded the card payment in Pesapal. It settles the refund like an executed payout (ledger, escrow totals, payout status) and anchors 'manual refund completed'. Idempotent. With ANCHOR_GATE_PAYOUTS it waits until the refund's approval is anchored.",
+        "operationId": "admin_complete_manual_refund_admin_refunds__attempt_id__complete_post",
+        "parameters": [
+          {
+            "name": "attempt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Attempt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteManualRefundRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManualRefundResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No manual refund with this id."
+          },
+          "409": {
+            "description": "Not completable yet: approval not anchored, or not enough held money."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ussd/africastalking/{token}": {
+      "post": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Africa's Talking USSD callback",
+        "description": "Africa's Talking posts every step of a USSD session here (form-encoded sessionId, serviceCode, phoneNumber, networkCode, text). The requests are unsigned, so the path carries USSD_CALLBACK_TOKEN; USSD_ALLOWED_IPS optionally limits callers. Answers text/plain CON or END screens of at most 160 characters (docs/ussd.md).",
+        "operationId": "africastalking_ussd_ussd_africastalking__token__post",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Wrong token, caller not allowed, or USSD is off."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/public/orders/{key}": {
       "get": {
         "tags": [
@@ -2946,6 +3522,9 @@
           "404": {
             "description": "No such order."
           },
+          "429": {
+            "description": "Too many lookups. See Retry-After."
+          },
           "422": {
             "description": "Validation Error",
             "content": {
@@ -2955,9 +3534,6 @@
                 }
               }
             }
-          },
-          "429": {
-            "description": "Too many lookups. See Retry-After."
           }
         }
       }
@@ -3207,6 +3783,9 @@
           "403": {
             "description": "Not a seller."
           },
+          "429": {
+            "description": "Too many codes. See Retry-After."
+          },
           "422": {
             "description": "Validation Error",
             "content": {
@@ -3216,9 +3795,6 @@
                 }
               }
             }
-          },
-          "429": {
-            "description": "Too many codes. See Retry-After."
           }
         }
       }
@@ -3302,11 +3878,11 @@
               }
             }
           },
-          "400": {
-            "description": "Current password is wrong."
-          },
           "401": {
             "description": "Authentication required."
+          },
+          "400": {
+            "description": "Current password is wrong."
           },
           "422": {
             "description": "Validation Error",
@@ -3350,6 +3926,9 @@
               }
             }
           },
+          "429": {
+            "description": "Too many codes."
+          },
           "422": {
             "description": "Validation Error",
             "content": {
@@ -3359,9 +3938,6 @@
                 }
               }
             }
-          },
-          "429": {
-            "description": "Too many codes."
           }
         }
       }
@@ -3557,6 +4133,44 @@
           },
           "403": {
             "description": "Not a seller."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/ussd-pin": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Set or change the USSD PIN",
+        "description": "The 4-digit PIN asked for before sensitive actions over USSD (*384*\u2026#). Needs the account password. Three wrong PINs over USSD lock USSD actions for 15 minutes.",
+        "operationId": "post_ussd_pin_account_ussd_pin_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UssdPinRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "Wrong password."
           },
           "422": {
             "description": "Validation Error",
@@ -4263,7 +4877,7 @@
             "anyOf": [
               {
                 "type": "number",
-                "exclusiveMinimum": 0
+                "exclusiveMinimum": 0.0
               },
               {
                 "type": "string",
@@ -4501,7 +5115,7 @@
           },
           "consecutive_failures": {
             "type": "integer",
-            "minimum": 0,
+            "minimum": 0.0,
             "title": "Consecutive Failures",
             "description": "Consecutive failure count tracked for breaker transitions."
           },
@@ -4638,7 +5252,7 @@
           },
           "econfirm_needs_reconciliation_count": {
             "type": "integer",
-            "minimum": 0,
+            "minimum": 0.0,
             "title": "Econfirm Needs Reconciliation Count",
             "description": "Count of eConfirm escrows flagged for manual reconciliation (A3).",
             "default": 0
@@ -4877,6 +5491,284 @@
         ],
         "title": "AnalyticsKpis"
       },
+      "AnchorBatchSummary": {
+        "properties": {
+          "batch_id": {
+            "type": "integer",
+            "title": "Batch Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "built, submitted, confirmed, failed_retryable or halted."
+          },
+          "root": {
+            "type": "string",
+            "title": "Root",
+            "description": "0x-prefixed keccak Merkle root."
+          },
+          "first_seq": {
+            "type": "integer",
+            "title": "First Seq"
+          },
+          "last_seq": {
+            "type": "integer",
+            "title": "Last Seq"
+          },
+          "leaf_count": {
+            "type": "integer",
+            "title": "Leaf Count"
+          },
+          "tx_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tx Hash",
+            "description": "Latest anchoring transaction hash."
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "block_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Block Number"
+          },
+          "submitted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted At"
+          },
+          "confirmed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "batch_id",
+          "status",
+          "root",
+          "first_seq",
+          "last_seq",
+          "leaf_count",
+          "attempts"
+        ],
+        "title": "AnchorBatchSummary"
+      },
+      "AnchoringStatusResponse": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "Whether the worker is allowed to submit (ANCHOR_ENABLED)."
+          },
+          "chain_id": {
+            "type": "integer",
+            "title": "Chain Id"
+          },
+          "network": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Network",
+            "description": "anvil, base-sepolia or base."
+          },
+          "registry_address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registry Address"
+          },
+          "anchorer_address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchorer Address",
+            "description": "Address of the anchoring key. The key itself is never shown."
+          },
+          "halted": {
+            "type": "boolean",
+            "title": "Halted",
+            "description": "A batch disagreed with the chain; anchoring has stopped."
+          },
+          "halt_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Halt Reason"
+          },
+          "last_confirmed": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnchorBatchSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "in_flight": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnchorBatchSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confirmed_batches": {
+            "type": "integer",
+            "title": "Confirmed Batches"
+          },
+          "unanchored_events": {
+            "type": "integer",
+            "title": "Unanchored Events",
+            "description": "Recorded events not yet in a batch."
+          },
+          "oldest_unanchored_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oldest Unanchored At"
+          },
+          "payouts_gated": {
+            "type": "boolean",
+            "title": "Payouts Gated",
+            "description": "Payouts wait for their authorisation to be anchored (ANCHOR_GATE_PAYOUTS)."
+          },
+          "payouts_waiting_for_anchor": {
+            "type": "integer",
+            "title": "Payouts Waiting For Anchor",
+            "description": "Queued payouts held until their authorisation is anchored or readable."
+          },
+          "oldest_payout_waiting_since": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oldest Payout Waiting Since"
+          },
+          "payouts_halted": {
+            "type": "integer",
+            "title": "Payouts Halted",
+            "description": "Payouts stopped because they disagree with their anchored authorisation."
+          },
+          "liabilities": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LiabilitiesStatus"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The latest liabilities snapshot (what Vekro owes buyers)."
+          },
+          "reserves": {
+            "items": {
+              "$ref": "#/components/schemas/ReservesStatus"
+            },
+            "type": "array",
+            "title": "Reserves",
+            "description": "The latest reserves reconciliation per provider."
+          },
+          "reserves_shortfall": {
+            "type": "boolean",
+            "title": "Reserves Shortfall",
+            "description": "A provider attests less than Vekro owes: investigate now.",
+            "default": false
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Server Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled",
+          "chain_id",
+          "halted",
+          "confirmed_batches",
+          "unanchored_events",
+          "payouts_gated",
+          "payouts_waiting_for_anchor",
+          "payouts_halted",
+          "server_time"
+        ],
+        "title": "AnchoringStatusResponse"
+      },
       "BuyerReconfirmationRequest": {
         "properties": {
           "accepted": {
@@ -4950,6 +5842,35 @@
         ],
         "title": "CollectionOutcome"
       },
+      "CompleteManualRefundRequest": {
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Note",
+            "description": "What support did, for the audit trail."
+          },
+          "provider_refund_reference": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Refund Reference",
+            "description": "Pesapal's reference for the refund, if any."
+          }
+        },
+        "type": "object",
+        "required": [
+          "note"
+        ],
+        "title": "CompleteManualRefundRequest"
+      },
       "CreateListingRequest": {
         "properties": {
           "title": {
@@ -4996,7 +5917,7 @@
             "anyOf": [
               {
                 "type": "number",
-                "minimum": 0
+                "minimum": 0.0
               },
               {
                 "type": "string",
@@ -5051,7 +5972,7 @@
             "anyOf": [
               {
                 "type": "number",
-                "exclusiveMinimum": 0
+                "exclusiveMinimum": 0.0
               },
               {
                 "type": "string",
@@ -5063,6 +5984,16 @@
             ],
             "title": "Amount",
             "description": "Optional. The escrow amount is always the listing price; if sent, it must match the listing price exactly or the request is rejected."
+          },
+          "payment_method": {
+            "type": "string",
+            "enum": [
+              "mpesa",
+              "card"
+            ],
+            "title": "Payment Method",
+            "description": "mpesa: an M-Pesa prompt on the buyer's phone (payment.kind STK_PROMPT). card: Pesapal's hosted card checkout (payment.kind REDIRECT, send the buyer to payment.redirect_url). Card is refused with 422 when it is not configured.",
+            "default": "mpesa"
           }
         },
         "type": "object",
@@ -5578,6 +6509,77 @@
         "title": "EscalationQueueItemResponse",
         "description": "Admin queue item for escalated disputes awaiting review."
       },
+      "EventAnchorResponse": {
+        "properties": {
+          "batch_id": {
+            "type": "integer",
+            "title": "Batch Id"
+          },
+          "seq": {
+            "type": "integer",
+            "title": "Seq",
+            "description": "Gapless global position of the event."
+          },
+          "leaf_index": {
+            "type": "integer",
+            "title": "Leaf Index"
+          },
+          "leaf_count": {
+            "type": "integer",
+            "title": "Leaf Count"
+          },
+          "batch_root": {
+            "type": "string",
+            "title": "Batch Root",
+            "description": "Vekro's copy of the batch root. A verifier reads the root from the registry."
+          },
+          "batch_status": {
+            "type": "string",
+            "title": "Batch Status"
+          },
+          "tx_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tx Hash"
+          },
+          "block_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Block Number"
+          },
+          "proof": {
+            "items": {
+              "$ref": "#/components/schemas/ProofStepResponse"
+            },
+            "type": "array",
+            "title": "Proof",
+            "description": "RFC 6962 inclusion proof, leaf upwards."
+          }
+        },
+        "type": "object",
+        "required": [
+          "batch_id",
+          "seq",
+          "leaf_index",
+          "leaf_count",
+          "batch_root",
+          "batch_status",
+          "proof"
+        ],
+        "title": "EventAnchorResponse"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -5590,6 +6592,99 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "LiabilitiesProofResponse": {
+        "properties": {
+          "snapshot_id": {
+            "type": "integer",
+            "title": "Snapshot Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "root": {
+            "$ref": "#/components/schemas/SumNodeResponse"
+          },
+          "total": {
+            "type": "string",
+            "title": "Total",
+            "description": "KES held for all buyers at the snapshot."
+          },
+          "leaf_count": {
+            "type": "integer",
+            "title": "Leaf Count"
+          },
+          "leaf": {
+            "$ref": "#/components/schemas/SumLeafResponse"
+          },
+          "proof": {
+            "items": {
+              "$ref": "#/components/schemas/SumProofStepResponse"
+            },
+            "type": "array",
+            "title": "Proof"
+          },
+          "anchor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerificationEventResponse"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The liabilities_snapshot event in the global chain, with its batch proof; null until anchoring is on."
+          }
+        },
+        "type": "object",
+        "required": [
+          "snapshot_id",
+          "created_at",
+          "root",
+          "total",
+          "leaf_count",
+          "leaf",
+          "proof",
+          "anchor"
+        ],
+        "title": "LiabilitiesProofResponse",
+        "description": "Proof that this order's held amount is counted in Vekro's anchored total (M24 B2)."
+      },
+      "LiabilitiesStatus": {
+        "properties": {
+          "snapshot_id": {
+            "type": "integer",
+            "title": "Snapshot Id"
+          },
+          "total": {
+            "type": "string",
+            "title": "Total"
+          },
+          "leaf_count": {
+            "type": "integer",
+            "title": "Leaf Count"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At"
+          },
+          "anchored": {
+            "type": "boolean",
+            "title": "Anchored"
+          }
+        },
+        "type": "object",
+        "required": [
+          "snapshot_id",
+          "total",
+          "leaf_count",
+          "at",
+          "anchored"
+        ],
+        "title": "LiabilitiesStatus"
       },
       "ListingListResponse": {
         "properties": {
@@ -5984,6 +7079,87 @@
         "title": "LoopCollectionWebhookResponse",
         "description": "Acknowledgement payload for LOOP collection callbacks."
       },
+      "ManualRefundListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ManualRefundResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "ManualRefundListResponse"
+      },
+      "ManualRefundResponse": {
+        "properties": {
+          "attempt_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Attempt Id"
+          },
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Transaction Id"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference",
+            "description": "The order reference, as on Pesapal (merchant reference)."
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Amount"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "queued_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Queued At"
+          },
+          "pesapal_order_tracking_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pesapal Order Tracking Id",
+            "description": "The Pesapal order that took the card payment; refund it in Pesapal."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "completed"
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "attempt_id",
+          "transaction_id",
+          "reference",
+          "amount",
+          "currency",
+          "queued_at",
+          "pesapal_order_tracking_id",
+          "status"
+        ],
+        "title": "ManualRefundResponse"
+      },
       "MarkAllReadResponse": {
         "properties": {
           "updated": {
@@ -6127,7 +7303,7 @@
               }
             ],
             "title": "Provider Reference",
-            "description": "Provider reference for the rail operation."
+            "description": "Keyed provider_ref (HMAC) of the provider's reference, never the raw value: some provider references carry the payer's phone number (#241)."
           },
           "rail_name": {
             "anyOf": [
@@ -6144,7 +7320,7 @@
           "correlation_id": {
             "type": "string",
             "title": "Correlation Id",
-            "description": "Correlation key combining transaction_id, provider_reference, and rail."
+            "description": "Correlation key combining transaction_id, provider_ref, and rail."
           },
           "amount": {
             "anyOf": [
@@ -6738,7 +7914,8 @@
                   "wrong_pin",
                   "insufficient_funds",
                   "timeout",
-                  "provider_error"
+                  "provider_error",
+                  "declined"
                 ]
               },
               {
@@ -6892,6 +8069,36 @@
         "title": "PesapalCollectionWebhookResponse",
         "description": "Acknowledgement payload for Pesapal collection callbacks."
       },
+      "PesapalIpnAnswer": {
+        "properties": {
+          "orderNotificationType": {
+            "type": "string",
+            "title": "Ordernotificationtype"
+          },
+          "orderTrackingId": {
+            "type": "string",
+            "title": "Ordertrackingid"
+          },
+          "orderMerchantReference": {
+            "type": "string",
+            "title": "Ordermerchantreference"
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status",
+            "description": "200: received and processed; 500: refused or not processed."
+          }
+        },
+        "type": "object",
+        "required": [
+          "orderNotificationType",
+          "orderTrackingId",
+          "orderMerchantReference",
+          "status"
+        ],
+        "title": "PesapalIpnAnswer",
+        "description": "The acknowledgement Pesapal documents for an IPN call."
+      },
       "PhoneCodeRequest": {
         "properties": {
           "phone": {
@@ -6966,6 +8173,128 @@
         ],
         "title": "PhoneCodeVerifyRequest",
         "description": "Verify the SMS code and open a buyer session."
+      },
+      "ProofStepResponse": {
+        "properties": {
+          "sibling": {
+            "type": "string",
+            "title": "Sibling",
+            "description": "0x-prefixed 32-byte sibling hash."
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "left",
+              "right"
+            ],
+            "title": "Side",
+            "description": "Where the sibling sits."
+          }
+        },
+        "type": "object",
+        "required": [
+          "sibling",
+          "side"
+        ],
+        "title": "ProofStepResponse"
+      },
+      "PublicBatchResponse": {
+        "properties": {
+          "batch_id": {
+            "type": "integer",
+            "title": "Batch Id"
+          },
+          "root": {
+            "type": "string",
+            "title": "Root"
+          },
+          "prev_root": {
+            "type": "string",
+            "title": "Prev Root"
+          },
+          "first_seq": {
+            "type": "integer",
+            "title": "First Seq"
+          },
+          "last_seq": {
+            "type": "integer",
+            "title": "Last Seq"
+          },
+          "leaf_count": {
+            "type": "integer",
+            "title": "Leaf Count"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "tx_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tx Hash"
+          },
+          "block_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Block Number"
+          },
+          "confirmed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmed At"
+          },
+          "chain_id": {
+            "type": "integer",
+            "title": "Chain Id"
+          },
+          "network": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Network"
+          },
+          "registry_address": {
+            "type": "string",
+            "title": "Registry Address"
+          }
+        },
+        "type": "object",
+        "required": [
+          "batch_id",
+          "root",
+          "prev_root",
+          "first_seq",
+          "last_seq",
+          "leaf_count",
+          "status",
+          "chain_id",
+          "registry_address"
+        ],
+        "title": "PublicBatchResponse"
       },
       "PublicOrderSummary": {
         "properties": {
@@ -7181,6 +8510,71 @@
         ],
         "title": "ReportFunctionalIssueRequest",
         "description": "Buyer dispute intake payload used during serialized hold window."
+      },
+      "ReservesStatus": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "covered",
+              "shortfall",
+              "incomplete",
+              "unavailable",
+              "not_applicable"
+            ],
+            "title": "Status"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "liability_total": {
+            "type": "string",
+            "title": "Liability Total"
+          },
+          "attested_total": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attested Total"
+          },
+          "difference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Difference"
+          },
+          "at": {
+            "type": "string",
+            "title": "At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "status",
+          "method",
+          "liability_total",
+          "attested_total",
+          "difference",
+          "at"
+        ],
+        "title": "ReservesStatus",
+        "description": "The latest reserves reconciliation for one custody provider (M24 B2)."
       },
       "ResetCodeRequest": {
         "properties": {
@@ -7634,6 +9028,120 @@
         "title": "SellerSummaryResponse",
         "description": "Money totals for the seller dashboard. Months are calendar months in EAT."
       },
+      "SellerTrackRecordResponse": {
+        "properties": {
+          "seller_id": {
+            "type": "string",
+            "title": "Seller Id"
+          },
+          "chain": {
+            "$ref": "#/components/schemas/VerificationChainResponse"
+          },
+          "completed_sales": {
+            "type": "integer",
+            "title": "Completed Sales",
+            "description": "Completed sales in Vekro's records (unverified)."
+          },
+          "recorded_sales": {
+            "type": "integer",
+            "title": "Recorded Sales",
+            "description": "Of those, how many have a track-record event."
+          },
+          "sales": {
+            "items": {
+              "$ref": "#/components/schemas/VerificationEventResponse"
+            },
+            "type": "array",
+            "title": "Sales",
+            "description": "Newest first, at most 200: each sale's public payload (seller, outcome, amount band, unlinkable sale_ref) with its proof. Count as verified only the sales whose proof matches the registry root and whose payload names this seller."
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Server Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "seller_id",
+          "chain",
+          "completed_sales",
+          "recorded_sales",
+          "sales",
+          "server_time"
+        ],
+        "title": "SellerTrackRecordResponse"
+      },
+      "SumLeafResponse": {
+        "properties": {
+          "salt": {
+            "type": "string",
+            "title": "Salt"
+          },
+          "order_commit": {
+            "type": "string",
+            "title": "Order Commit",
+            "description": "keccak256(\"vekro-liability-order:\" + the order id): recompute it to check the leaf is this order's."
+          },
+          "amount_cents": {
+            "type": "string",
+            "title": "Amount Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "salt",
+          "order_commit",
+          "amount_cents"
+        ],
+        "title": "SumLeafResponse"
+      },
+      "SumNodeResponse": {
+        "properties": {
+          "hash": {
+            "type": "string",
+            "title": "Hash"
+          },
+          "sum": {
+            "type": "string",
+            "title": "Sum",
+            "description": "Cents, as a decimal string (may exceed 2**53)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "hash",
+          "sum"
+        ],
+        "title": "SumNodeResponse"
+      },
+      "SumProofStepResponse": {
+        "properties": {
+          "sibling_hash": {
+            "type": "string",
+            "title": "Sibling Hash"
+          },
+          "sibling_sum": {
+            "type": "string",
+            "title": "Sibling Sum"
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "left",
+              "right"
+            ],
+            "title": "Side"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sibling_hash",
+          "sibling_sum",
+          "side"
+        ],
+        "title": "SumProofStepResponse"
+      },
       "TimelineEventResponse": {
         "properties": {
           "kind": {
@@ -7763,6 +9271,38 @@
             "title": "Custody Provider",
             "description": "Who holds the money. 'econfirm' is real Tier-1 custody; 'simulated' is the Vekro-side simulated ledger and must never be presented as real money.",
             "default": "simulated"
+          },
+          "payment_method": {
+            "type": "string",
+            "enum": [
+              "mpesa",
+              "card"
+            ],
+            "title": "Payment Method",
+            "description": "How the buyer pays: mpesa (STK prompt) or card (Pesapal).",
+            "default": "mpesa"
+          },
+          "collection_rail": {
+            "type": "string",
+            "enum": [
+              "simulated",
+              "daraja",
+              "pesapal",
+              "econfirm"
+            ],
+            "title": "Collection Rail",
+            "description": "The rail that collects the money. daraja and pesapal collect into the merchant's account (collection, not third-party escrow); econfirm is third-party custody; simulated moves no money.",
+            "default": "simulated"
+          },
+          "payment_mode": {
+            "type": "string",
+            "enum": [
+              "sandbox",
+              "live"
+            ],
+            "title": "Payment Mode",
+            "description": "sandbox: a test payment, no real money moves. live: real money was collected. Show sandbox payments as tests, never as real money.",
+            "default": "sandbox"
           },
           "created_at": {
             "type": "string",
@@ -7910,6 +9450,38 @@
             "title": "Custody Provider",
             "description": "Who holds the money. 'econfirm' is real Tier-1 custody; 'simulated' is the Vekro-side simulated ledger and must never be presented as real money.",
             "default": "simulated"
+          },
+          "payment_method": {
+            "type": "string",
+            "enum": [
+              "mpesa",
+              "card"
+            ],
+            "title": "Payment Method",
+            "description": "How the buyer pays: mpesa (STK prompt) or card (Pesapal).",
+            "default": "mpesa"
+          },
+          "collection_rail": {
+            "type": "string",
+            "enum": [
+              "simulated",
+              "daraja",
+              "pesapal",
+              "econfirm"
+            ],
+            "title": "Collection Rail",
+            "description": "The rail that collects the money. daraja and pesapal collect into the merchant's account (collection, not third-party escrow); econfirm is third-party custody; simulated moves no money.",
+            "default": "simulated"
+          },
+          "payment_mode": {
+            "type": "string",
+            "enum": [
+              "sandbox",
+              "live"
+            ],
+            "title": "Payment Mode",
+            "description": "sandbox: a test payment, no real money moves. live: real money was collected. Show sandbox payments as tests, never as real money.",
+            "default": "sandbox"
           },
           "created_at": {
             "type": "string",
@@ -8172,6 +9744,38 @@
             "description": "Who holds the money. 'econfirm' is real Tier-1 custody; 'simulated' is the Vekro-side simulated ledger and must never be presented as real money.",
             "default": "simulated"
           },
+          "payment_method": {
+            "type": "string",
+            "enum": [
+              "mpesa",
+              "card"
+            ],
+            "title": "Payment Method",
+            "description": "How the buyer pays: mpesa (STK prompt) or card (Pesapal).",
+            "default": "mpesa"
+          },
+          "collection_rail": {
+            "type": "string",
+            "enum": [
+              "simulated",
+              "daraja",
+              "pesapal",
+              "econfirm"
+            ],
+            "title": "Collection Rail",
+            "description": "The rail that collects the money. daraja and pesapal collect into the merchant's account (collection, not third-party escrow); econfirm is third-party custody; simulated moves no money.",
+            "default": "simulated"
+          },
+          "payment_mode": {
+            "type": "string",
+            "enum": [
+              "sandbox",
+              "live"
+            ],
+            "title": "Payment Mode",
+            "description": "sandbox: a test payment, no real money moves. live: real money was collected. Show sandbox payments as tests, never as real money.",
+            "default": "sandbox"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -8330,6 +9934,61 @@
         "title": "TransactionSummaryResponse",
         "description": "One row of the caller's order list."
       },
+      "TransactionVerificationResponse": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "transaction_id": {
+            "type": "string",
+            "title": "Transaction Id"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          },
+          "chain": {
+            "$ref": "#/components/schemas/VerificationChainResponse"
+          },
+          "current": {
+            "$ref": "#/components/schemas/VerificationCurrentResponse"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/VerificationEventResponse"
+            },
+            "type": "array",
+            "title": "Events",
+            "description": "The order's chain, oldest first."
+          },
+          "linked_events": {
+            "items": {
+              "$ref": "#/components/schemas/VerificationEventResponse"
+            },
+            "type": "array",
+            "title": "Linked Events",
+            "description": "Provider events from the global chain that this order's chain links to."
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Server Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "transaction_id",
+          "reference",
+          "chain",
+          "current",
+          "events",
+          "linked_events",
+          "server_time"
+        ],
+        "title": "TransactionVerificationResponse"
+      },
       "UnreadCountResponse": {
         "properties": {
           "unread_count": {
@@ -8399,7 +10058,7 @@
             "anyOf": [
               {
                 "type": "number",
-                "minimum": 0
+                "minimum": 0.0
               },
               {
                 "type": "string",
@@ -8460,6 +10119,29 @@
         ],
         "title": "UserRole"
       },
+      "UssdPinRequest": {
+        "properties": {
+          "pin": {
+            "type": "string",
+            "pattern": "^\\d{4}$",
+            "title": "Pin",
+            "description": "4 digits, for sensitive actions over USSD."
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password",
+            "description": "The account password."
+          }
+        },
+        "type": "object",
+        "required": [
+          "pin",
+          "password"
+        ],
+        "title": "UssdPinRequest"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -8499,6 +10181,119 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "VerificationChainResponse": {
+        "properties": {
+          "chain_id": {
+            "type": "integer",
+            "title": "Chain Id"
+          },
+          "network": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Network"
+          },
+          "registry_address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registry Address",
+            "description": "Informational. Verifiers use the registry address they were built with."
+          }
+        },
+        "type": "object",
+        "required": [
+          "chain_id"
+        ],
+        "title": "VerificationChainResponse"
+      },
+      "VerificationCurrentResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Live transaction status, to compare with the last event."
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount",
+            "description": "Live amount as a 2-place decimal string."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "amount"
+        ],
+        "title": "VerificationCurrentResponse"
+      },
+      "VerificationEventResponse": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "title": "Event Type"
+          },
+          "schema_version": {
+            "type": "integer",
+            "title": "Schema Version"
+          },
+          "payload": {
+            "type": "string",
+            "title": "Payload",
+            "description": "Canonical JSON (RFC 8785), exactly as hashed."
+          },
+          "salt": {
+            "type": "string",
+            "title": "Salt"
+          },
+          "prev_event_hash": {
+            "type": "string",
+            "title": "Prev Event Hash"
+          },
+          "leaf_hash": {
+            "type": "string",
+            "title": "Leaf Hash",
+            "description": "keccak256(0x00 || salt || prev_event_hash || payload)."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "anchor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventAnchorResponse"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null while the event waits for a batch."
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_type",
+          "schema_version",
+          "payload",
+          "salt",
+          "prev_event_hash",
+          "leaf_hash",
+          "created_at"
+        ],
+        "title": "VerificationEventResponse"
       }
     }
   }

@@ -8,6 +8,8 @@ import { ApiError } from '@/models/api/errors'
 import { caseAge, type AdminCaseDetail, type AdminDecision } from '@/models/domain/adminCase'
 import { issueLabel, sellerOptions } from '@/models/domain/listing'
 import { useCase, useDecideCase } from '@/models/queries/admin'
+import { useOrder } from '@/models/queries/orders'
+import { moneyHolder } from '@/models/domain/paymentNote'
 import { shortCaseId, toQueueRow } from './useAdminQueue'
 import { useStaleSince } from './useOnline'
 
@@ -54,6 +56,8 @@ export function useAdminCase() {
   const staleSince = useStaleSince(query)
   const decide = useDecideCase(id)
   const c = query.data
+  // The money path names who holds the money: Pesapal for a card order (#290).
+  const order = useOrder(c?.transactionId ?? '', { enabled: Boolean(c?.decided) })
   const [decision, setDecision] = useState<AdminDecision | undefined>()
   const [sellerAmount, setSellerAmount] = useState<number | null>(null)
   const [reason, setReason] = useState('')
@@ -155,6 +159,7 @@ export function useAdminCase() {
                 ),
                 reason: c.decided.reason,
                 by: c.decided.decidedBy ?? 'Vekro support',
+                holder: moneyHolder(order.data?.collection.rail ?? 'simulated'),
                 at: c.decided.decidedAt ? formatEatFull(c.decided.decidedAt) : null,
                 moneyAt:
                   c.decided.decision === 'refund'
