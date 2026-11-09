@@ -1,6 +1,6 @@
 # Vekro web app (M17 #134). One site: the app, and the API under /api, so the session and CSRF
 # cookies stay first-party and the API needs no CORS. API_UPSTREAM is set at start-up
-# (for example http://api.internal:8000 or https://api.vekro.co.ke).
+# (for example http://api.internal:8000 or https://api.vekro.me).
 server {
   listen 8080;
   server_name _;
