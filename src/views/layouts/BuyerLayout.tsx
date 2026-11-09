@@ -1,11 +1,14 @@
 import { ShieldCheck } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { cn } from '@/lib/cn'
+import { useTheme } from '@/controllers/useTheme'
+import { ThemeSwitch } from '../components/ui/ThemeSwitch'
 import { VekroMark } from '../components/ui/VekroMark'
 
 /** Buyer pages: 56px frosted header, one 480px column on a faint emerald mesh. */
 export function BuyerLayout({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false)
+  const theme = useTheme()
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4)
     onScroll()
@@ -30,7 +33,13 @@ export function BuyerLayout({ children }: { children: ReactNode }) {
           </span>
         </div>
       </header>
-      <main className="relative mx-auto flex max-w-120 flex-col gap-4 px-5 pt-4 pb-32">{children}</main>
+      <main className="relative mx-auto flex max-w-120 flex-col gap-4 px-5 pt-4 pb-32">
+        {children}
+        <footer className="mt-6 flex items-center justify-center gap-3 text-text-muted">
+          <span className="type-body-sm">Theme</span>
+          <ThemeSwitch value={theme.preference} onChange={theme.setPreference} />
+        </footer>
+      </main>
     </div>
   )
 }

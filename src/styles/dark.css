@@ -1,0 +1,126 @@
+/*
+ * Dark mode (M25, #292). `html.dark` is set before first paint by public/theme-init.js and kept in
+ * sync by useTheme. Tailwind utilities read the colour variables, so redefining them here flips every
+ * screen: the sand scale becomes DESIGN.md's dark greens, the ink scale becomes light text, and the
+ * pale tints and dark text shades swap places. Colours that are always dark in light mode too (the
+ * vault and sidebar emeralds, ink-950 chips, sand-0 text on them) are left alone.
+ */
+html.dark {
+  color-scheme: dark;
+
+  /* Roles: DESIGN.md "Roles (dark)". */
+  --color-background: var(--color-dark-background);
+  --color-surface: var(--color-dark-surface);
+  --color-surface-sunken: #0a1512;
+  --color-border: var(--color-dark-border);
+  --color-text: var(--color-dark-text);
+  --color-text-muted: var(--color-dark-text-muted);
+  --color-info: #6aa8f5;
+  --color-scrim: rgb(0 0 0 / 0.6);
+
+  /* Sand: page and card surfaces. sand-0 stays white: it is text on dark fills. */
+  --color-sand-50: #0a1512;
+  --color-sand-100: #14261f;
+  --color-sand-200: #1f3a30;
+  --color-sand-300: #2b4a3e;
+
+  /* Ink: text greys, light on dark. ink-950 stays: it is a dark fill (toasts, chips, phone). */
+  --color-ink-800: #d3e3dc;
+  --color-ink-600: #b4c7bf;
+  --color-ink-500: var(--color-dark-text-muted);
+  --color-ink-400: #7c9489;
+
+  /* Tints become deep washes; text shades become light. */
+  --color-emerald-50: #0f2a21;
+  --color-emerald-700: #4ed6a0;
+  --color-lake-50: #0e1e33;
+  --color-lake-600: #7db5f8;
+  --color-coral-50: #2c1416;
+  --color-coral-600: #ff8a8e;
+  --color-saffron-50: #2a2108;
+  --color-saffron-100: #4a3a0f;
+  --color-saffron-600: #f5b940;
+  --color-saffron-700: #f5bf52;
+  --color-plum-50: #1e1838;
+  --color-plum-700: #b8a6fa;
+
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.35);
+  --color-chart-area: #14513b;
+}
+
+html.dark .bg-mesh {
+  background:
+    radial-gradient(60% 100% at 15% 0%, rgb(44 196 138 / 0.12), transparent 70%),
+    radial-gradient(50% 90% at 90% 0%, rgb(12 138 95 / 0.1), transparent 70%);
+}
+
+/*
+ * Screens that keep their own fixed look in both themes (the admin console, which is a dark console
+ * by design and paints its light panels on purpose): the light values again. tokens.test.ts checks
+ * they match tokens.css and theme.css.
+ */
+html.dark .theme-fixed {
+  --color-background: #fbf9f4;
+  --color-surface: #ffffff;
+  --color-surface-sunken: #f5f1e7;
+  --color-border: #eae4d4;
+  --color-text: #0b1512;
+  --color-text-muted: #5e6d67;
+  --color-info: #2f80ed;
+  --color-scrim: rgb(11 21 18 / 0.4);
+  --color-sand-50: #fbf9f4;
+  --color-sand-100: #f5f1e7;
+  --color-sand-200: #eae4d4;
+  --color-sand-300: #d8d0ba;
+  --color-ink-800: #1b2824;
+  --color-ink-600: #44524d;
+  --color-ink-500: #5e6d67;
+  --color-ink-400: #8a9792;
+  --color-emerald-50: #e9f8f1;
+  --color-emerald-700: #0a6e4c;
+  --color-lake-50: #e8f1fd;
+  --color-lake-600: #1f66c8;
+  --color-coral-50: #fdecec;
+  --color-coral-600: #c93238;
+  --color-saffron-50: #fff6e0;
+  --color-saffron-100: #ffe8b3;
+  --color-saffron-600: #b87a00;
+  --color-saffron-700: #8a5b00;
+  --color-plum-50: #efebfc;
+  --color-plum-700: #4f36b0;
+  --shadow-1: 0 1px 2px rgb(11 21 18 / 0.04), 0 8px 24px rgb(11 21 18 / 0.06);
+  --color-chart-area: #cdefe0;
+}
+
+/*
+ * `primary` stays the deep emerald for filled buttons (white text on it). As text, an icon stroke or a
+ * border on a dark surface it would be too dark to read, so those uses take the lightened emerald.
+ */
+html.dark :where(.text-primary, .hover\:text-primary:hover) {
+  color: var(--color-emerald-700);
+}
+html.dark :where(.stroke-primary) {
+  stroke: var(--color-emerald-700);
+}
+html.dark :where(.border-primary) {
+  border-color: var(--color-emerald-700);
+}
+html.dark .theme-fixed :where(.text-primary) {
+  color: var(--color-primary);
+}
+
+/* emerald-800 is also the vault gradient and the seller sidebar, so only its text use is lightened. */
+html.dark :where(.text-emerald-800) {
+  color: var(--color-emerald-700);
+}
+html.dark :where(.text-emerald-800\/80) {
+  color: color-mix(in oklab, var(--color-emerald-700) 80%, transparent);
+}
+
+/* emerald-100 stays light for text on the vault and sidebar; as a track or a ring it becomes a wash. */
+html.dark :where(.bg-emerald-100) {
+  background-color: var(--color-sand-200);
+}
+html.dark :where(.ring-emerald-100) {
+  --tw-ring-color: var(--color-sand-200);
+}

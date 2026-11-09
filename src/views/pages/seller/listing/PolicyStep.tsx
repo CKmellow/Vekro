@@ -48,7 +48,7 @@ export function PolicyStep(p: PolicyStepProps) {
                 key={text}
                 className="type-body-md flex items-start gap-3 rounded-md bg-surface p-3 text-text"
               >
-                <span className="grid size-6 shrink-0 place-items-center rounded-full bg-emerald-700 font-mono text-label font-bold text-sand-0">
+                <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary font-mono text-label font-bold text-on-primary">
                   {i + 1}
                 </span>
                 {text}

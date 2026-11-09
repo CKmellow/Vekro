@@ -20,7 +20,7 @@ const items: { to: string; label: string; Icon: LucideIcon; end?: boolean }[] = 
 /** Support console: dark surfaces, 240px sidebar with a plum active indicator, 1280px design width. */
 export function AdminLayout({ name, queueCount, onSearch, onSignOut, children }: AdminLayoutProps) {
   return (
-    <div className="min-h-dvh w-fit min-w-full bg-dark-background pl-60 text-dark-text [color-scheme:dark]">
+    <div className="theme-fixed min-h-dvh w-fit min-w-full bg-dark-background pl-60 text-dark-text [color-scheme:dark]">
       <aside className="fixed inset-y-0 left-0 flex w-60 flex-col gap-6 border-r border-dark-border bg-dark-surface p-4">
         <span className="flex items-center gap-2 px-2 pt-2">
           <span

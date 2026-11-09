@@ -10,6 +10,10 @@
   --color-transparent: transparent;
   --color-current: currentColor;
   --color-scrim: rgb(11 21 18 / 0.4);
+  /* Solid fills behind white text: the same in both themes (dark mode lightens coral-600). */
+  --color-danger-fill: #c93238;
+  /* Seller analytics: the top of the released-money area gradient (emerald-100 in light). */
+  --color-chart-area: #cdefe0;
 }
 
 @theme {

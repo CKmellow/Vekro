@@ -78,7 +78,7 @@ function SalesChart({ p }: { p: P }) {
         <AreaChart data={p.sales} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           <defs>
             <linearGradient id="sales-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--color-emerald-100)" stopOpacity={0.9} />
+              <stop offset="0%" stopColor="var(--color-chart-area)" stopOpacity={0.9} />
               <stop offset="100%" stopColor="var(--color-emerald-50)" stopOpacity={0} />
             </linearGradient>
           </defs>

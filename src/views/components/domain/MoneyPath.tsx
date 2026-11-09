@@ -49,7 +49,7 @@ export function MoneyPath({ buyer, vault, seller, position }: MoneyPathProps) {
               className={cn(
                 'absolute top-1/2 grid size-10 -translate-1/2 place-items-center rounded-full border-2',
                 i === current
-                  ? 'border-emerald-600 bg-emerald-700 text-sand-0'
+                  ? 'border-emerald-600 bg-primary text-on-primary'
                   : i < current
                     ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
                     : 'border-sand-300 bg-sand-100 text-ink-600',

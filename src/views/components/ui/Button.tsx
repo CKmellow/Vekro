@@ -8,7 +8,7 @@ const variants: Record<ButtonVariant, string> = {
   secondary: 'h-13 border border-border bg-surface text-text hover:bg-sand-100 active:bg-sand-200',
   danger: 'h-13 border border-coral-500 bg-surface text-coral-600 hover:bg-coral-50 active:bg-coral-50',
   /** Solid coral: only for the final step of a confirmation. */
-  destructive: 'h-13 bg-coral-600 text-sand-0 hover:brightness-95 active:brightness-90',
+  destructive: 'h-13 bg-danger-fill text-sand-0 hover:brightness-95 active:brightness-90',
   ghost: 'h-11 bg-transparent text-ink-600 hover:bg-sand-100 active:bg-sand-200',
   /** Plum: the support console's binding actions (log in, review and execute a decision). */
   console: 'h-13 bg-plum-500 text-sand-0 hover:bg-plum-700 active:bg-plum-700',
