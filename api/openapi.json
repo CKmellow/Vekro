@@ -76,11 +76,11 @@
           "401": {
             "description": "Invalid phone or password."
           },
-          "422": {
-            "description": "Request payload failed validation."
-          },
           "429": {
             "description": "Too many login attempts or account temporarily locked."
+          },
+          "422": {
+            "description": "Request payload failed validation."
           }
         }
       }
@@ -114,11 +114,11 @@
               }
             }
           },
-          "422": {
-            "description": "Invalid phone number."
-          },
           "429": {
             "description": "Too soon after the last code, too many codes, or locked after wrong tries. See Retry-After."
+          },
+          "422": {
+            "description": "Invalid phone number."
           }
         }
       }
@@ -1059,11 +1059,11 @@
           "404": {
             "description": "Listing not found."
           },
-          "422": {
-            "description": "Business-rule or payload validation failed."
-          },
           "503": {
             "description": "Payment initiation failed before a partial-success response could be returned."
+          },
+          "422": {
+            "description": "Business-rule or payload validation failed."
           }
         }
       },
@@ -1371,6 +1371,68 @@
           },
           "422": {
             "description": "Not a card order."
+          }
+        }
+      }
+    },
+    "/transactions/{transaction_id}/payment/card": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Pay by card instead (buyer only)",
+        "description": "Switch an unpaid M-Pesa order to a Pesapal card checkout and return the REDIRECT instruction. Allowed only while the order awaits payment and no M-Pesa prompt is open: a prompt still inside its lifetime answers 409 with Retry-After; an older pending one is first checked with M-Pesa (if it was paid, the order is locked and the switch refused). The switch is recorded on the order's public record. From then on the order is paid by card only; resend restarts a failed card checkout.",
+        "operationId": "pay_transaction_by_card_instead_transactions__transaction_id__payment_card_post",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentInstructionResponse"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Switched, but Pesapal refused the checkout (failed_to_initiate); POST /payment/resend starts a new one."
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Authenticated user is not a buyer."
+          },
+          "404": {
+            "description": "Transaction not found, or the caller is not its buyer."
+          },
+          "409": {
+            "description": "Not awaiting payment, already a card order, an eConfirm order, or an M-Pesa prompt is still open (with a Retry-After header)."
+          },
+          "503": {
+            "description": "Card payments are not available right now."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
         }
       }
@@ -2470,7 +2532,7 @@
               "anyOf": [
                 {
                   "type": "number",
-                  "minimum": 0
+                  "minimum": 0.0
                 },
                 {
                   "type": "string",
@@ -2491,7 +2553,7 @@
               "anyOf": [
                 {
                   "type": "number",
-                  "minimum": 0
+                  "minimum": 0.0
                 },
                 {
                   "type": "string",
@@ -2901,6 +2963,9 @@
           "404": {
             "description": "No such batch."
           },
+          "429": {
+            "description": "Too many lookups. See Retry-After."
+          },
           "422": {
             "description": "Validation Error",
             "content": {
@@ -2910,9 +2975,6 @@
                 }
               }
             }
-          },
-          "429": {
-            "description": "Too many lookups. See Retry-After."
           }
         }
       }
@@ -2951,6 +3013,9 @@
           "404": {
             "description": "No such seller."
           },
+          "429": {
+            "description": "Too many lookups. See Retry-After."
+          },
           "422": {
             "description": "Validation Error",
             "content": {
@@ -2960,9 +3025,6 @@
                 }
               }
             }
-          },
-          "429": {
-            "description": "Too many lookups. See Retry-After."
           }
         }
       }
@@ -3130,11 +3192,11 @@
           "401": {
             "description": "Callback signature is missing, invalid, or outside the replay window."
           },
-          "422": {
-            "description": "Callback payload was not valid JSON object content."
-          },
           "503": {
             "description": "LOOP collection rail is unavailable."
+          },
+          "422": {
+            "description": "Callback payload was not valid JSON object content."
           }
         }
       }
@@ -3460,6 +3522,9 @@
           "404": {
             "description": "No such order."
           },
+          "429": {
+            "description": "Too many lookups. See Retry-After."
+          },
           "422": {
             "description": "Validation Error",
             "content": {
@@ -3469,9 +3534,6 @@
                 }
               }
             }
-          },
-          "429": {
-            "description": "Too many lookups. See Retry-After."
           }
         }
       }
@@ -3721,6 +3783,9 @@
           "403": {
             "description": "Not a seller."
           },
+          "429": {
+            "description": "Too many codes. See Retry-After."
+          },
           "422": {
             "description": "Validation Error",
             "content": {
@@ -3730,9 +3795,6 @@
                 }
               }
             }
-          },
-          "429": {
-            "description": "Too many codes. See Retry-After."
           }
         }
       }
@@ -3816,11 +3878,11 @@
               }
             }
           },
-          "400": {
-            "description": "Current password is wrong."
-          },
           "401": {
             "description": "Authentication required."
+          },
+          "400": {
+            "description": "Current password is wrong."
           },
           "422": {
             "description": "Validation Error",
@@ -3864,6 +3926,9 @@
               }
             }
           },
+          "429": {
+            "description": "Too many codes."
+          },
           "422": {
             "description": "Validation Error",
             "content": {
@@ -3873,9 +3938,6 @@
                 }
               }
             }
-          },
-          "429": {
-            "description": "Too many codes."
           }
         }
       }
@@ -4091,7 +4153,7 @@
           "Account"
         ],
         "summary": "Set or change the USSD PIN",
-        "description": "The 4-digit PIN asked for before sensitive actions over USSD (*384*…#). Needs the account password. Three wrong PINs over USSD lock USSD actions for 15 minutes.",
+        "description": "The 4-digit PIN asked for before sensitive actions over USSD (*384*\u2026#). Needs the account password. Three wrong PINs over USSD lock USSD actions for 15 minutes.",
         "operationId": "post_ussd_pin_account_ussd_pin_post",
         "requestBody": {
           "content": {
@@ -4815,7 +4877,7 @@
             "anyOf": [
               {
                 "type": "number",
-                "exclusiveMinimum": 0
+                "exclusiveMinimum": 0.0
               },
               {
                 "type": "string",
@@ -5053,7 +5115,7 @@
           },
           "consecutive_failures": {
             "type": "integer",
-            "minimum": 0,
+            "minimum": 0.0,
             "title": "Consecutive Failures",
             "description": "Consecutive failure count tracked for breaker transitions."
           },
@@ -5190,7 +5252,7 @@
           },
           "econfirm_needs_reconciliation_count": {
             "type": "integer",
-            "minimum": 0,
+            "minimum": 0.0,
             "title": "Econfirm Needs Reconciliation Count",
             "description": "Count of eConfirm escrows flagged for manual reconciliation (A3).",
             "default": 0
@@ -5855,7 +5917,7 @@
             "anyOf": [
               {
                 "type": "number",
-                "minimum": 0
+                "minimum": 0.0
               },
               {
                 "type": "string",
@@ -5910,7 +5972,7 @@
             "anyOf": [
               {
                 "type": "number",
-                "exclusiveMinimum": 0
+                "exclusiveMinimum": 0.0
               },
               {
                 "type": "string",
@@ -9996,7 +10058,7 @@
             "anyOf": [
               {
                 "type": "number",
-                "minimum": 0
+                "minimum": 0.0
               },
               {
                 "type": "string",

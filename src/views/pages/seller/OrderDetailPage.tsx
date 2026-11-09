@@ -167,7 +167,7 @@ export function OrderDetailPage() {
       <Card>
         <MoneyPath
           buyer={{ title: 'Buyer', detail: order.buyer.name }}
-          vault={{ title: 'Vekro vault' }}
+          vault={{ title: order.holder }}
           seller={{ title: 'You' }}
           position={order.moneyAt}
         />

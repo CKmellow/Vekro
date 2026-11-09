@@ -17,6 +17,7 @@ import {
   sellerReceived,
   sellerResolution,
   rejectAtDoor,
+  payByCard,
   refreshCardPayment,
   resendPayment,
 } from '@/models/api/transactions'
@@ -115,6 +116,19 @@ export function useRefreshCardPayment(orderId: string) {
     onSuccess: (payment) => {
       client.setQueryData<Order>(orderKeys.detail(orderId), (order) =>
         order ? { ...order, payment } : order,
+      )
+    },
+  })
+}
+
+/** Pay by card instead: the cached order becomes a card order with its checkout at once. */
+export function usePayByCard(orderId: string) {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: () => payByCard(orderId),
+    onSuccess: (payment) => {
+      client.setQueryData<Order>(orderKeys.detail(orderId), (order) =>
+        order ? { ...order, payment, collection: { ...order.collection, rail: 'pesapal' } } : order,
       )
     },
   })

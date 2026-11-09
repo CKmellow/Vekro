@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { paymentNote } from './paymentNote'
+import { moneyHolder, payingHint, paymentNote } from './paymentNote'
 
 const note = (
   rail: 'simulated' | 'daraja' | 'pesapal' | 'econfirm',
@@ -24,5 +24,18 @@ describe('paymentNote (backend #257)', () => {
 
   it('says nothing about a live payment that has not been made', () => {
     expect(note('daraja', 'live', 'awaiting_payment')).toBeNull()
+  })
+})
+
+describe('moneyHolder (#290)', () => {
+  it('says card money is held by Pesapal, never the Vekro vault', () => {
+    expect(moneyHolder('pesapal')).toBe('Held by Pesapal')
+    expect(payingHint('pesapal')).toBe('Your card payment will be held by Pesapal, not paid to the seller.')
+    expect(`${moneyHolder('pesapal')} ${payingHint('pesapal')}`).not.toMatch(/vault|escrow/i)
+  })
+
+  it('keeps the vault for M-Pesa orders', () => {
+    for (const rail of ['simulated', 'daraja', 'econfirm'] as const)
+      expect(moneyHolder(rail)).toBe('Vekro vault')
   })
 })

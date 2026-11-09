@@ -24,3 +24,18 @@ export function paymentNote(order: { collection: Collection; status: Transaction
   if (UNPAID.has(order.status)) return null
   return `Paid via ${RAIL_NAMES[rail]}. Held by Vekro's payment partner until delivery.`
 }
+
+/**
+ * Who holds the money on the money path. Card money is collected into Pesapal's account, so a card
+ * order never says "Vekro vault" (#290); like `paymentNote`, never third-party escrow.
+ */
+export function moneyHolder(rail: Collection['rail']): string {
+  return rail === 'pesapal' ? 'Held by Pesapal' : 'Vekro vault'
+}
+
+/** B2's line under the amount while the buyer pays. */
+export function payingHint(rail: Collection['rail']): string {
+  return rail === 'pesapal'
+    ? 'Your card payment will be held by Pesapal, not paid to the seller.'
+    : 'Your money goes into the Vekro vault, not to the seller.'
+}

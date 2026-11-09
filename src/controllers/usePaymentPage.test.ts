@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { toOrder } from '@/models/api/transactions'
 import { orderResponse, paymentResponse } from '@/test/fixtures'
-import { paymentVariant, pollInterval } from './usePaymentPage'
+import { canPayByCard, paymentVariant, pollInterval } from './usePaymentPage'
 
 const SENT = new Date('2026-10-20T09:00:00Z').getTime()
 const order = (overrides: Parameters<typeof orderResponse>[0] = {}) => toOrder(orderResponse(overrides), SENT)
@@ -76,5 +76,36 @@ describe('B2 polling', () => {
     // The phone is 5 minutes fast; the server says the prompt is still open.
     const fast = toOrder(orderResponse(), SENT + 300_000)
     expect(pollInterval(fast, SENT + 300_000 + 30_000)).toBe(3000)
+  })
+})
+
+describe('B2 pay by card instead (#290)', () => {
+  const NOW = Date.parse('2026-10-20T09:05:00Z')
+  const order = (rail: 'simulated' | 'daraja' | 'pesapal' | 'econfirm', status: string) =>
+    toOrder(
+      orderResponse({
+        collection_rail: rail,
+        server_time: '2026-10-20T09:05:00Z',
+        payment: paymentResponse({ status: status as 'pending' }),
+      }),
+      NOW,
+    )
+  const offered = (rail: Parameters<typeof order>[0], status: string) => {
+    const o = order(rail, status)
+    return canPayByCard(o, paymentVariant(o, NOW))
+  }
+
+  it('is offered once the M-Pesa prompt is closed', () => {
+    for (const status of ['failed', 'expired', 'failed_to_initiate'])
+      expect(offered('daraja', status)).toBe(true)
+    // A pending prompt past its expiry reads as timed out: closed on the phone.
+    expect(offered('simulated', 'pending')).toBe(true)
+  })
+
+  it('is never offered for card or eConfirm orders, or once paid', () => {
+    expect(offered('pesapal', 'failed')).toBe(false)
+    expect(offered('econfirm', 'failed')).toBe(false)
+    const paid = toOrder(orderResponse({ status: 'locked', collection_rail: 'daraja' }), NOW)
+    expect(canPayByCard(paid, paymentVariant(paid, NOW))).toBe(false)
   })
 })

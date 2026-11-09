@@ -4,10 +4,10 @@ import { toast } from '@/lib/toast'
 import { ApiError } from '@/models/api/errors'
 import type { Order, PaymentFailure } from '@/models/domain/order'
 import { statusView } from '@/models/domain/stateMeta'
-import { useOrder, useResendPayment } from '@/models/queries/orders'
+import { useOrder, usePayByCard, useResendPayment } from '@/models/queries/orders'
 import { useNow } from './useNow'
 import { useOnline } from './useOnline'
-import { paymentNote } from '@/models/domain/paymentNote'
+import { moneyHolder, payingHint, paymentNote } from '@/models/domain/paymentNote'
 
 const POLL_MS = 3000
 /** Keep polling a little past expiry: a PIN entered at the last second still confirms. */
@@ -32,7 +32,7 @@ export function paymentVariant(order: Order, serverNow: number): PaymentVariant 
       return {
         kind: 'failed',
         reason: payment.failureReason ?? 'provider_error',
-        card: payment.kind === 'REDIRECT',
+        card: payment.kind === 'REDIRECT' || order.collection.rail === 'pesapal',
       }
     case 'failed_to_initiate':
       return { kind: 'not_started' }
@@ -44,6 +44,15 @@ export function paymentVariant(order: Order, serverNow: number): PaymentVariant 
       if (serverNow >= new Date(payment.expiresAt).getTime()) return { kind: 'timed_out' }
       return { kind: 'waiting', expiresAt: payment.expiresAt, sentAt: payment.sentAt }
   }
+}
+
+/** No prompt is open on the phone: M-Pesa failed, expired or never started (backend #280 guard). */
+const PROMPT_CLOSED = new Set<PaymentVariant['kind']>(['failed', 'timed_out', 'not_started'])
+
+/** "Pay by card instead" is offered on an unpaid M-Pesa order once its prompt is closed. */
+export function canPayByCard(order: Order, variant: PaymentVariant): boolean {
+  const rail = order.collection.rail
+  return rail !== 'pesapal' && rail !== 'econfirm' && PROMPT_CLOSED.has(variant.kind)
 }
 
 /** Poll every 3s while a prompt can still be answered (90s window plus grace), else stop. */
@@ -63,6 +72,7 @@ export function usePaymentPage(orderId: string) {
   const online = useOnline()
   const query = useOrder(orderId, { refetchInterval: (order) => pollInterval(order) })
   const resend = useResendPayment(orderId)
+  const payCard = usePayByCard(orderId)
   const [cooldownUntil, setCooldownUntil] = useState<number | null>(null)
   const [leaveOpen, setLeaveOpen] = useState(false)
   const order = query.data
@@ -74,7 +84,9 @@ export function usePaymentPage(orderId: string) {
     order?.payment ? new Date(order.payment.resendAvailableAt).getTime() : 0,
     cooldownUntil ?? 0,
   )
-  const resendInSeconds = Math.max(0, Math.ceil((resendAt - serverNow) / 1000))
+  // A card checkout has no resend cooldown (only M-Pesa refuses a second prompt within a minute).
+  const card = order?.collection.rail === 'pesapal'
+  const resendInSeconds = card ? 0 : Math.max(0, Math.ceil((resendAt - serverNow) / 1000))
 
   const sendAgain = async () => {
     try {
@@ -91,6 +103,31 @@ export function usePaymentPage(orderId: string) {
           error instanceof ApiError && error.kind === 'network'
             ? "You're offline. Try again when you're connected."
             : "We couldn't send a new request. Try again.",
+          'danger',
+        )
+      }
+    }
+  }
+
+  const payByCardInstead = async () => {
+    try {
+      await payCard.mutateAsync()
+    } catch (error) {
+      if (error instanceof ApiError && error.kind === 'conflict') {
+        void query.refetch()
+        toast.show(
+          error.retryAfterSeconds
+            ? 'Your M-Pesa request is still open. Finish or cancel it on your phone, then try again.'
+            : 'This order has changed. We refreshed it.',
+          'info',
+        )
+      } else {
+        toast.show(
+          error instanceof ApiError && error.kind === 'network'
+            ? "You're offline. Try again when you're connected."
+            : error instanceof ApiError && error.status === 503
+              ? 'Card payments are not available right now.'
+              : "We couldn't start the card payment. Try again.",
           'danger',
         )
       }
@@ -115,6 +152,9 @@ export function usePaymentPage(orderId: string) {
           sellerName: order.seller.name,
           phoneMasked: order.buyer.phoneMasked,
           paymentNote: paymentNote(order),
+          card,
+          holder: moneyHolder(order.collection.rail),
+          payingHint: payingHint(order.collection.rail),
           status: statusView(order.status, 'buyer'),
           serverOffsetMs: order.serverOffsetMs,
         }
@@ -123,6 +163,9 @@ export function usePaymentPage(orderId: string) {
     resendInSeconds,
     resending: resend.isPending,
     sendAgain: () => void sendAgain(),
+    canPayByCard: Boolean(order && variant && canPayByCard(order, variant)),
+    payByCard: () => void payByCardInstead(),
+    switchingToCard: payCard.isPending,
     copyReference: async () => {
       if (!order) return
       try {
