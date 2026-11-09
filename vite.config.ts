@@ -1,9 +1,10 @@
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath, URL } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig, loadEnv } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
-import { cspFor } from './src/app/csp'
+import { cspFor, renderNginxTemplate } from './src/app/csp'
 
 export default defineConfig(({ mode }) => ({
   plugins: [
@@ -17,6 +18,13 @@ export default defineConfig(({ mode }) => ({
           '<meta charset="UTF-8" />',
           `<meta charset="UTF-8" />\n    <meta http-equiv="Content-Security-Policy" content="${cspFor(loadEnv(mode, process.cwd(), 'VITE_').VITE_ANCHOR_RPC_URL)}" />\n    <meta name="referrer" content="strict-origin-when-cross-origin" />`,
         ),
+      // The web image's nginx header gets the same policy (#294): .deploy/ is git-ignored.
+      closeBundle: () => {
+        const template = readFileSync('deploy/nginx.conf.template', 'utf8')
+        const rpcUrl = loadEnv(mode, process.cwd(), 'VITE_').VITE_ANCHOR_RPC_URL
+        mkdirSync('.deploy', { recursive: true })
+        writeFileSync('.deploy/default.conf.template', renderNginxTemplate(template, rpcUrl))
+      },
     },
     tailwindcss(),
     VitePWA({

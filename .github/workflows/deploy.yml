@@ -36,6 +36,9 @@ jobs:
             VITE_SUPPORT_WHATSAPP=${{ vars.VITE_SUPPORT_WHATSAPP }}
             VITE_SUPPORT_EMAIL=${{ vars.VITE_SUPPORT_EMAIL }}
             VITE_SUPPORT_HOURS=${{ vars.VITE_SUPPORT_HOURS }}
+            VITE_ANCHOR_CHAIN_ID=${{ vars.VITE_ANCHOR_CHAIN_ID }}
+            VITE_ANCHOR_REGISTRY_ADDRESS=${{ vars.VITE_ANCHOR_REGISTRY_ADDRESS }}
+            VITE_ANCHOR_RPC_URL=${{ vars.VITE_ANCHOR_RPC_URL }}
           tags: |
             ghcr.io/ckmellow/vekro-web:${{ github.sha }}
             ghcr.io/ckmellow/vekro-web:latest
