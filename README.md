@@ -35,7 +35,7 @@ flowchart LR
     V --> C --> M
   end
   SW["Service worker<br/>app shell only, never API data"]
-  subgraph Site["One site: app.vekro.co.ke"]
+  subgraph Site["One site: app.vekro.me"]
     S["Static app<br/>CSP, hashed assets"]
     P["/api reverse proxy"]
   end

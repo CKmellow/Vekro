@@ -182,7 +182,7 @@ export function useListingWizard() {
       item: values.item,
       categoryLabel: values.item.category,
       photoCount: photos.photos.length,
-      linkHost: typeof window === 'undefined' ? 'vekro.co.ke' : window.location.host,
+      linkHost: typeof window === 'undefined' ? 'app.vekro.me' : window.location.host,
     },
     problemPresets: problemPresets(values.item.category),
     categories: CATEGORIES,

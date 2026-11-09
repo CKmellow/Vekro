@@ -34,8 +34,8 @@ Full list in the backend's `.env.example`. These are the ones that decide whethe
 | Backend variable | Development | Production | Why |
 | --- | --- | --- | --- |
 | `ENVIRONMENT` | `development` | `production` | Production turns on the safety checks below. |
-| `FRONTEND_URL` | `http://localhost:4173` | `https://app.vekro.co.ke` | Links in SMS messages; must be HTTPS in production. |
-| `CORS_ORIGINS` | `http://localhost:4173` | `https://app.vekro.co.ke` | Same-origin through `/api` doesn't need CORS, but keep the app's origin listed. |
+| `FRONTEND_URL` | `http://localhost:4173` | `https://app.vekro.me` | Links in SMS messages; must be HTTPS in production. |
+| `CORS_ORIGINS` | `http://localhost:4173` | `https://app.vekro.me` | Same-origin through `/api` doesn't need CORS, but keep the app's origin listed. |
 | `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE` | `false` | `true` | Required in production. |
 | `SESSION_COOKIE_SAMESITE`, `CSRF_COOKIE_SAMESITE` | `lax` | `lax` | Same-origin requests carry them. |
 | `CSRF_HEADER_NAME` | `X-CSRF-Token` | `X-CSRF-Token` | The frontend sends this header (`src/models/api/csrf.ts`). |

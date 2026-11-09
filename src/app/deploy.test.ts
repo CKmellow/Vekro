@@ -55,6 +55,13 @@ describe('web image', () => {
     expect(dockerfile).not.toContain('COPY deploy/nginx.conf.template')
   })
 
+  it('rolls out over SSH with the backend deploy script, only once enabled (#296)', () => {
+    expect(deploy).not.toContain('DEPLOY_HOOK_URL')
+    expect(deploy).toMatch(/roll-out:\s+needs: image\s+if: vars\.DEPLOY_ENABLED == 'true'/)
+    expect(deploy).toContain("deploy/deploy.sh web '${{ github.sha }}'")
+    expect(deploy).toContain('StrictHostKeyChecking=yes')
+  })
+
   it('takes the anchoring registry as build arguments from repository variables', () => {
     for (const name of ['VITE_ANCHOR_CHAIN_ID', 'VITE_ANCHOR_REGISTRY_ADDRESS', 'VITE_ANCHOR_RPC_URL']) {
       expect(dockerfile).toContain(`${name}=`)
