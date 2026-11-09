@@ -211,7 +211,7 @@ export function PayoutSetupPage() {
                   </label>
                   <div className="flex h-12 overflow-hidden rounded-md" aria-hidden="true">
                     <span
-                      className="type-body-sm flex items-center bg-emerald-700 px-4 font-semibold whitespace-nowrap text-sand-0 transition-[width] duration-(--duration-state)"
+                      className="type-body-sm flex items-center bg-primary px-4 font-semibold whitespace-nowrap text-on-primary transition-[width] duration-(--duration-state)"
                       style={{ width: `${(s.fee.net / s.fee.gross) * 100}%` }}
                     >
                       You receive {formatKes(s.fee.net)}

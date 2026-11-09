@@ -3,6 +3,8 @@ import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import type { ReactNode } from 'react'
 import { duration } from '@/lib/motion'
 import { VaultCard, type VaultCardProps } from '../components/domain/VaultCard'
+import { useTheme } from '@/controllers/useTheme'
+import { ThemeSwitch } from '../components/ui/ThemeSwitch'
 import { VekroMark } from '../components/ui/VekroMark'
 
 const BENEFITS: { Icon: LucideIcon; text: string }[] = [
@@ -27,6 +29,7 @@ export interface AuthLayoutProps {
  * header strip with the form card overlapping it.
  */
 export function AuthLayout({ headline, lead, benefits = false, vault, children }: AuthLayoutProps) {
+  const theme = useTheme()
   const reduce = useReducedMotion()
   return (
     <div className="min-h-dvh bg-background lg:grid lg:grid-cols-[55fr_45fr]">
@@ -66,7 +69,13 @@ export function AuthLayout({ headline, lead, benefits = false, vault, children }
         </div>
       </section>
       <main className="relative -mt-10 px-4 pb-10 lg:mt-0 lg:grid lg:place-items-center lg:px-10 lg:py-12">
-        <div className="mx-auto w-full max-w-110 rounded-lg bg-surface p-5 shadow-1 sm:p-8">{children}</div>
+        <div className="mx-auto w-full max-w-110">
+          <div className="rounded-lg bg-surface p-5 shadow-1 sm:p-8">{children}</div>
+          <div className="mt-4 flex items-center justify-center gap-3 text-text-muted">
+            <span className="type-body-sm">Theme</span>
+            <ThemeSwitch value={theme.preference} onChange={theme.setPreference} />
+          </div>
+        </div>
       </main>
     </div>
   )

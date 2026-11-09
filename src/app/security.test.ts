@@ -33,8 +33,12 @@ describe('source rules', () => {
     expect(using(/dangerouslySetInnerHTML|\.innerHTML\s*=/)).toEqual([])
   })
 
-  it('keeps sessions out of browser storage: only the listing draft uses localStorage', () => {
-    expect(using(/localStorage|sessionStorage|indexedDB/)).toEqual(['src/models/domain/listingDraftStore.ts'])
+  it('keeps sessions out of browser storage: only the listing draft and the theme use localStorage', () => {
+    // The theme choice (M25, #292, Cyprian 2026-11-09) is a per-device display preference, never a session.
+    expect(using(/localStorage|sessionStorage|indexedDB/)).toEqual([
+      'src/lib/theme.ts',
+      'src/models/domain/listingDraftStore.ts',
+    ])
     expect(using(/document\.cookie/)).toEqual(['src/models/api/csrf.ts'])
   })
 
