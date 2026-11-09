@@ -254,7 +254,7 @@ export function OrderTrackerPage() {
                   </Card>
                 )}
                 <Suspense fallback={null}>
-                  <VerifiedRecordSection orderId={order.id} version={order.status.label} />
+                  <VerifiedRecordSection orderId={order.id} version={order.status.label} buyer />
                 </Suspense>
                 <p className="type-body-sm text-center">
                   <Link to="/help" className="font-semibold text-primary">

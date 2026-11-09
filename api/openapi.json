@@ -2817,6 +2817,56 @@
         }
       }
     },
+    "/transactions/{transaction_id}/liabilities-proof": {
+      "get": {
+        "tags": [
+          "Verification"
+        ],
+        "summary": "Proof the order's held money is counted in Vekro's published total (buyer, admin)",
+        "description": "The order's leaf, salt and Merkle sum proof in the latest liabilities snapshot, the snapshot's root and total, and the anchored liabilities_snapshot event with its batch proof. The browser checks the leaf is this order's (order_commit), folds the proof (no negative or overflowing sums), compares the root and total with the anchored payload, and reads the batch root from the AnchorRegistry. 404 when the order is not held now.",
+        "operationId": "get_liabilities_proof_transactions__transaction_id__liabilities_proof_get",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiabilitiesProofResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "404": {
+            "description": "Not the caller's order, or no held money for it in the latest snapshot."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/anchoring/batches/{batch_id}": {
       "get": {
         "tags": [
@@ -3315,6 +3365,52 @@
           },
           "409": {
             "description": "Not completable yet: approval not anchored, or not enough held money."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ussd/africastalking/{token}": {
+      "post": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Africa's Talking USSD callback",
+        "description": "Africa's Talking posts every step of a USSD session here (form-encoded sessionId, serviceCode, phoneNumber, networkCode, text). The requests are unsigned, so the path carries USSD_CALLBACK_TOKEN; USSD_ALLOWED_IPS optionally limits callers. Answers text/plain CON or END screens of at most 160 characters (docs/ussd.md).",
+        "operationId": "africastalking_ussd_ussd_africastalking__token__post",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Wrong token, caller not allowed, or USSD is off."
           },
           "422": {
             "description": "Validation Error",
@@ -3975,6 +4071,44 @@
           },
           "403": {
             "description": "Not a seller."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/ussd-pin": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Set or change the USSD PIN",
+        "description": "The 4-digit PIN asked for before sensitive actions over USSD (*384*…#). Needs the account password. Three wrong PINs over USSD lock USSD actions for 15 minutes.",
+        "operationId": "post_ussd_pin_account_ussd_pin_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UssdPinRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "Wrong password."
           },
           "422": {
             "description": "Validation Error",
@@ -5528,6 +5662,31 @@
             "title": "Payouts Halted",
             "description": "Payouts stopped because they disagree with their anchored authorisation."
           },
+          "liabilities": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LiabilitiesStatus"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The latest liabilities snapshot (what Vekro owes buyers)."
+          },
+          "reserves": {
+            "items": {
+              "$ref": "#/components/schemas/ReservesStatus"
+            },
+            "type": "array",
+            "title": "Reserves",
+            "description": "The latest reserves reconciliation per provider."
+          },
+          "reserves_shortfall": {
+            "type": "boolean",
+            "title": "Reserves Shortfall",
+            "description": "A provider attests less than Vekro owes: investigate now.",
+            "default": false
+          },
           "server_time": {
             "type": "string",
             "format": "date-time",
@@ -6371,6 +6530,99 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "LiabilitiesProofResponse": {
+        "properties": {
+          "snapshot_id": {
+            "type": "integer",
+            "title": "Snapshot Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "root": {
+            "$ref": "#/components/schemas/SumNodeResponse"
+          },
+          "total": {
+            "type": "string",
+            "title": "Total",
+            "description": "KES held for all buyers at the snapshot."
+          },
+          "leaf_count": {
+            "type": "integer",
+            "title": "Leaf Count"
+          },
+          "leaf": {
+            "$ref": "#/components/schemas/SumLeafResponse"
+          },
+          "proof": {
+            "items": {
+              "$ref": "#/components/schemas/SumProofStepResponse"
+            },
+            "type": "array",
+            "title": "Proof"
+          },
+          "anchor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerificationEventResponse"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The liabilities_snapshot event in the global chain, with its batch proof; null until anchoring is on."
+          }
+        },
+        "type": "object",
+        "required": [
+          "snapshot_id",
+          "created_at",
+          "root",
+          "total",
+          "leaf_count",
+          "leaf",
+          "proof",
+          "anchor"
+        ],
+        "title": "LiabilitiesProofResponse",
+        "description": "Proof that this order's held amount is counted in Vekro's anchored total (M24 B2)."
+      },
+      "LiabilitiesStatus": {
+        "properties": {
+          "snapshot_id": {
+            "type": "integer",
+            "title": "Snapshot Id"
+          },
+          "total": {
+            "type": "string",
+            "title": "Total"
+          },
+          "leaf_count": {
+            "type": "integer",
+            "title": "Leaf Count"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At"
+          },
+          "anchored": {
+            "type": "boolean",
+            "title": "Anchored"
+          }
+        },
+        "type": "object",
+        "required": [
+          "snapshot_id",
+          "total",
+          "leaf_count",
+          "at",
+          "anchored"
+        ],
+        "title": "LiabilitiesStatus"
       },
       "ListingListResponse": {
         "properties": {
@@ -8197,6 +8449,71 @@
         "title": "ReportFunctionalIssueRequest",
         "description": "Buyer dispute intake payload used during serialized hold window."
       },
+      "ReservesStatus": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "covered",
+              "shortfall",
+              "incomplete",
+              "unavailable",
+              "not_applicable"
+            ],
+            "title": "Status"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "liability_total": {
+            "type": "string",
+            "title": "Liability Total"
+          },
+          "attested_total": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attested Total"
+          },
+          "difference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Difference"
+          },
+          "at": {
+            "type": "string",
+            "title": "At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "status",
+          "method",
+          "liability_total",
+          "attested_total",
+          "difference",
+          "at"
+        ],
+        "title": "ReservesStatus",
+        "description": "The latest reserves reconciliation for one custody provider (M24 B2)."
+      },
       "ResetCodeRequest": {
         "properties": {
           "phone": {
@@ -8692,6 +9009,76 @@
           "server_time"
         ],
         "title": "SellerTrackRecordResponse"
+      },
+      "SumLeafResponse": {
+        "properties": {
+          "salt": {
+            "type": "string",
+            "title": "Salt"
+          },
+          "order_commit": {
+            "type": "string",
+            "title": "Order Commit",
+            "description": "keccak256(\"vekro-liability-order:\" + the order id): recompute it to check the leaf is this order's."
+          },
+          "amount_cents": {
+            "type": "string",
+            "title": "Amount Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "salt",
+          "order_commit",
+          "amount_cents"
+        ],
+        "title": "SumLeafResponse"
+      },
+      "SumNodeResponse": {
+        "properties": {
+          "hash": {
+            "type": "string",
+            "title": "Hash"
+          },
+          "sum": {
+            "type": "string",
+            "title": "Sum",
+            "description": "Cents, as a decimal string (may exceed 2**53)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "hash",
+          "sum"
+        ],
+        "title": "SumNodeResponse"
+      },
+      "SumProofStepResponse": {
+        "properties": {
+          "sibling_hash": {
+            "type": "string",
+            "title": "Sibling Hash"
+          },
+          "sibling_sum": {
+            "type": "string",
+            "title": "Sibling Sum"
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "left",
+              "right"
+            ],
+            "title": "Side"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sibling_hash",
+          "sibling_sum",
+          "side"
+        ],
+        "title": "SumProofStepResponse"
       },
       "TimelineEventResponse": {
         "properties": {
@@ -9669,6 +10056,29 @@
           "admin"
         ],
         "title": "UserRole"
+      },
+      "UssdPinRequest": {
+        "properties": {
+          "pin": {
+            "type": "string",
+            "pattern": "^\\d{4}$",
+            "title": "Pin",
+            "description": "4 digits, for sensitive actions over USSD."
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password",
+            "description": "The account password."
+          }
+        },
+        "type": "object",
+        "required": [
+          "pin",
+          "password"
+        ],
+        "title": "UssdPinRequest"
       },
       "ValidationError": {
         "properties": {

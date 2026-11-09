@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { createRootReader } from '@/models/api/registry'
 import { registryConfig, type RegistryConfig } from '@/models/api/registryConfig'
-import { getVerification, type VerificationBundle } from '@/models/api/transactions'
+import { getLiabilitiesProof, getVerification, type VerificationBundle } from '@/models/api/transactions'
+import { verifyLiabilities, type LiabilitiesCheck } from '@/models/domain/verification/liabilities'
 import { verifyBundle, type RootOf, type VerificationReport } from '@/models/domain/verification/verify'
 
 export interface OrderVerification {
@@ -47,6 +48,28 @@ export function useOrderVerification(
         return { bundle, report, registry: pinned }
       }
       return { bundle, report: await verifyBundle(bundle, readerFor(pinned)), registry: pinned }
+    },
+  })
+}
+
+/**
+ * "Your KES X is included in Vekro's published total" (backend #261), checked in the browser against
+ * the same pinned registry. Null data when the order has no proof (not held now, or not the buyer).
+ */
+export function useLiabilitiesCheck(
+  orderId: string,
+  version: string,
+  enabled: boolean,
+  registry: RegistryConfig | null = config,
+) {
+  return useQuery({
+    queryKey: ['orders', orderId, 'liabilities', version] as const,
+    enabled: enabled && registry !== null && orderId !== '',
+    staleTime: 60_000,
+    retry: 1,
+    queryFn: async ({ signal }): Promise<LiabilitiesCheck | null> => {
+      const proof = await getLiabilitiesProof(orderId, signal)
+      return proof ? verifyLiabilities(proof, orderId, readerFor(registry as RegistryConfig)) : null
     },
   })
 }
