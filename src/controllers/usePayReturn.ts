@@ -1,43 +1,77 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { ApiError } from '@/models/api/errors'
-import { useOrder, useRefreshCardPayment } from '@/models/queries/orders'
+import {
+  useCardPaymentStatus,
+  useCheckCardPayment,
+  useOrder,
+  useRefreshCardPayment,
+} from '@/models/queries/orders'
+import { useCurrentUser } from '@/models/queries/session'
 import { useOnline } from './useOnline'
 
 const POLL_MS = 3000
 const WINDOW_MS = 90_000
 const UNPAID = new Set(['initiated', 'awaiting_payment'])
 
-export type PayReturnState = 'confirming' | 'not_confirmed' | 'unmatched' | 'not_found' | 'failed'
+export type PayReturnState =
+  | 'confirming'
+  | 'not_confirmed'
+  | 'unmatched'
+  | 'not_found'
+  | 'failed'
+  /** Paid, and this browser has no session: say so and offer the order link (#300). */
+  | 'paid'
+  /** Only on an old return URL without Pesapal's tracking id: the signed-in read answered 401. */
+  | 'sign_in'
+
+const isApiError = (error: unknown, kind: ApiError['kind']) =>
+  error instanceof ApiError && error.kind === kind
 
 /**
- * /pay/return after Pesapal's card checkout (FRONTEND_CONTRACT B). The backend sends the buyer back
- * with `order` (our order id). Arriving here confirms nothing and no query parameter is trusted
- * for the result: the page asks the backend to check the payment once, then polls the order every
- * 3s for 90s. When it is paid, B2 shows the same success as an M-Pesa payment.
+ * /pay/return after Pesapal's card checkout (FRONTEND_CONTRACT B). Pesapal sends the buyer back with
+ * our `order` and `ref` plus its own `OrderTrackingId`. Arriving here confirms nothing and no query
+ * parameter is trusted for the result: the page asks the backend to check the payment once, then
+ * polls every 3s for 90s.
+ *
+ * The status comes from the public, status-only read keyed by the reference and Pesapal's tracking
+ * id (backend #308), so it works in a browser without the buyer's session. When the order is paid,
+ * a signed-in buyer goes to B2 as before; anyone else sees "Payment received" and the order link.
+ * An old URL without the tracking id falls back to the signed-in read.
  */
 export function usePayReturn() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const online = useOnline()
   const orderId = params.get('order') ?? ''
-  const refresh = useRefreshCardPayment(orderId)
+  const reference = (params.get('ref') ?? params.get('OrderMerchantReference') ?? '').trim()
+  const trackingId = (params.get('OrderTrackingId') ?? '').trim()
+  const viaPublic = Boolean(reference && trackingId)
+
+  const session = useCurrentUser()
   const [windowStart, setWindowStart] = useState(() => Date.now())
   const [expired, setExpired] = useState(false)
   const checked = useRef(false)
 
-  const query = useOrder(orderId, {
-    enabled: Boolean(orderId),
-    refetchInterval: (order) => ((order && !UNPAID.has(order.status)) || expired ? false : POLL_MS),
+  const check = useCheckCardPayment(reference, trackingId)
+  const status = useCardPaymentStatus(reference, trackingId, {
+    enabled: viaPublic,
+    refetchInterval: (s) => ((s && s.stateGroup !== 'unpaid') || expired ? false : POLL_MS),
   })
-  const order = query.data
+  const refresh = useRefreshCardPayment(orderId)
+  const order = useOrder(orderId, {
+    enabled: !viaPublic && Boolean(orderId),
+    refetchInterval: (o) => ((o && !UNPAID.has(o.status)) || expired ? false : POLL_MS),
+  })
+
+  const runCheck = viaPublic ? check.mutate : refresh.mutate
 
   // One server-side check on arrival, in case Pesapal's notification is still on its way.
   useEffect(() => {
-    if (!orderId || checked.current) return
+    if (!(viaPublic || orderId) || checked.current) return
     checked.current = true
-    refresh.mutate()
-  }, [orderId, refresh])
+    runCheck()
+  }, [viaPublic, orderId, runCheck])
 
   useEffect(() => {
     const timer = window.setTimeout(
@@ -47,36 +81,52 @@ export function usePayReturn() {
     return () => window.clearTimeout(timer)
   }, [windowStart])
 
+  const paid = viaPublic
+    ? Boolean(status.data && status.data.stateGroup !== 'unpaid')
+    : Boolean(order.data && !UNPAID.has(order.data.status))
+  const signedIn = Boolean(session.data)
+  const handOver = paid && Boolean(orderId) && (!viaPublic || signedIn)
+
   useEffect(() => {
-    if (order && !UNPAID.has(order.status)) navigate(`/order/${order.id}/payment`, { replace: true })
-  }, [order, navigate])
+    if (handOver) navigate(`/order/${orderId}/payment`, { replace: true })
+  }, [handOver, orderId, navigate])
 
-  const failed =
-    order?.payment && (order.payment.status === 'failed' || order.payment.status === 'failed_to_initiate')
+  const error = viaPublic ? status.error : order.error
+  const payment = order.data?.payment
+  const failed = viaPublic
+    ? status.data?.paymentStatus === 'failed'
+    : payment?.status === 'failed' || payment?.status === 'failed_to_initiate'
 
-  const state: PayReturnState = !orderId
+  const state: PayReturnState = !(viaPublic || orderId)
     ? 'unmatched'
-    : query.error instanceof ApiError && query.error.kind === 'not_found'
+    : isApiError(error, 'not_found')
       ? 'not_found'
-      : failed
-        ? 'failed'
-        : expired
-          ? 'not_confirmed'
-          : 'confirming'
+      : paid && !handOver && !session.isPending
+        ? 'paid'
+        : paid
+          ? 'confirming' // handing over to B2
+          : !viaPublic && isApiError(error, 'unauthorized')
+            ? 'sign_in'
+            : failed
+              ? 'failed'
+              : expired
+                ? 'not_confirmed'
+                : 'confirming'
 
   return {
     state,
     online,
-    reference: order?.reference ?? null,
-    retrying: refresh.isPending,
+    reference: status.data?.reference ?? order.data?.reference ?? (reference || null),
+    retrying: viaPublic ? check.isPending : refresh.isPending,
     /** Check with Pesapal again and poll for another 90s. */
     retry: () => {
-      refresh.mutate()
+      runCheck()
       setExpired(false)
       setWindowStart(Date.now())
-      void query.refetch()
+      void (viaPublic ? status.refetch() : order.refetch())
     },
-    trackOrder: () => navigate(`/order/${orderId}`),
+    /** The order link: without a session it shows the public summary and the sign in. */
+    trackOrder: () => navigate(`/order/${orderId || reference}`),
     backToPayment: () => navigate(`/order/${orderId}/payment`),
   }
 }
