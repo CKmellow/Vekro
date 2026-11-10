@@ -123,6 +123,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -t vekro-web:ci .
+      - name: No secrets in the image (#298; the GHCR image is public)
+        run: |
+          python3 -I scripts/scan-image-secrets.py --self-test
+          python3 -I scripts/scan-image-secrets.py vekro-web:ci \
+            --path /usr/share/nginx/html --path /etc/nginx/templates --path /etc/nginx/conf.d
       - name: nginx config renders and is valid
         run: docker run --rm -e API_UPSTREAM=http://127.0.0.1:8000 vekro-web:ci sh -c '/docker-entrypoint.d/20-envsubst-on-templates.sh && nginx -t'
 
