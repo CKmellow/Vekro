@@ -332,6 +332,46 @@ export async function getPublicOrder(key: string, signal?: AbortSignal): Promise
   }
 }
 
+export interface CardPaymentStatus {
+  reference: string
+  stateGroup: 'unpaid' | 'paid' | 'closed'
+  paymentStatus: 'pending' | 'failed' | 'succeeded'
+  failureReason: 'declined' | 'provider_error' | null
+}
+
+const toCardPaymentStatus = (raw: Schemas['PublicCardPaymentStatus']): CardPaymentStatus => ({
+  reference: raw.reference,
+  stateGroup: raw.state_group,
+  paymentStatus: raw.payment_status,
+  failureReason: raw.failure_reason ?? null,
+})
+
+/**
+ * GET /public/orders/{reference}/card-payment: the return page's status read without a session
+ * (backend #308). Keyed by our reference and the OrderTrackingId Pesapal appended; status only.
+ */
+export async function getCardPaymentStatus(
+  reference: string,
+  trackingId: string,
+  signal?: AbortSignal,
+): Promise<CardPaymentStatus> {
+  const raw = await api.get('/public/orders/{reference}/card-payment', {
+    path: { reference },
+    query: { tracking_id: trackingId },
+    signal,
+  })
+  return toCardPaymentStatus(raw)
+}
+
+/** POST on the same path: the backend asks Pesapal now, then answers like the GET. */
+export async function checkCardPayment(reference: string, trackingId: string): Promise<CardPaymentStatus> {
+  const raw = await api.post('/public/orders/{reference}/card-payment', {
+    path: { reference },
+    query: { tracking_id: trackingId },
+  })
+  return toCardPaymentStatus(raw)
+}
+
 export type VerificationBundle = Schemas['TransactionVerificationResponse']
 
 /** The order's tamper-evident record: data only; the browser decides (domain/verification). */

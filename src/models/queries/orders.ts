@@ -19,6 +19,9 @@ import {
   rejectAtDoor,
   payByCard,
   refreshCardPayment,
+  checkCardPayment,
+  getCardPaymentStatus,
+  type CardPaymentStatus,
   resendPayment,
 } from '@/models/api/transactions'
 import type { DisputeCategory, Order, OrderListFilter, PaymentMethod } from '@/models/domain/order'
@@ -118,6 +121,35 @@ export function useRefreshCardPayment(orderId: string) {
         order ? { ...order, payment } : order,
       )
     },
+  })
+}
+
+const cardPaymentKey = (reference: string, trackingId: string) =>
+  ['orders', 'card-payment', reference, trackingId] as const
+
+/** The return page's public status read (no session needed), polled while the order is unpaid. */
+export function useCardPaymentStatus(
+  reference: string,
+  trackingId: string,
+  options: { enabled?: boolean; refetchInterval?: (status?: CardPaymentStatus) => number | false } = {},
+) {
+  const { refetchInterval } = options
+  return useQuery({
+    queryKey: cardPaymentKey(reference, trackingId),
+    queryFn: ({ signal }) => getCardPaymentStatus(reference, trackingId, signal),
+    enabled: options.enabled ?? true,
+    refetchInterval: refetchInterval ? (query) => refetchInterval(query.state.data) : false,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
+  })
+}
+
+/** Ask the backend to check with Pesapal now; its answer replaces the cached status. */
+export function useCheckCardPayment(reference: string, trackingId: string) {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: () => checkCardPayment(reference, trackingId),
+    onSuccess: (status) => client.setQueryData(cardPaymentKey(reference, trackingId), status),
   })
 }
 

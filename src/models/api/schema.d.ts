@@ -1298,6 +1298,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/public/orders/{reference}/card-payment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Card payment status for the return page (no auth)
+         * @description What /pay/return shows after Pesapal's checkout, without a session: whether the order is paid and the checkout's status. Needs the order reference and the OrderTrackingId Pesapal appended to the return URL; anything else is 404. No names, phones, ids or amounts. Poll it; POST asks Pesapal first.
+         */
+        get: operations["public_card_payment_public_orders__reference__card_payment_get"];
+        put?: never;
+        /**
+         * Check a card payment with Pesapal now (no auth)
+         * @description The return page's check on arrival (and on 'Check again'), before Pesapal's IPN may have arrived: Vekro asks Pesapal for the order's status and records funding only for a COMPLETED payment of the exact amount, currency and reference, the same rule as the IPN. Nothing in the request is trusted as a result. Answers like the GET.
+         */
+        post: operations["check_public_card_payment_public_orders__reference__card_payment_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/me/profile": {
         parameters: {
             query?: never;
@@ -3413,6 +3437,35 @@ export interface components {
             network?: string | null;
             /** Registry Address */
             registry_address: string;
+        };
+        /**
+         * PublicCardPaymentStatus
+         * @description What the card return page shows without a session (#308): status only, no personal data,
+         *     no ids and no amounts.
+         */
+        PublicCardPaymentStatus: {
+            /**
+             * Reference
+             * @description Human order reference, such as VK-7K3P9Q.
+             */
+            reference: string;
+            /**
+             * State Group
+             * @description As in the public order summary: paid once the payment is confirmed.
+             * @enum {string}
+             */
+            state_group: "unpaid" | "paid" | "closed";
+            /**
+             * Payment Status
+             * @description This card checkout: pending (not confirmed yet), failed (declined or refused; a declined card can still be retried on Pesapal's page) or succeeded.
+             * @enum {string}
+             */
+            payment_status: "pending" | "failed" | "succeeded";
+            /**
+             * Failure Reason
+             * @description Why it failed: declined by the card, or refused by Vekro.
+             */
+            failure_reason?: ("declined" | "provider_error") | null;
         };
         /**
          * PublicOrderSummary
@@ -7494,6 +7547,102 @@ export interface operations {
                 };
             };
             /** @description No such order. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too many lookups. See Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    public_card_payment_public_orders__reference__card_payment_get: {
+        parameters: {
+            query: {
+                /** @description The OrderTrackingId Pesapal appends to the return URL. */
+                tracking_id: string;
+            };
+            header?: never;
+            path: {
+                reference: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicCardPaymentStatus"];
+                };
+            };
+            /** @description No card checkout with this reference and tracking id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too many lookups. See Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    check_public_card_payment_public_orders__reference__card_payment_post: {
+        parameters: {
+            query: {
+                /** @description The OrderTrackingId Pesapal appends to the return URL. */
+                tracking_id: string;
+            };
+            header?: never;
+            path: {
+                reference: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicCardPaymentStatus"];
+                };
+            };
+            /** @description No card checkout with this reference and tracking id. */
             404: {
                 headers: {
                     [name: string]: unknown;

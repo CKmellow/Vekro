@@ -21,15 +21,24 @@ export function PayReturnPage() {
       ) : (
         <>
           <section className="flex flex-col items-center gap-4 rounded-xl bg-vault p-8 text-center text-sand-0 shadow-vault">
-            <LockRing state="open" />
+            <LockRing state={page.state === 'paid' ? 'locked' : 'open'} />
             {page.reference && <span className="type-mono text-emerald-glow">{page.reference}</span>}
             <p role="status" aria-live="polite" className="type-title">
               {page.state === 'confirming'
                 ? 'Confirming your payment…'
-                : page.state === 'not_confirmed'
-                  ? "We haven't received confirmation yet."
-                  : "The payment didn't go through."}
+                : page.state === 'paid'
+                  ? 'Payment received.'
+                  : page.state === 'sign_in'
+                    ? 'Sign in to see your payment.'
+                    : page.state === 'not_confirmed'
+                      ? "We haven't received confirmation yet."
+                      : "The payment didn't go through."}
             </p>
+            {page.state === 'paid' && (
+              <p className="type-body-sm text-emerald-100">
+                Your money is held safely until you confirm delivery. Sign in to see your order.
+              </p>
+            )}
             {page.state === 'not_confirmed' && (
               <p className="type-body-sm text-emerald-100">
                 If you paid, it can take a minute to reach us. Check again, or track your order: we&apos;ll
@@ -42,9 +51,16 @@ export function PayReturnPage() {
               We&apos;ll check your payment when you&apos;re back.
             </Banner>
           )}
-          {(page.state === 'not_confirmed' || page.state === 'failed') && (
+          {(page.state === 'not_confirmed' ||
+            page.state === 'failed' ||
+            page.state === 'paid' ||
+            page.state === 'sign_in') && (
             <ActionDock>
-              {page.state === 'failed' ? (
+              {page.state === 'paid' || page.state === 'sign_in' ? (
+                <Button fullWidth onClick={page.trackOrder}>
+                  See my order
+                </Button>
+              ) : page.state === 'failed' ? (
                 <Button fullWidth onClick={page.backToPayment}>
                   Try again
                 </Button>
