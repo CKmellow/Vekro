@@ -45,3 +45,9 @@ Every Stitch screen for Vekro, its exports and its review status.
 | X1 | Landing | `X1-landing/` | mobile, desktop | M13 | none (code-ready spec) | Specced (2026-10-24) |
 | X2 | Not found and offline | `X2-not-found/` | mobile, desktop | M13 | none (code-ready spec) | Specced (2026-10-24) |
 | X3 | Help and support | `X3-help/` | mobile | M10 | none (code-ready spec) | Specced (2026-10-24) |
+| X4 | Account shell and mode switch | `X4-account-shell/` | mobile, desktop | M21 | none (code-ready spec) | Specced (2026-11-11) |
+| B10 | Buyer Home | `B10-buyer-home/` | mobile, desktop | M21 | none (code-ready spec) | Specced (2026-11-11) |
+| B11 | Returns & disputes | `B11-returns-disputes/` | mobile, desktop | M21 | none (code-ready spec) | Specced (2026-11-11) |
+| B12 | Profile & security | `B12-profile-security/` | mobile, desktop | M21 | none (code-ready spec) | Specced (2026-11-11) |
+| S15 | Start selling | `S15-start-selling/` | mobile, desktop | M21 | none (code-ready spec) | Specced (2026-11-11) |
+| S16 | Close store and Trust Link store states | `S16-close-store/` | mobile, desktop | M21 | none (code-ready spec) | Specced (2026-11-11) |

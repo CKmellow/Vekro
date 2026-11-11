@@ -48,3 +48,17 @@ Usability and accessibility
 
 1. "Sign out" sits beside the headline instead of in an avatar menu, so the buyer header stays the same on every buyer page.
 2. Signed-in sellers and admins are sent to their own areas.
+
+## M21 update (2026-11-11, #314)
+
+B9 moves into the buyer app shell (X4) and its filter follows the backend's buyer filters:
+
+| Segment | Request |
+| --- | --- |
+| All | `GET /transactions?as=buying` |
+| Active | `filter=active` |
+| Completed | `filter=completed` |
+| Refunded | `filter=refunded` |
+| Disputed | `filter=disputed` |
+
+Counts come from `filter_counts`. Search stays `q` (reference or item). Each card still opens the B3 tracker. Store owners' purchases appear here (`as=buying`), never their sales. The "Sign out" button moves into the shell (More / sidebar).
