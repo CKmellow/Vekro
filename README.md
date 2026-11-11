@@ -105,6 +105,10 @@ CI (`.github/workflows/ci.yml`) runs lint, format, typecheck, tests with coverag
 
 Audits from the hardening milestone: [page states](docs/audits/page-states.md), [accessibility](docs/audits/accessibility.md), [security](docs/audits/security.md), [performance](docs/audits/performance.md).
 
+## Report evidence
+
+Test totals, coverage, CI jobs, security measures with their tests, and the live evidence for the capstone report are in the backend repository: [docs/report-evidence.md](https://github.com/CKmellow/Vekro-backend/blob/main/docs/report-evidence.md).
+
 ## Work process
 
 Work happens in issues, one branch per issue, merged into `main` through pull requests (squash-merged once CI is green).
