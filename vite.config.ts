@@ -6,6 +6,13 @@ import { defineConfig, loadEnv } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { cspFor, renderNginxTemplate } from './src/app/csp'
 
+/**
+ * Which deploy this build is (#302): the web image passes the commit (Dockerfile VEKRO_BUILD_ID). It is shown in
+ * <meta name="vekro-build"> and /version.json, so a browser can be checked for running the latest deploy.
+ */
+const requestedBuildId = process.env.VEKRO_BUILD_ID ?? ''
+const buildId = /^[\w.-]{1,64}$/.test(requestedBuildId) ? requestedBuildId : 'dev'
+
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
@@ -16,8 +23,16 @@ export default defineConfig(({ mode }) => ({
       transformIndexHtml: (html) =>
         html.replace(
           '<meta charset="UTF-8" />',
-          `<meta charset="UTF-8" />\n    <meta http-equiv="Content-Security-Policy" content="${cspFor(loadEnv(mode, process.cwd(), 'VITE_').VITE_ANCHOR_RPC_URL)}" />\n    <meta name="referrer" content="strict-origin-when-cross-origin" />`,
+          `<meta charset="UTF-8" />\n    <meta http-equiv="Content-Security-Policy" content="${cspFor(loadEnv(mode, process.cwd(), 'VITE_').VITE_ANCHOR_RPC_URL)}" />\n    <meta name="referrer" content="strict-origin-when-cross-origin" />\n    <meta name="vekro-build" content="${buildId}" />`,
         ),
+      // Not precached (globPatterns has no json) and served no-cache by nginx.
+      generateBundle() {
+        this.emitFile({
+          type: 'asset',
+          fileName: 'version.json',
+          source: `${JSON.stringify({ build: buildId })}\n`,
+        })
+      },
       // The web image's nginx header gets the same policy (#294): .deploy/ is git-ignored.
       closeBundle: () => {
         const template = readFileSync('deploy/nginx.conf.template', 'utf8')
@@ -28,7 +43,9 @@ export default defineConfig(({ mode }) => ({
     },
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // A new version waits until the page is not mid-payment, then takes over and reloads
+      // (src/app/registerServiceWorker.ts, #302).
+      registerType: 'prompt',
       injectRegister: false,
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
@@ -66,6 +83,9 @@ export default defineConfig(({ mode }) => ({
           },
         ],
         cleanupOutdatedCaches: true,
+        // Once activated (only when no tab is mid-payment, #302), the new version also takes over open pages
+        // that no worker controlled yet, so they reload onto it too.
+        clientsClaim: true,
       },
     }),
   ],

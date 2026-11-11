@@ -27,6 +27,8 @@ export default tseslint.config(
   {
     ignores: [
       'dist',
+      '.sw-e2e',
+      '.deploy',
       'coverage',
       'dev-dist',
       'playwright-report',

@@ -13,6 +13,7 @@ Playwright against the real backend (CKmellow/Vekro-backend) through the Vite de
 | `sign-in.spec.ts` | buyer SMS sign-in; phone gate on an order link; seller password reset by SMS |
 | `account.spec.ts` | buyer My orders and track by reference; seller payout number change by SMS code |
 | `a11y.spec.ts` | axe on every page (public, buyer, seller, console) |
+| `sw-update.spec.ts` | after a deploy, an open or returning browser moves to the new build; never on a payment page (#302). Own project `sw-update`: two production builds served by `e2e/sw-update/server.mjs` on :4174, no backend |
 
 Backend settings the suite needs (CI sets them): `PHONE_CODE_DEV_ECHO=true` (codes come back in the API response; refused in production) and a support admin from `python -m app.cli create-admin`, passed as `E2E_ADMIN_PHONE` and `E2E_ADMIN_PASSWORD`. Without them the console specs skip.
 

@@ -39,7 +39,11 @@ describe('deploy/nginx.conf.template', () => {
 
   it('proxies the API on the same site and keeps the shell and service worker fresh', () => {
     expect(nginx).toMatch(/location \/api\/ \{\s+proxy_pass \$\{API_UPSTREAM\}\//)
-    expect(nginx).toMatch(/sw\\\.js[\s\S]*?no-cache/)
+    // #302: no-store, so Cloudflare neither caches the worker nor stretches it to its 4-hour browser TTL.
+    const fresh = nginx.match(/location ~ \^\/\(([^)]+)\)\$ \{\s+add_header Cache-Control "([^"]+)"/)
+    expect(fresh?.[2]).toBe('no-store')
+    for (const file of ['sw', 'registerSW', 'manifest', 'index', 'version'])
+      expect(fresh?.[1]).toContain(file)
     expect(nginx).toMatch(/location \/assets\/[\s\S]*?immutable/)
     expect(nginx).toContain('Strict-Transport-Security')
   })
@@ -60,6 +64,11 @@ describe('web image', () => {
     expect(deploy).toMatch(/roll-out:\s+needs: image\s+if: vars\.DEPLOY_ENABLED == 'true'/)
     expect(deploy).toContain("deploy/deploy.sh web '${{ github.sha }}'")
     expect(deploy).toContain('StrictHostKeyChecking=yes')
+  })
+
+  it('stamps the image with its commit (#302)', () => {
+    expect(dockerfile).toMatch(/ARG VEKRO_BUILD_ID=dev[\s\S]*VEKRO_BUILD_ID=\$VEKRO_BUILD_ID/)
+    expect(deploy).toContain('VEKRO_BUILD_ID=${{ github.sha }}')
   })
 
   it('takes the anchoring registry as build arguments from repository variables', () => {

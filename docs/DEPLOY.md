@@ -15,7 +15,8 @@ The image (`Dockerfile`) builds the app, enforces the bundle budget, and serves 
 2. **Registry access**: GHCR packages start private. Make `vekro-web` public (it holds only public build values), or log the VM in with a token that has only `read:packages`.
 3. **DNS and TLS**: `app.vekro.me` (and `api.vekro.me` for the backend) are tunnel hostnames in Cloudflare; Cloudflare serves HTTPS (backend `docs/hosting.md` sections 2 and 4).
 4. **Secrets and variables** in this repository, the same as the backend's (`docs/hosting.md` section 7): environment `production`; variables `DEPLOY_ENABLED`, `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_PATH`; secrets `DEPLOY_SSH_KEY`, `DEPLOY_KNOWN_HOSTS`, and `CF_ACCESS_CLIENT_ID` / `CF_ACCESS_CLIENT_SECRET` for SSH through Cloudflare Access. Build variables `VITE_SUPPORT_PHONE`, `VITE_SUPPORT_WHATSAPP`, `VITE_SUPPORT_EMAIL`, `VITE_SUPPORT_HOURS` (shown on the help page), and for the "Verified record" panel `VITE_ANCHOR_CHAIN_ID=84532`, `VITE_ANCHOR_REGISTRY_ADDRESS=0xD8094faf2B44711dD372A59C288130FA8113E4DB`, `VITE_ANCHOR_RPC_URL=https://sepolia.base.org` (Base Sepolia, backend `docs/anchoring.md` section 8; the panel stays hidden while any is empty).
-5. **Backend** in production: `ENVIRONMENT=production`, `FRONTEND_URL=https://app.vekro.me`, `CORS_ORIGINS=https://app.vekro.me`, secure cookies, `PAYMENT_CALLBACK_SECRET`, live SMS keys, `PHONE_CODE_DEV_ECHO=false` (the backend refuses to start otherwise), and a support admin from `python -m app.cli create-admin`.
+5. **Cloudflare caching** (#302): Caching → Configuration → **Browser Cache TTL → Respect Existing Headers**. The default (4 hours) replaces the origin's `Cache-Control` on anything Cloudflare caches, such as `.js`. nginx already sends `no-store` for `/sw.js`, the shell and `/version.json`, which Cloudflare neither caches nor rewrites; this setting is the second line of defence.
+6. **Backend** in production: `ENVIRONMENT=production`, `FRONTEND_URL=https://app.vekro.me`, `CORS_ORIGINS=https://app.vekro.me`, secure cookies, `PAYMENT_CALLBACK_SECRET`, live SMS keys, `PHONE_CODE_DEV_ECHO=false` (the backend refuses to start otherwise), and a support admin from `python -m app.cli create-admin`.
 
 ## Check after a deploy
 
@@ -23,5 +24,14 @@ The image (`Dockerfile`) builds the app, enforces the bundle budget, and serves 
 curl -sI https://app.vekro.me/ | grep -iE 'content-security-policy|strict-transport|cache-control'
 curl -s https://app.vekro.me/api/health
 ```
+
+Which build is live, and whether the worker and shell stay fresh (#302):
+
+```sh
+curl -s https://app.vekro.me/version.json                     # {"build":"<web commit>"}
+curl -sI https://app.vekro.me/sw.js | grep -i cache-control   # no-store, never max-age=14400
+```
+
+A browser that had the app open picks up a new deploy by itself: the new service worker installs, and as soon as the page is not a payment (`/pay/*`, `/order/<id>/payment`, `/order/<id>/inspect`) it takes over and the page reloads (`src/app/registerServiceWorker.ts`). On a payment page it waits until the buyer leaves it. In the browser, `document.querySelector('meta[name=vekro-build]').content` shows the running build.
 
 Then log in as a seller and confirm `/api/auth/me` returns 200 in the browser's network tab (cookies working), and that the order tracker updates.
