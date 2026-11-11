@@ -33,9 +33,11 @@ describe('source rules', () => {
     expect(using(/dangerouslySetInnerHTML|\.innerHTML\s*=/)).toEqual([])
   })
 
-  it('keeps sessions out of browser storage: only the listing draft and the theme use localStorage', () => {
+  it('keeps sessions out of browser storage: only the listing draft, the theme and the install hint use localStorage', () => {
     // The theme choice (M25, #292, Cyprian 2026-11-09) is a per-device display preference, never a session.
+    // So is the dismissed "Install Vekro" hint (#304).
     expect(using(/localStorage|sessionStorage|indexedDB/)).toEqual([
+      'src/lib/installHint.ts',
       'src/lib/theme.ts',
       'src/models/domain/listingDraftStore.ts',
     ])

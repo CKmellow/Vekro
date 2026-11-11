@@ -1,3 +1,4 @@
+import { ApiError } from '@/models/api/errors'
 import { useCurrentUser, useSessionExpired, type CurrentUser, type Role } from '@/models/queries/session'
 
 export type SessionState =
@@ -10,7 +11,8 @@ export type SessionState =
 export function useSession(): SessionState {
   const query = useCurrentUser()
   const expired = useSessionExpired()
-  const offline = !navigator.onLine
+  // No response at all is offline too: phones with no data often still report navigator.onLine (#304).
+  const offline = !navigator.onLine || (query.error instanceof ApiError && query.error.kind === 'network')
   if (query.isPending) return { status: 'loading', offline: query.fetchStatus === 'paused' || undefined }
   if (query.isError)
     return { status: 'error', retry: () => void query.refetch(), offline: offline || undefined }

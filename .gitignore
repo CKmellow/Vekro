@@ -34,3 +34,6 @@ npm-debug.log*
 .vscode/*
 !.vscode/mcp.json
 !.vscode/extensions.json
+
+# Local notes such as TEST-LOGINS.local.md (never commit)
+*.local.md

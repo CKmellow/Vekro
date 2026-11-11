@@ -1,4 +1,5 @@
 import { isRouteErrorResponse, useRouteError } from 'react-router'
+import { ApiError } from '@/models/api/errors'
 import { ErrorPage, NotFoundPage, OfflinePage } from '@/views/pages/shared/system'
 
 /**
@@ -9,7 +10,7 @@ export function RouteError() {
   const error = useRouteError()
   if (isRouteErrorResponse(error) && error.status === 404) return <NotFoundPage />
   // A page's code or data that can't load with no connection (no cached copy) gets the offline page.
-  if (!navigator.onLine) return <OfflinePage />
+  if (!navigator.onLine || (error instanceof ApiError && error.kind === 'network')) return <OfflinePage />
   if (import.meta.env.DEV) console.error(error)
   return <ErrorPage />
 }
