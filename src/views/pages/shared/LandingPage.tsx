@@ -17,6 +17,7 @@ import { Link, Navigate } from 'react-router'
 import { useLanding } from '@/controllers/useLanding'
 import { LANDING_FAQ } from '@/lib/help'
 import { duration } from '@/lib/motion'
+import { InstallHint } from '../../components/domain/InstallHint'
 import { MoneyPath } from '../../components/domain/MoneyPath'
 import { VaultCard } from '../../components/domain/VaultCard'
 import { PublicLayout } from '../../layouts/PublicLayout'
@@ -62,6 +63,11 @@ export function LandingPage() {
 
   return (
     <PublicLayout>
+      {p.installHint.show && (
+        <div className="mx-auto max-w-300 px-5 pt-4 lg:px-6">
+          <InstallHint onInstall={p.installHint.install} onDismiss={p.installHint.dismiss} />
+        </div>
+      )}
       <section className="relative overflow-hidden">
         <div aria-hidden="true" className="bg-mesh pointer-events-none absolute inset-x-0 top-0 h-80" />
         <div className="relative mx-auto grid max-w-300 items-center gap-12 px-5 py-14 lg:grid-cols-2 lg:px-6 lg:py-24">

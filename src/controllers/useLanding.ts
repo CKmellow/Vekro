@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useInstallHint } from './useInstallHint'
 import { useReducedMotionPreference } from './useReducedMotionPreference'
 import { useSession } from './useSession'
 
@@ -14,6 +15,7 @@ export function useLanding() {
   const session = useSession()
   const reduce = useReducedMotionPreference()
   const [phase, setPhase] = useState(0)
+  const installHint = useInstallHint()
 
   // An 8-second story on the hero phone; with reduced motion, one still frame.
   useEffect(() => {
@@ -33,5 +35,6 @@ export function useLanding() {
     redirect,
     story: reduce ? ('released' as const) : (PHASES[phase] ?? 'locked'),
     trackForm: TRACK_FORM_ENABLED,
+    installHint,
   }
 }

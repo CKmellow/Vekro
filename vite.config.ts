@@ -49,6 +49,7 @@ export default defineConfig(({ mode }) => ({
       injectRegister: false,
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
+        id: '/',
         name: 'Vekro',
         short_name: 'Vekro',
         description: "Escrow for social commerce. Your money stays safe until you've checked the item.",

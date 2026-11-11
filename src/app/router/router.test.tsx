@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { listingListResponse, orderListResponse, sellerSummaryResponse } from '@/test/fixtures'
 import { renderWithProviders } from '@/test/render'
 import { server } from '@/test/server'
+import { ApiError } from '@/models/api/errors'
 import { RouteError } from './RouteError'
 import { routes } from '.'
 
@@ -219,6 +220,22 @@ describe('route error boundary', () => {
     )
     renderWithProviders(<RouterProvider router={router} />)
     expect(await screen.findByRole('heading', { name: "You're offline" })).toBeInTheDocument()
+    vi.restoreAllMocks()
+  })
+
+  it('treats an API call with no response as offline even when the browser says online (#304)', async () => {
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+    function NoNetwork(): never {
+      throw new ApiError('network', 'Failed to fetch', null)
+    }
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const router = createMemoryRouter(
+      [{ errorElement: <RouteError />, children: [{ path: '/page', element: <NoNetwork /> }] }],
+      { initialEntries: ['/page'] },
+    )
+    renderWithProviders(<RouterProvider router={router} />)
+    expect(await screen.findByRole('heading', { name: "You're offline" })).toBeInTheDocument()
+    logged.mockRestore()
     vi.restoreAllMocks()
   })
 })
