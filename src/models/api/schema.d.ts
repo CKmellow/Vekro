@@ -124,6 +124,154 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/google/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Whether Continue with Google is offered */
+        get: operations["google_status_auth_google_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/google/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Start Continue with Google (browser navigation)
+         * @description Redirects to Google's consent screen with a single-use state, a nonce and a PKCE S256 challenge; the state is also bound to this browser by an HttpOnly cookie.
+         */
+        get: operations["google_start_auth_google_start_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/google/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Google's redirect back (OIDC callback)
+         * @description Checks the state against this browser's cookie (single use), exchanges the code with the PKCE verifier, verifies the ID token (signature, issuer, audience, expiry, nonce, verified e-mail) and signs in by google_sub only, links it, or starts a seller sign-up.
+         */
+        get: operations["google_callback_auth_google_callback_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/account/google/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start linking Google to the signed-in account
+         * @description Signed in only (CSRF). Returns Google's URL; the callback links this Google account to this user. Never links by matching e-mail.
+         */
+        post: operations["google_link_account_google_link_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/account/google": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Unlink Google from the signed-in account */
+        delete: operations["google_unlink_account_google_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/google/signup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The Google identity waiting for a verified phone */
+        get: operations["google_signup_auth_google_signup_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/google/signup/request-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send the seller's phone a sign-up code by SMS */
+        post: operations["google_signup_request_code_auth_google_signup_request_code_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/google/signup/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create the seller account once the phone is verified
+         * @description Checks the SMS code, then creates the seller with this phone and the Google account, and signs in (same cookies as /auth/login). No account exists before this succeeds.
+         */
+        post: operations["google_signup_complete_auth_google_signup_complete_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -1269,7 +1417,7 @@ export interface paths {
         put?: never;
         /**
          * Africa's Talking USSD callback
-         * @description Africa's Talking posts every step of a USSD session here (form-encoded sessionId, serviceCode, phoneNumber, networkCode, text). The requests are unsigned, so the path carries USSD_CALLBACK_TOKEN; USSD_ALLOWED_IPS optionally limits callers. Answers text/plain CON or END screens of at most 160 characters (docs/ussd.md).
+         * @description Africa's Talking posts every step of a USSD session here (form-encoded sessionId, serviceCode, phoneNumber, networkCode, text). The requests are unsigned, so the path carries USSD_CALLBACK_TOKEN; behind the Cloudflare tunnel USSD_ALLOWED_IPS can also limit callers (read from CF-Connecting-IP only). Answers text/plain CON or END screens of at most 160 characters (docs/ussd.md).
          */
         post: operations["africastalking_ussd_ussd_africastalking__token__post"];
         delete?: never;
@@ -2599,6 +2747,66 @@ export interface components {
              */
             proof: components["schemas"]["ProofStepResponse"][];
         };
+        /**
+         * GoogleLinkRequest
+         * @description Start linking Google to the signed-in account (#324).
+         */
+        GoogleLinkRequest: {
+            /**
+             * Return To
+             * @description Path on this site to come back to, e.g. /seller/settings.
+             */
+            return_to?: string | null;
+        };
+        /** GoogleLinkResponse */
+        GoogleLinkResponse: {
+            /**
+             * Authorization Url
+             * @description Send the browser here (Google's consent screen).
+             */
+            authorization_url: string;
+        };
+        /** GoogleSignupCodeRequest */
+        GoogleSignupCodeRequest: {
+            /**
+             * Phone
+             * @description The seller's Kenyan mobile number.
+             */
+            phone: string;
+        };
+        /** GoogleSignupCompleteRequest */
+        GoogleSignupCompleteRequest: {
+            /** Phone */
+            phone: string;
+            /**
+             * Code
+             * @description The 6-digit code from the SMS.
+             */
+            code: string;
+            /**
+             * Name
+             * @description Shown to buyers; defaults to the Google name.
+             */
+            name?: string | null;
+        };
+        /**
+         * GoogleSignupResponse
+         * @description The Google identity waiting for a verified phone.
+         */
+        GoogleSignupResponse: {
+            /** Email */
+            email: string;
+            /** Name */
+            name: string | null;
+        };
+        /**
+         * GoogleStatusResponse
+         * @description Whether Continue with Google is offered (#324).
+         */
+        GoogleStatusResponse: {
+            /** Enabled */
+            enabled: boolean;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -2813,6 +3021,17 @@ export interface components {
              * Format: date-time
              */
             session_expires_at: string;
+            /**
+             * Google Email
+             * @description The linked Google account's e-mail, for display (#324).
+             */
+            google_email?: string | null;
+            /**
+             * Has Password
+             * @description False for a seller who signed up with Google and has not set a password yet.
+             * @default true
+             */
+            has_password: boolean;
         };
         /**
          * LoopCollectionWebhookResponse
@@ -4653,6 +4872,288 @@ export interface operations {
             };
             /** @description Authentication required. */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    google_status_auth_google_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoogleStatusResponse"];
+                };
+            };
+        };
+    };
+    google_start_auth_google_start_get: {
+        parameters: {
+            query?: {
+                return_to?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    google_callback_auth_google_callback_get: {
+        parameters: {
+            query?: {
+                state?: string | null;
+                code?: string | null;
+                error?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    google_link_account_google_link_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GoogleLinkRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoogleLinkResponse"];
+                };
+            };
+            /** @description Google sign-in is not set up. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    google_unlink_account_google_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not linked, or Google is the only way in (set a password first). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    google_signup_auth_google_signup_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoogleSignupResponse"];
+                };
+            };
+            /** @description No pending sign-up, or it expired. */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    google_signup_request_code_auth_google_signup_request_code_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GoogleSignupCodeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhoneCodeRequestResponse"];
+                };
+            };
+            /** @description The number already has an account. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No pending sign-up, or it expired. */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too many codes. See Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    google_signup_complete_auth_google_signup_complete_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GoogleSignupCompleteRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginResponse"];
+                };
+            };
+            /** @description The number or the Google account is taken. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The sign-up or the code expired. */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The code doesn't match. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many wrong tries. */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };

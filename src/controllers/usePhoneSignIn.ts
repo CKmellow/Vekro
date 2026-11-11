@@ -4,7 +4,13 @@ import { ApiError } from '@/models/api/errors'
 import { useRequestPhoneCode, useVerifyPhoneCode } from '@/models/queries/session'
 import { useNow } from './useNow'
 
-export type SignInBanner = 'offline' | 'server' | 'seller' | null
+type PhoneCodeRequestMutation = Pick<ReturnType<typeof useRequestPhoneCode>, 'mutateAsync' | 'isPending'>
+type PhoneCodeVerifyMutation = {
+  mutateAsync: (variables: { phone: string; code: string }) => Promise<unknown>
+  isPending: boolean
+}
+
+export type SignInBanner = 'offline' | 'server' | 'seller' | 'taken' | null
 export type CodeProblem = 'wrong' | 'expired' | null
 
 /** A 429 this short on "Send code" is the resend cooldown: a code is already on its way. */
@@ -20,9 +26,14 @@ export function clock(ms: number): string {
  * Sign in with an SMS code, no password (backend #201): phone step, code step, resend timer, wrong,
  * expired, locked, seller number and offline. Used by B8 and the B3 phone gate.
  */
-export function usePhoneSignIn(onSignedIn: () => void) {
-  const request = useRequestPhoneCode()
-  const verify = useVerifyPhoneCode()
+export function usePhoneSignIn(
+  onSignedIn: () => void,
+  /** Another phone-code flow with the same steps (Google seller sign-up, #312). */
+  mutations?: { request: PhoneCodeRequestMutation; verify: PhoneCodeVerifyMutation },
+) {
+  const defaults = { request: useRequestPhoneCode(), verify: useVerifyPhoneCode() }
+  const request = mutations?.request ?? defaults.request
+  const verify = mutations?.verify ?? defaults.verify
   const [step, setStep] = useState<'phone' | 'code'>('phone')
   const [phone, setPhone] = useState('')
   const [phoneTouched, setPhoneTouched] = useState(false)
@@ -62,7 +73,8 @@ export function usePhoneSignIn(onSignedIn: () => void) {
           setStep('code')
         } else if (wait <= COOLDOWN_MAX_SECONDS) setResendAt(Date.now() + wait * 1000)
         else setLockedAt(Date.now() + wait * 1000)
-      } else fail(error)
+      } else if (error instanceof ApiError && error.kind === 'conflict') setBanner('taken')
+      else fail(error)
     }
   }
 

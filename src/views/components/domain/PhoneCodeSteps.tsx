@@ -12,6 +12,10 @@ const BANNERS: Record<Exclude<SignInBanner, null>, { tone: 'danger' | 'escalatio
   offline: { tone: 'danger', title: "You're offline. Connect and try again." },
   server: { tone: 'danger', title: "We couldn't sign you in. Try again in a moment." },
   seller: { tone: 'escalation', title: 'This number has a seller account. Log in with your password.' },
+  taken: {
+    tone: 'escalation',
+    title: 'This number already has a Vekro account. Log in with it, then link Google in settings.',
+  },
 }
 
 /**

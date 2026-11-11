@@ -1,7 +1,16 @@
+import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
-// Shared MSW server for tests. Tests add handlers with server.use(...).
-export const server = setupServer()
+/**
+ * Handlers every test gets unless it overrides them: Continue with Google is off (#312), as on a
+ * backend without a Google client. Tests that need it on use server.use(googleOn()).
+ */
+const defaults = [http.get('/api/auth/google/status', () => HttpResponse.json({ enabled: false }))]
+
+// Shared MSW server for tests. Tests add handlers with server.use(...); resetHandlers keeps the defaults.
+export const server = setupServer(...defaults)
+
+export const googleOn = () => http.get('/api/auth/google/status', () => HttpResponse.json({ enabled: true }))
 
 const unhandled: string[] = []
 

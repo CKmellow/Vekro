@@ -59,6 +59,13 @@ export function useCurrentUser() {
 }
 
 /**
+ * The signed-in user as the route guard already loaded it: subscribes to the cache and never fetches
+ * on its own (settings sections inside a guarded page, #312).
+ */
+export const useSignedInUser = () =>
+  useQuery({ queryKey: sessionKeys.me, queryFn: fetchCurrentUser, enabled: false }).data ?? null
+
+/**
  * Any 401 from a query or mutation while signed in means the server session ended (expired or revoked).
  * Auth calls themselves (log in, register) opt out with `meta: { auth: true }`: their 401 is a wrong password.
  */

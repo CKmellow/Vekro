@@ -2,6 +2,7 @@
 export { CreateListingPage as S7 } from '@/views/pages/seller/CreateListingPage'
 export { DashboardPage as S4 } from '@/views/pages/seller/DashboardPage'
 export { ForgotPasswordPage as ForgotPassword } from '@/views/pages/seller/ForgotPasswordPage'
+export { GoogleSignUpPage as GoogleSignUp } from '@/views/pages/seller/GoogleSignUpPage'
 export { ListingDetailPage as S9 } from '@/views/pages/seller/ListingDetailPage'
 export { ListingsPage as S8 } from '@/views/pages/seller/ListingsPage'
 export { NotificationsPage as S14 } from '@/views/pages/seller/NotificationsPage'
