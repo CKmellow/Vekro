@@ -91,6 +91,9 @@ describe('B2 payment', () => {
     )
     const { user } = renderPayment()
     expect(await screen.findByText('The M-Pesa request expired.')).toBeInTheDocument()
+    // #308: an expired prompt never claims nothing was charged.
+    expect(screen.getByText(/we'll still find the payment/)).toBeInTheDocument()
+    expect(screen.queryByText(/Nothing was charged/)).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Send a new request' }))
     expect(await screen.findByText('Check your phone and enter your M-Pesa PIN')).toBeInTheDocument()
     expect(resent).toBe(1)

@@ -27,15 +27,19 @@ export function paymentNote(order: { collection: Collection; status: Transaction
 
 /**
  * Who holds the money on the money path. Card money is collected into Pesapal's account, so a card
- * order never says "Vekro vault" (#290); like `paymentNote`, never third-party escrow.
+ * order never says "Vekro vault" (#290). eConfirm is a third-party escrow and holds the money itself
+ * (#308); Daraja and Pesapal are never called escrow.
  */
 export function moneyHolder(rail: Collection['rail']): string {
-  return rail === 'pesapal' ? 'Held by Pesapal' : 'Vekro vault'
+  if (rail === 'pesapal') return 'Held by Pesapal'
+  if (rail === 'econfirm') return 'Held by eConfirm'
+  return 'Vekro vault'
 }
 
 /** B2's line under the amount while the buyer pays. */
 export function payingHint(rail: Collection['rail']): string {
-  return rail === 'pesapal'
-    ? 'Your card payment will be held by Pesapal, not paid to the seller.'
-    : 'Your money goes into the Vekro vault, not to the seller.'
+  if (rail === 'pesapal') return 'Your card payment will be held by Pesapal, not paid to the seller.'
+  if (rail === 'econfirm')
+    return 'Your money will be held by eConfirm, an independent escrow, not paid to the seller.'
+  return 'Your money goes into the Vekro vault, not to the seller.'
 }

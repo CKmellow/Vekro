@@ -21,7 +21,11 @@ const FAILURES: Record<Extract<PaymentVariant, { kind: 'failed' }>['reason'], [s
   cancelled: ['You cancelled the M-Pesa request.', 'Nothing was charged.'],
   wrong_pin: ['The PIN was incorrect.', 'Nothing was charged. Try again and enter your M-Pesa PIN.'],
   insufficient_funds: ["There wasn't enough in M-Pesa.", 'Top up M-Pesa and try again.'],
-  timeout: ['The M-Pesa request expired.', 'Nothing was charged. Send a new request to try again.'],
+  // An expired prompt is not a refusal (#308): a late PIN, or the provider confirming later, still funds the order.
+  timeout: [
+    'The M-Pesa request expired.',
+    "If you entered your PIN, we'll still find the payment and update this order. If not, send a new request.",
+  ],
   provider_error: ["M-Pesa didn't go through.", "This is on M-Pesa's side. Try again in a minute."],
   declined: ['The payment was declined.', 'Nothing was charged. Try again or pay another way.'],
 }
