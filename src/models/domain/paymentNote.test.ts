@@ -35,7 +35,14 @@ describe('moneyHolder (#290)', () => {
   })
 
   it('keeps the vault for M-Pesa orders', () => {
-    for (const rail of ['simulated', 'daraja', 'econfirm'] as const)
-      expect(moneyHolder(rail)).toBe('Vekro vault')
+    for (const rail of ['simulated', 'daraja'] as const) expect(moneyHolder(rail)).toBe('Vekro vault')
+  })
+
+  it('says eConfirm money is held by eConfirm, never the Vekro vault (#308)', () => {
+    expect(moneyHolder('econfirm')).toBe('Held by eConfirm')
+    expect(payingHint('econfirm')).toBe(
+      'Your money will be held by eConfirm, an independent escrow, not paid to the seller.',
+    )
+    expect(`${moneyHolder('econfirm')} ${payingHint('econfirm')}`).not.toMatch(/vault/i)
   })
 })
