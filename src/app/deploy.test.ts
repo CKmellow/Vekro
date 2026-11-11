@@ -12,14 +12,14 @@ const headersOf = (conf: string) =>
 describe('deploy/nginx.conf.template', () => {
   it('takes its CSP header from the build on every location, never a hard-coded policy', () => {
     const headers = headersOf(nginx)
-    expect(headers.length).toBeGreaterThanOrEqual(4)
+    expect(headers.length).toBeGreaterThanOrEqual(3)
     for (const header of headers) expect(header).toBe(CSP_HEADER_PLACEHOLDER)
     expect(nginx).not.toContain('connect-src')
   })
 
   it('renders the same header as the app without an anchoring RPC', () => {
     const headers = headersOf(renderNginxTemplate(nginx))
-    expect(headers.length).toBeGreaterThanOrEqual(4)
+    expect(headers.length).toBeGreaterThanOrEqual(3)
     for (const header of headers) expect(header).toBe(CSP_HEADER)
   })
 
@@ -35,6 +35,32 @@ describe('deploy/nginx.conf.template', () => {
     expect(renderNginxTemplate(nginx, 'https://rpc.example/v2/key')).toContain(
       "connect-src 'self' https://rpc.example;",
     )
+  })
+
+  it('sends the full security header set from every app location, and one set on /api (#306)', () => {
+    // nginx drops server-level add_header lines in a location with its own, so each must repeat all.
+    const blocks = [...nginx.matchAll(/^ {2}location ([^{]+)\{([\s\S]*?)\n {2}\}/gm)].map((m) => ({
+      where: (m[1] ?? '').trim(),
+      body: m[2] ?? '',
+    }))
+    const app = blocks.filter((b) => b.where !== '/api/')
+    expect(app.map((b) => b.where)).toHaveLength(3)
+    for (const { where, body } of app) {
+      for (const header of [
+        'Content-Security-Policy',
+        'Strict-Transport-Security "max-age=31536000; includeSubDomains"',
+        'X-Content-Type-Options "nosniff"',
+        'X-Frame-Options "DENY"',
+        'Referrer-Policy "strict-origin-when-cross-origin"',
+        'Permissions-Policy',
+      ])
+        expect(body, `${where} ${header}`).toContain(`add_header ${header}`)
+    }
+    const api = blocks.find((b) => b.where === '/api/')?.body ?? ''
+    expect(api).toContain('add_header Cache-Control "no-store" always')
+    expect(api).not.toContain('Strict-Transport-Security')
+    // Nothing at server level, which would be inherited only by locations without their own.
+    expect(nginx.split(/^ {2}location/m)[0]).not.toMatch(/^\s*add_header/m)
   })
 
   it('proxies the API on the same site and keeps the shell and service worker fresh', () => {
