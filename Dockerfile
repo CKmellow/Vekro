@@ -8,7 +8,9 @@ COPY . .
 ARG VITE_SUPPORT_PHONE= VITE_SUPPORT_WHATSAPP= VITE_SUPPORT_EMAIL= VITE_SUPPORT_HOURS=
 # The "Verified record" panel's registry (#294); empty hides the panel. The RPC origin joins the CSP.
 ARG VITE_ANCHOR_CHAIN_ID= VITE_ANCHOR_REGISTRY_ADDRESS= VITE_ANCHOR_RPC_URL=
-ENV VITE_API_BASE_URL=/api
+# The commit, shown in <meta name="vekro-build"> and /version.json (#302); the Deploy workflow passes it.
+ARG VEKRO_BUILD_ID=dev
+ENV VITE_API_BASE_URL=/api VEKRO_BUILD_ID=$VEKRO_BUILD_ID
 RUN npm run build && npm run budget
 
 FROM nginx:1.27-alpine

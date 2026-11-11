@@ -34,9 +34,11 @@ server {
     try_files $uri =404;
   }
 
-  # The service worker and the shell must always be fresh, or users get stuck on an old version.
-  location ~ ^/(sw\.js|workbox-.*\.js|registerSW\.js|manifest\.webmanifest|index\.html)$ {
-    add_header Cache-Control "no-cache" always;
+  # The service worker, the shell and the build id must always be fresh, or users get stuck on an old version
+  # (#302). no-store, not no-cache: Cloudflare caches .js at the edge and then sends browsers its own 4-hour
+  # Browser Cache TTL instead of no-cache; it neither caches nor rewrites a no-store response.
+  location ~ ^/(sw\.js|workbox-.*\.js|registerSW\.js|manifest\.webmanifest|index\.html|version\.json)$ {
+    add_header Cache-Control "no-store" always;
     add_header Content-Security-Policy "__CSP_HEADER__" always;
     add_header X-Content-Type-Options "nosniff" always;
     try_files $uri =404;

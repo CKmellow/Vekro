@@ -23,6 +23,7 @@ coverage/
 playwright-report/
 test-results/
 blob-report/
+.sw-e2e/
 
 # Tooling noise
 __pycache__/

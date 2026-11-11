@@ -42,6 +42,7 @@ jobs:
             VITE_ANCHOR_CHAIN_ID=${{ vars.VITE_ANCHOR_CHAIN_ID }}
             VITE_ANCHOR_REGISTRY_ADDRESS=${{ vars.VITE_ANCHOR_REGISTRY_ADDRESS }}
             VITE_ANCHOR_RPC_URL=${{ vars.VITE_ANCHOR_RPC_URL }}
+            VEKRO_BUILD_ID=${{ github.sha }}
           tags: |
             ghcr.io/ckmellow/vekro-web:${{ github.sha }}
             ghcr.io/ckmellow/vekro-web:latest

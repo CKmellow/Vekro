@@ -21,11 +21,37 @@ export default defineConfig({
       ? { launchOptions: { executablePath: process.env.PW_CHROMIUM_PATH } }
       : {}),
   },
-  projects: [{ name: 'mobile', use: { ...devices['Pixel 7'], browserName: 'chromium' } }],
-  webServer: {
-    command: 'npx vite --port 4173 --strictPort',
-    url: 'http://localhost:4173',
-    reuseExistingServer: !process.env.CI,
-    timeout: 60_000,
-  },
+  projects: [
+    {
+      name: 'mobile',
+      testIgnore: /sw-update\.spec\.ts/,
+      use: { ...devices['Pixel 7'], browserName: 'chromium' },
+    },
+    {
+      // #302: production builds with the service worker, no backend (e2e/sw-update/server.mjs).
+      name: 'sw-update',
+      testMatch: /sw-update\.spec\.ts/,
+      // bypassCSP: the app's strict CSP refuses Playwright's waitForFunction (eval); CSP is not under test here.
+      use: {
+        ...devices['Pixel 7'],
+        browserName: 'chromium',
+        baseURL: 'http://localhost:4174',
+        bypassCSP: true,
+      },
+    },
+  ],
+  webServer: [
+    {
+      command: 'npx vite --port 4173 --strictPort',
+      url: 'http://localhost:4173',
+      reuseExistingServer: !process.env.CI,
+      timeout: 60_000,
+    },
+    {
+      command: 'node e2e/sw-update/server.mjs',
+      url: 'http://localhost:4174/version.json',
+      reuseExistingServer: false,
+      timeout: 240_000,
+    },
+  ],
 })
