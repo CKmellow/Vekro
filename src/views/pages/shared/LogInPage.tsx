@@ -1,7 +1,8 @@
 import { lazy, Suspense } from 'react'
 import { Link, Navigate } from 'react-router'
 import { useAuthShowcase } from '@/controllers/useAuthShowcase'
-import { useLogIn, type LogInBanner, type LogInMethod } from '@/controllers/useLogIn'
+import { useLogIn, type GoogleNotice, type LogInBanner, type LogInMethod } from '@/controllers/useLogIn'
+import { GoogleButton } from '../../components/domain/GoogleButton'
 import { PhoneCodeSteps } from '../../components/domain/PhoneCodeSteps'
 import { Banner } from '../../components/ui/Banner'
 import { SegmentedControl } from '../../components/ui/SegmentedControl'
@@ -17,6 +18,22 @@ const BANNERS: Record<
   'wrong-details': { tone: 'danger', title: "Phone or password doesn't match. Check them and try again." },
   offline: { tone: 'danger', title: "You're offline. Check your connection and try again." },
   server: { tone: 'danger', title: "We couldn't log you in. Try again in a moment." },
+}
+
+/** What came back from Continue with Google (backend #324). */
+const GOOGLE_NOTICES: Record<Exclude<GoogleNotice, null>, { tone: 'warning' | 'danger'; title: string }> = {
+  denied: {
+    tone: 'warning',
+    title:
+      "Google didn't let this account in. While Vekro's Google sign-in is in testing, only invited accounts can use it. Log in with your phone instead.",
+  },
+  state: { tone: 'warning', title: 'That Google sign-in expired or was already used. Try again.' },
+  failed: { tone: 'danger', title: "We couldn't confirm your Google account. Try again in a moment." },
+  inactive: { tone: 'danger', title: 'This account is switched off. Contact Vekro support.' },
+  unavailable: {
+    tone: 'warning',
+    title: "Google sign-in isn't available right now. Log in with your phone.",
+  },
 }
 
 // The form and validation libraries load only when the password form shows.
@@ -49,6 +66,19 @@ export function LogInPage() {
           <p className="type-body-md text-text-muted">Buyers, sellers and Vekro support all log in here.</p>
         </div>
         {p.banner && <Banner tone={BANNERS[p.banner].tone} title={BANNERS[p.banner].title} />}
+        {p.google.notice && (
+          <Banner tone={GOOGLE_NOTICES[p.google.notice].tone} title={GOOGLE_NOTICES[p.google.notice].title} />
+        )}
+        {p.google.enabled && (
+          <>
+            <GoogleButton href={p.google.href} />
+            <div className="flex items-center gap-3" aria-hidden="true">
+              <span className="h-px flex-1 bg-border" />
+              <span className="type-label-sm text-text-muted">or</span>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+          </>
+        )}
         <SegmentedControl label="How to log in" segments={METHODS} value={p.method} onChange={p.setMethod} />
 
         {p.method === 'code' ? (

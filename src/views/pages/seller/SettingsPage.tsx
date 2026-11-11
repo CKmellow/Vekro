@@ -18,6 +18,8 @@ import { PasswordField } from '../../components/ui/PasswordField'
 import { PhoneField } from '../../components/ui/PhoneField'
 import { Skeleton, SkeletonGroup } from '../../components/ui/Skeleton'
 import { Switch } from '../../components/ui/Switch'
+import { useGoogleAccount } from '@/controllers/useGoogleAccount'
+import { GoogleAccountCard } from '../../components/domain/GoogleAccountCard'
 
 type Profile = ReturnType<typeof useSettingsProfile>
 type Payout = ReturnType<typeof useSettingsPayout>
@@ -317,6 +319,24 @@ function NotificationsTab({ p }: { p: Notifications }) {
   )
 }
 
+/** Link or unlink Google (#312); hidden while the server has no Google sign-in and nothing is linked. */
+function GoogleSection() {
+  const g = useGoogleAccount()
+  if (!g.show) return null
+  return (
+    <div className="border-t border-border pt-6">
+      <GoogleAccountCard
+        linkedEmail={g.linkedEmail}
+        notice={g.notice}
+        linking={g.linking}
+        unlinking={g.unlinking}
+        onLink={g.link}
+        onUnlink={g.unlink}
+      />
+    </div>
+  )
+}
+
 function SecurityTab({ p }: { p: Security }) {
   return (
     <div className="flex flex-col gap-8">
@@ -363,6 +383,8 @@ function SecurityTab({ p }: { p: Security }) {
         </div>
         <p className="type-body-sm text-text-muted">Changing it signs out your other devices.</p>
       </form>
+
+      <GoogleSection />
 
       <section aria-labelledby="devices" className="flex flex-col gap-4 border-t border-border pt-6">
         <h2 id="devices" className="type-headline text-text">

@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 import { renderWithProviders } from '@/test/render'
-import { server } from '@/test/server'
+import { googleOn, server } from '@/test/server'
 import { LogInPage } from './LogInPage'
 
 vi.mock('motion/react', async (original) => ({ ...(await original<object>()), useReducedMotion: () => true }))
@@ -266,5 +266,36 @@ describe('log in with an SMS code (buyers)', () => {
     await toCodeStep(u)
     await u.click(screen.getByRole('button', { name: 'Use a different number' }))
     expect(screen.getByLabelText('Phone number')).toHaveValue('712 345 678')
+  })
+})
+
+describe('Continue with Google (#312)', () => {
+  it('is hidden while the server has no Google sign-in', async () => {
+    renderAt('/login')
+    expect(await screen.findByRole('heading', { name: 'Log in to Vekro' })).toBeInTheDocument()
+    await waitFor(() => expect(screen.queryByRole('link', { name: 'Continue with Google' })).toBeNull())
+  })
+
+  it('links to the server start, carrying where to come back to', async () => {
+    server.use(googleOn())
+    renderAt('/login?returnTo=%2Forder%2F42')
+    const link = await screen.findByRole('link', { name: 'Continue with Google' })
+    expect(link).toHaveAttribute('href', '/api/auth/google/start?return_to=%2Forder%2F42')
+  })
+
+  it.each([
+    ['denied', /only invited accounts can use it/],
+    ['state', /expired or was already used/],
+    ['id_token', /couldn't confirm your Google account/],
+    ['not_configured', /isn't available right now/],
+  ])('explains ?google=%s', async (result, message) => {
+    renderAt(`/login?google=${result}`)
+    expect(await screen.findByText(message)).toBeInTheDocument()
+  })
+
+  it('goes home once Google signed the seller in', async () => {
+    const { router } = renderAt('/login?google=signed_in', user('seller'))
+    expect(await screen.findByRole('heading', { name: 'Seller area' })).toBeInTheDocument()
+    expect(where(router)).toBe('/seller')
   })
 })

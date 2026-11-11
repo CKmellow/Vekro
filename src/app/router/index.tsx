@@ -79,6 +79,7 @@ export const routes: RouteObject[] = [
 
       // Seller (public)
       { path: '/register', lazy: page(seller, 'S1') },
+      { path: '/register/google', lazy: page(seller, 'GoogleSignUp') },
       { path: '/forgot-password', lazy: page(seller, 'ForgotPassword') },
 
       // Seller (signed in)

@@ -14,6 +14,8 @@ import { MoneyText } from '../../components/ui/MoneyText'
 import { Pagination } from '../../components/ui/Pagination'
 import { SegmentedControl } from '../../components/ui/SegmentedControl'
 import { Sheet } from '../../components/ui/Sheet'
+import { useGoogleAccount } from '@/controllers/useGoogleAccount'
+import { GoogleAccountCard } from '../../components/domain/GoogleAccountCard'
 
 function Dots({ progress }: { progress: NonNullable<BuyerOrderCard['progress']> }) {
   const label = progress.steps[Math.min(progress.current, progress.steps.length - 1)]
@@ -88,6 +90,7 @@ function OrderCard({ card, serverOffsetMs }: { card: BuyerOrderCard; serverOffse
 /** B9 My orders (design/B9-my-orders). Route /buyer/orders. */
 export function MyOrdersPage() {
   const p = useMyOrders()
+  const google = useGoogleAccount()
   const reduce = useReducedMotion()
   if (p.redirect) return <Navigate to={p.redirect} replace />
 
@@ -199,6 +202,18 @@ export function MyOrdersPage() {
         Track an order
       </button>
 
+      {google.show && (
+        <div className="border-t border-border pt-6">
+          <GoogleAccountCard
+            linkedEmail={google.linkedEmail}
+            notice={google.notice}
+            linking={google.linking}
+            unlinking={google.unlinking}
+            onLink={google.link}
+            onUnlink={google.unlink}
+          />
+        </div>
+      )}
       <Sheet
         open={p.trackOpen}
         onOpenChange={p.setTrackOpen}

@@ -1,11 +1,22 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
+import { googleStartUrl } from '@/models/api/google'
 import { destinationFor } from '@/models/domain/roleHome'
+import { useGoogleEnabled } from '@/models/queries/google'
 import { usePhoneSignIn } from './usePhoneSignIn'
 import { useSession } from './useSession'
 
 export type LogInBanner = 'expired' | 'reset' | 'wrong-details' | 'offline' | 'server' | null
 export type LogInMethod = 'password' | 'code'
+/** What Continue with Google came back with (backend #324); `signed_in` needs no message. */
+export type GoogleNotice = 'denied' | 'state' | 'failed' | 'inactive' | 'unavailable' | null
+
+export function googleNoticeFor(result: string | null): GoogleNotice {
+  if (!result || result === 'signed_in') return null
+  if (result === 'denied' || result === 'state' || result === 'inactive') return result
+  if (result === 'not_configured') return 'unavailable'
+  return 'failed'
+}
 
 /**
  * One log in for everyone (Cyprian, 2026-11-07): phone and password for buyers, sellers and admins
@@ -22,6 +33,7 @@ export function useLogIn() {
     params.get('reason') === 'expired' ? 'expired' : params.get('reason') === 'reset' ? 'reset' : null,
   )
   const code = usePhoneSignIn(() => navigate(destinationFor('buyer', returnTo), { replace: true }))
+  const googleOn = useGoogleEnabled().data === true
 
   return {
     method,
@@ -33,6 +45,11 @@ export function useLogIn() {
     onBanner: setBanner,
     returnTo,
     code,
+    google: {
+      enabled: googleOn,
+      href: googleStartUrl(returnTo),
+      notice: googleNoticeFor(params.get('google')),
+    },
     /** Already signed in: where to go. */
     redirect: session.status === 'authenticated' ? destinationFor(session.role, returnTo) : null,
   }
