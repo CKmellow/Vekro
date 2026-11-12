@@ -18,3 +18,7 @@ Playwright against the real backend (CKmellow/Vekro-backend) through the Vite de
 Backend settings the suite needs (CI sets them): `PHONE_CODE_DEV_ECHO=true` (codes come back in the API response; refused in production) and a support admin from `python -m app.cli create-admin`, passed as `E2E_ADMIN_PHONE` and `E2E_ADMIN_PASSWORD`. Without them the console specs skip.
 
 Run locally: start the backend on :8000, then `npm run e2e` (or `npx playwright test e2e/console.spec.ts`). Traces of failures are in `test-results/`; open one with `npx playwright show-trace <trace.zip>`.
+
+## M21 accounts (e2e/accounts.spec.ts)
+
+One account buys and sells: SMS-code sign-in to Home and Orders, opening a store with an SMS-verified payout number and switching modes, a seller buying from another shop, the self-purchase refusal, and closing a store (blocked while an order is open; succeeds once the refund has gone out). The close-store journey needs the backend scheduler running (`python -m app.jobs.scheduler`), as CI does: refunds and payouts go out on its 30 s payout cycle.

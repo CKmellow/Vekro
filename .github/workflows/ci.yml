@@ -97,6 +97,8 @@ jobs:
             echo "E2E_CARD=1" >> "$GITHUB_ENV"
           fi
           nohup uvicorn app.main:app --host 127.0.0.1 --port 8000 > ../backend.log 2>&1 &
+          # The periodic jobs, as in production: payouts and refunds go out every 30 s (M21 close-store e2e).
+          nohup python -m app.jobs.scheduler > ../scheduler.log 2>&1 &
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/health && exit 0; sleep 1; done
           cat ../backend.log; exit 1
       - uses: actions/setup-node@v4
