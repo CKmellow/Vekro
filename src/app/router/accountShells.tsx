@@ -13,6 +13,7 @@ export function SellerShell() {
       openReturns={shell.openReturns}
       hasUnreadNotifications={shell.hasUnreadNotifications}
       onSearch={shell.onSellerSearch}
+      onSwitchToBuying={shell.onSwitchToBuying}
     >
       <Outlet />
     </SellerLayout>

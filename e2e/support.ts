@@ -23,6 +23,25 @@ export async function signUpVia(
   if (!registered.ok()) throw new Error(`register ${registered.status()}: ${await registered.text()}`)
   const login = await api.post('/api/auth/login', { data: { phone, password: PASSWORD } })
   if (!login.ok()) throw new Error(`login ${login.status()}`)
+  if (role === 'seller') await verifyPayout(context, phone, name)
+}
+
+/**
+ * A store takes orders only once an SMS code proves its payout number (backend M28): ask for the
+ * code (PHONE_CODE_DEV_ECHO returns it in CI) and confirm it, as the seller would from Settings.
+ */
+export async function verifyPayout(context: BrowserContext, phone: string, name: string) {
+  const api = context.request
+  const headers = await csrfHeader(context)
+  const sent = await api.post('/api/me/mpesa-number/request-code', { data: { mpesa_phone: phone }, headers })
+  if (!sent.ok()) throw new Error(`payout code ${sent.status()}: ${await sent.text()}`)
+  const { dev_code: code } = (await sent.json()) as { dev_code: string | null }
+  if (!code) throw new Error('set PHONE_CODE_DEV_ECHO=true on the backend')
+  const saved = await api.put('/api/me/mpesa-number', {
+    data: { mpesa_phone: phone, mpesa_account_name: name, code },
+    headers,
+  })
+  if (!saved.ok()) throw new Error(`payout ${saved.status()}: ${await saved.text()}`)
 }
 
 /** The payment provider: no session cookies, like a real M-Pesa callback. */

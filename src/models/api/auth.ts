@@ -1,7 +1,10 @@
 import { api, type Schemas } from './client'
 
 export type CurrentUser = Schemas['LoginResponse']
-export type Role = Schemas['UserRole']
+/** The area a session opens (the backend's derived role): admin, seller (store open) or buyer. */
+export type Role = Schemas['PartyRole']
+export type AccountType = Schemas['UserRole']
+export type StoreSummary = Schemas['StoreSummary']
 
 export interface Credentials {
   /** E.164, for example +254722118904. */

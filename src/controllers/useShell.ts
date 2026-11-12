@@ -1,3 +1,5 @@
+import { writeMode } from '@/lib/mode'
+import { BUYER_HOME, hasStore } from '@/models/domain/roleHome'
 import { useNavigate } from 'react-router'
 import { useCases } from '@/models/queries/admin'
 import { useUnreadCount } from '@/models/queries/notifications'
@@ -9,9 +11,9 @@ import { useSession } from './useSession'
 export function useShell() {
   const session = useSession()
   const navigate = useNavigate()
-  const seller = session.status === 'authenticated' && session.role === 'seller'
+  const seller = session.status === 'authenticated' && hasStore(session.account)
   // One small request; it shares the orders cache, so badges update with every order change.
-  const orders = useOrders({ pageSize: 1 }, { enabled: seller, refetchInterval: 60_000 })
+  const orders = useOrders({ side: 'selling', pageSize: 1 }, { enabled: seller, refetchInterval: 60_000 })
   const unread = useUnreadCount({ enabled: seller })
   const admin = session.status === 'authenticated' && session.role === 'admin'
   const queue = useCases('open', 1, { enabled: admin })
@@ -24,6 +26,11 @@ export function useShell() {
     hasUnreadNotifications: (unread.data ?? 0) > 0,
     ordersNeedingAction: orders.data?.segmentCounts.needs_action,
     openReturns: status ? (status.return_in_transit ?? 0) + (status.return_received ?? 0) : undefined,
+    /** M21: the same account's buyer area; remembered as this device's mode. */
+    onSwitchToBuying: () => {
+      writeMode('buying')
+      navigate(BUYER_HOME)
+    },
     onSellerSearch: (q: string) => navigate(`/seller/orders?q=${encodeURIComponent(q.trim())}`),
     onAdminSignOut: () =>
       signOut.mutate(undefined, { onSettled: () => navigate('/login', { replace: true }) }),

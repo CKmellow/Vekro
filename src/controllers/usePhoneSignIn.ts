@@ -1,3 +1,4 @@
+import type { CurrentUser } from '@/models/api/auth'
 import { useState } from 'react'
 import { isValidNational, maskPhone, PHONE_ERROR, toE164 } from '@/lib/phone'
 import { ApiError } from '@/models/api/errors'
@@ -27,7 +28,8 @@ export function clock(ms: number): string {
  * expired, locked, seller number and offline. Used by B8 and the B3 phone gate.
  */
 export function usePhoneSignIn(
-  onSignedIn: () => void,
+  /** Gets the signed-in user when the verify call returns one (sign-in and Google sign-up do). */
+  onSignedIn: (user?: CurrentUser) => void,
   /** Another phone-code flow with the same steps (Google seller sign-up, #312). */
   mutations?: { request: PhoneCodeRequestMutation; verify: PhoneCodeVerifyMutation },
 ) {
@@ -83,8 +85,10 @@ export function usePhoneSignIn(
     setBanner(null)
     setProblem(null)
     try {
-      await verify.mutateAsync({ phone: toE164(phone), code: value })
-      onSignedIn()
+      // Both flows answer with the signed-in user (LoginResponse); the shared mutation type is loose.
+      const user = (await verify.mutateAsync({ phone: toE164(phone), code: value })) as
+        CurrentUser | undefined
+      onSignedIn(user ?? undefined)
     } catch (error) {
       setCode('')
       if (!(error instanceof ApiError)) return setBanner('server')

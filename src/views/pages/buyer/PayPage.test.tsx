@@ -180,8 +180,8 @@ describe('B1 order summary and pay', () => {
     expect(await screen.findByLabelText('M-Pesa phone number')).toBeInTheDocument()
   })
 
-  it('does not let a seller account pay', async () => {
-    signedInAs('seller')
+  it('does not let an admin account pay (sellers can buy since M21)', async () => {
+    signedInAs('admin')
     renderPay()
     expect(await screen.findByText("This account can't pay for items")).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Pay KES 52,000/ })).toBeDisabled()

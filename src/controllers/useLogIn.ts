@@ -19,8 +19,8 @@ export function googleNoticeFor(result: string | null): GoogleNotice {
 }
 
 /**
- * One log in for everyone (Cyprian, 2026-11-07): phone and password for buyers, sellers and admins
- * (usePasswordLogIn), or an SMS code for buyers. Each role lands in its own area, or back on the
+ * One log in for everyone (Cyprian, 2026-11-07): phone and password for every account
+ * (usePasswordLogIn), or an SMS code for every member (M21; never admins). Each role lands in its own area, or back on the
  * page it was sent away from when that page is in its area. Someone already signed in goes there.
  */
 export function useLogIn() {
@@ -32,7 +32,9 @@ export function useLogIn() {
   const [banner, setBanner] = useState<LogInBanner>(
     params.get('reason') === 'expired' ? 'expired' : params.get('reason') === 'reset' ? 'reset' : null,
   )
-  const code = usePhoneSignIn(() => navigate(destinationFor('buyer', returnTo), { replace: true }))
+  const code = usePhoneSignIn((user) =>
+    navigate(destinationFor(user ?? 'buyer', returnTo), { replace: true }),
+  )
   const googleOn = useGoogleEnabled().data === true
 
   return {
@@ -51,6 +53,6 @@ export function useLogIn() {
       notice: googleNoticeFor(params.get('google')),
     },
     /** Already signed in: where to go. */
-    redirect: session.status === 'authenticated' ? destinationFor(session.role, returnTo) : null,
+    redirect: session.status === 'authenticated' ? destinationFor(session.account, returnTo) : null,
   }
 }

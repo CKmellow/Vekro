@@ -140,7 +140,15 @@ export interface OrderSummary {
   updatedAt: string
 }
 
+/** Which side of an account's orders (M21): what it bought, or what its store sold. */
+export type OrderSide = 'buying' | 'selling'
+/** The buyer area's Orders filters (backend BuyerFilter); `cases` is Returns & disputes. */
+export type BuyerFilter = 'active' | 'completed' | 'refunded' | 'disputed' | 'cases'
+
 export interface OrderListFilter {
+  /** Omitted: selling for an account with a store, buying otherwise (the server's default). */
+  side?: OrderSide
+  buyerFilter?: BuyerFilter
   segment?: OrderSegment
   statuses?: TransactionStatus[]
   q?: string
@@ -158,6 +166,8 @@ export interface OrderList {
   /** Across all the caller's orders, before filters. */
   segmentCounts: Record<OrderSegment, number>
   statusCounts: Partial<Record<TransactionStatus, number>>
+  /** Buying side only: orders per buyer filter, before filters. */
+  filterCounts: Record<BuyerFilter, number> | null
   serverOffsetMs: number
 }
 

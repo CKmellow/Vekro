@@ -16,6 +16,8 @@ import { useState, type ReactNode } from 'react'
 import { Link, NavLink } from 'react-router'
 import { cn } from '@/lib/cn'
 import { useTheme } from '@/controllers/useTheme'
+import type { Mode } from '@/lib/mode'
+import { SegmentedControl } from '../components/ui/SegmentedControl'
 import { Sheet } from '../components/ui/Sheet'
 import { ThemeSwitch } from '../components/ui/ThemeSwitch'
 import { VekroMark } from '../components/ui/VekroMark'
@@ -30,6 +32,8 @@ export interface SellerLayoutProps {
   openReturns?: number
   hasUnreadNotifications?: boolean
   onSearch?: (query: string) => void
+  /** Buying or Selling (M21): switch to the buyer area of the same account. */
+  onSwitchToBuying?: () => void
   children: ReactNode
 }
 
@@ -66,6 +70,7 @@ export function SellerLayout({
   openReturns,
   hasUnreadNotifications,
   onSearch,
+  onSwitchToBuying,
   children,
 }: SellerLayoutProps) {
   const [moreOpen, setMoreOpen] = useState(false)
@@ -100,6 +105,7 @@ export function SellerLayout({
         className="fixed inset-y-0 left-0 hidden w-66 flex-col gap-6 bg-emerald-950 p-4 text-sand-0 lg:flex"
       >
         <VekroMark className="px-2 pt-2" />
+        {onSwitchToBuying && <ModeSwitch onSwitchToBuying={onSwitchToBuying} />}
         <nav aria-label="Seller" className="flex flex-col gap-1">
           {items.map(({ to, label, Icon, badge, end }) => (
             <NavLink
@@ -205,6 +211,16 @@ export function SellerLayout({
         </ul>
       </nav>
       <Sheet open={moreOpen} onOpenChange={setMoreOpen} title="More">
+        {onSwitchToBuying && (
+          <div className="mb-3">
+            <ModeSwitch
+              onSwitchToBuying={() => {
+                setMoreOpen(false)
+                onSwitchToBuying()
+              }}
+            />
+          </div>
+        )}
         <ul className="flex flex-col">
           {[items[2], ...items.slice(4)].map(
             (item) =>
@@ -255,5 +271,20 @@ function BottomItem({ item }: { item: Item }) {
         ) : null}
       </NavLink>
     </li>
+  )
+}
+
+/** Buying or Selling for an account with a store (X4); this shell is Selling. */
+function ModeSwitch({ onSwitchToBuying }: { onSwitchToBuying: () => void }) {
+  return (
+    <SegmentedControl<Mode>
+      label="Switch between buying and selling"
+      segments={[
+        { value: 'buying', label: 'Buying' },
+        { value: 'selling', label: 'Selling' },
+      ]}
+      value="selling"
+      onChange={(next) => next === 'buying' && onSwitchToBuying()}
+    />
   )
 }

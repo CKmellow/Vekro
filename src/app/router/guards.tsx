@@ -1,3 +1,4 @@
+import { hasStore } from '@/models/domain/roleHome'
 import { Navigate, Outlet, useLocation } from 'react-router'
 import { useSession, type Role } from '@/controllers/useSession'
 import { ErrorPage, LoadingPage, NoPermissionPage, OfflinePage } from '@/views/pages/shared/system'
@@ -15,7 +16,10 @@ export function RequireRole({ allow: role }: { allow: Extract<Role, 'seller' | '
     if (session.expired) params.set('reason', 'expired')
     return <Navigate to={`/login?${params}`} replace />
   }
-  if (session.role !== role) return <NoPermissionPage area={role} />
+  // The seller area belongs to every account with a store, open or closed (a closed store still
+  // reads its history); the console to admins.
+  const allowed = role === 'seller' ? hasStore(session.account) : session.role === role
+  if (!allowed) return <NoPermissionPage area={role} />
   return <Outlet />
 }
 
