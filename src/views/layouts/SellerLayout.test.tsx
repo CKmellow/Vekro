@@ -53,4 +53,25 @@ describe('SellerLayout', () => {
     at('/seller', <SellerLayout name="Amina Gadgets">Home</SellerLayout>)
     expect(screen.queryByRole('group', { name: 'Switch between buying and selling' })).toBeNull()
   })
+
+  it('shows the store notice with its action on every page', () => {
+    at(
+      '/seller',
+      <SellerLayout
+        name="Amina Gadgets"
+        storeNotice={{
+          tone: 'warning',
+          title: 'Finish setup: add your payout number (SMS-verified).',
+          action: { label: 'Add payout number', to: '/buyer/start-selling?step=payout' },
+        }}
+      >
+        Home
+      </SellerLayout>,
+    )
+    expect(screen.getByText('Finish setup: add your payout number (SMS-verified).')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Add payout number' })).toHaveAttribute(
+      'href',
+      '/buyer/start-selling?step=payout',
+    )
+  })
 })

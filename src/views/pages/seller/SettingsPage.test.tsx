@@ -22,7 +22,31 @@ const profile = (over: Record<string, unknown> = {}) => ({
   ...over,
 })
 
-function renderAt(url = '/seller/settings', over: Record<string, unknown> = {}) {
+const sellerSession = (status: 'active' | 'closed' = 'active') => ({
+  id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+  name: 'Amina Wanjiru',
+  phone: '+254722118904',
+  role: status === 'active' ? 'seller' : 'buyer',
+  account_type: 'member',
+  store: {
+    status,
+    name: 'Amina Gadgets',
+    opened_at: '2026-01-05T00:00:00Z',
+    closed_at: status === 'closed' ? '2026-11-11T09:00:00Z' : null,
+    payout_ready: true,
+  },
+  mpesa_phone: '+254722118904',
+  mpesa_account_name: null,
+  is_active: true,
+  created_at: '2026-01-05T00:00:00Z',
+  session_expires_at: '2026-11-18T09:00:00Z',
+})
+
+function renderAt(
+  url = '/seller/settings',
+  over: Record<string, unknown> = {},
+  store: 'active' | 'closed' = 'active',
+) {
   let current = profile(over)
   const calls: { method: string; path: string; body: unknown }[] = []
   const record =
@@ -32,6 +56,7 @@ function renderAt(url = '/seller/settings', over: Record<string, unknown> = {}) 
       calls.push({ method, path: new URL(request.url).pathname, body })
     }
   server.use(
+    http.get('/api/auth/me', () => HttpResponse.json(sellerSession(store))),
     http.get('/api/me/profile', () => HttpResponse.json(current)),
     http.patch('/api/me/profile', async (info) => {
       await record('PATCH')(info)
@@ -240,5 +265,64 @@ describe('S13 settings: security', () => {
     const { user } = renderAt('/seller/settings?tab=security')
     await user.click(await screen.findByRole('button', { name: 'Log out' }))
     expect(await screen.findByRole('heading', { name: 'Log in' })).toBeInTheDocument()
+  })
+})
+
+describe('S16 close store (S13 Settings)', () => {
+  it('shows what must finish first, then closes once nothing blocks', async () => {
+    let blocked = true
+    server.use(
+      http.get('/api/account/store/close-check', () =>
+        HttpResponse.json(
+          blocked
+            ? {
+                can_close: false,
+                open_orders: ['VK-7K3P9Q'],
+                held_amount: '2400.00',
+                unsettled_payouts: [],
+                open_disputes: [],
+              }
+            : {
+                can_close: true,
+                open_orders: [],
+                held_amount: '0.00',
+                unsettled_payouts: [],
+                open_disputes: [],
+              },
+        ),
+      ),
+      http.post('/api/account/store/close', () => HttpResponse.json({ status: 'closed' })),
+    )
+    const { user } = renderAt()
+    await user.click(await screen.findByRole('button', { name: 'Close store' }))
+    const dialog = await screen.findByRole('alertdialog', { name: 'Finish these first' })
+    expect(within(dialog).getByRole('link', { name: 'VK-7K3P9Q' })).toHaveAttribute(
+      'href',
+      '/seller/orders?q=VK-7K3P9Q',
+    )
+    expect(within(dialog).getByText(/KES 2,400 still held for your orders/)).toBeInTheDocument()
+    expect(within(dialog).getByRole('button', { name: 'Close store' })).toBeDisabled()
+    await user.click(within(dialog).getByRole('button', { name: 'OK' }))
+
+    blocked = false
+    await user.click(screen.getByRole('button', { name: 'Close store' }))
+    const confirm = await screen.findByRole('alertdialog', { name: 'Close your store?' })
+    await vi.waitFor(() => expect(within(confirm).getByRole('button', { name: 'Close store' })).toBeEnabled())
+    await user.click(within(confirm).getByRole('button', { name: 'Close store' }))
+    await vi.waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull())
+  })
+
+  it('reopens a closed store', async () => {
+    let reopened = false
+    server.use(
+      http.post('/api/account/store/reopen', () => {
+        reopened = true
+        return HttpResponse.json({ status: 'active' })
+      }),
+    )
+    const { user } = renderAt('/seller/settings', {}, 'closed')
+    expect(await screen.findByText(/Your store is closed \(since/)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Reopen store' }))
+    await vi.waitFor(() => expect(reopened).toBe(true))
   })
 })

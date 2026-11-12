@@ -1,11 +1,13 @@
 import * as RadixTabs from '@radix-ui/react-tabs'
 import { ImagePlus, LogOut, Monitor, Smartphone } from 'lucide-react'
 import { AnimatePresence, m, useReducedMotion } from 'motion/react'
+import { Link } from 'react-router'
 import { useSettings } from '@/controllers/useSettings'
 import { ABOUT_MAX, useSettingsProfile } from '@/controllers/useSettingsProfile'
 import { useSettingsNotifications } from '@/controllers/useSettingsNotifications'
 import { useSettingsPayout } from '@/controllers/useSettingsPayout'
 import { useSettingsSecurity } from '@/controllers/useSettingsSecurity'
+import { useStoreLifecycle } from '@/controllers/useStoreLifecycle'
 import { cn } from '@/lib/cn'
 import { duration, spring } from '@/lib/motion'
 import { Banner } from '../../components/ui/Banner'
@@ -117,7 +119,86 @@ function ProfileTab({ p }: { p: Profile }) {
         maxLength={ABOUT_MAX}
         rows={4}
       />
+      <StoreSection />
     </form>
+  )
+}
+
+/** S16: close or reopen the store; never delete it (its records are part of the public audit). */
+function StoreSection() {
+  const s = useStoreLifecycle()
+  return (
+    <section aria-labelledby="your-store" className="flex flex-col gap-3 border-t border-border pt-6">
+      <h2 id="your-store" className="type-title text-text">
+        Your store
+      </h2>
+      {s.status === 'closed' ? (
+        <>
+          <p className="type-body-md text-text">
+            Your store is closed{s.closedSince ? ` (since ${s.closedSince})` : ''}.
+          </p>
+          <p className="type-body-sm text-text-muted">
+            Listings stay archived; restore the ones you want from Listings.
+          </p>
+          <Button className="self-start" onClick={() => void s.reopenStore()} loading={s.reopening}>
+            Reopen store
+          </Button>
+        </>
+      ) : (
+        <>
+          <p className="type-body-sm text-text-muted">
+            Closing hides your listings and stops new orders. You can reopen any time.
+          </p>
+          <Button
+            variant="secondary"
+            className="self-start text-coral-700"
+            onClick={() => s.setDialogOpen(true)}
+          >
+            Close store
+          </Button>
+        </>
+      )}
+      <p className="type-body-sm text-text-muted">
+        Stores and orders are never deleted: they are part of a tamper-evident record.
+      </p>
+      <ConfirmDialog
+        open={s.dialogOpen}
+        onOpenChange={s.setDialogOpen}
+        title={s.checkState === 'blocked' ? 'Finish these first' : 'Close your store?'}
+        body={
+          s.checkState === 'loading'
+            ? 'Checking your orders…'
+            : s.checkState === 'blocked'
+              ? 'Your store can close once nothing still needs you.'
+              : "Closing your store hides your listings and stops new orders. Your past orders and payouts stay on record, because buyers and Vekro's public audit rely on them. You can reopen any time."
+        }
+        confirmLabel="Close store"
+        cancelLabel={s.checkState === 'blocked' ? 'OK' : 'Keep my store open'}
+        destructive
+        confirmDisabled={s.checkState !== 'can_close'}
+        loading={s.closing}
+        onConfirm={() => void s.closeStore()}
+      >
+        {s.checkState === 'blocked' && (
+          <ul className="flex flex-col gap-2">
+            {s.blockers.map((b) => (
+              <li key={b.label} className="type-body-sm text-text">
+                {b.label}:{' '}
+                {b.references.map((ref, i) => (
+                  <span key={ref}>
+                    {i > 0 && ', '}
+                    <Link to={`/seller/orders?q=${ref}`} className="font-mono font-semibold text-primary">
+                      {ref}
+                    </Link>
+                  </span>
+                ))}
+              </li>
+            ))}
+            {s.held && <li className="type-body-sm text-text">{s.held}</li>}
+          </ul>
+        )}
+      </ConfirmDialog>
+    </section>
   )
 }
 

@@ -72,6 +72,8 @@ export const routes: RouteObject[] = [
       {
         element: <RequireRole allow="buyer" />,
         children: [
+          // S15: a focused wizard, outside the shell; also where a store finishes its setup.
+          { path: '/buyer/start-selling', lazy: page(buyer, 'S15') },
           {
             lazy: page(() => import('./accountShells'), 'BuyerAppShell'),
             children: [

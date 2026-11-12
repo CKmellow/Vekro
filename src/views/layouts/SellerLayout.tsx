@@ -17,6 +17,7 @@ import { Link, NavLink } from 'react-router'
 import { cn } from '@/lib/cn'
 import { useTheme } from '@/controllers/useTheme'
 import type { Mode } from '@/lib/mode'
+import { Banner } from '../components/ui/Banner'
 import { SegmentedControl } from '../components/ui/SegmentedControl'
 import { Sheet } from '../components/ui/Sheet'
 import { ThemeSwitch } from '../components/ui/ThemeSwitch'
@@ -34,6 +35,8 @@ export interface SellerLayoutProps {
   onSearch?: (query: string) => void
   /** Buying or Selling (M21): switch to the buyer area of the same account. */
   onSwitchToBuying?: () => void
+  /** M21: Finish setup (no verified payout number) or Store closed, on every seller page. */
+  storeNotice?: { tone: 'warning' | 'info'; title: string; action: { label: string; to: string } } | null
   children: ReactNode
 }
 
@@ -71,6 +74,7 @@ export function SellerLayout({
   hasUnreadNotifications,
   onSearch,
   onSwitchToBuying,
+  storeNotice,
   children,
 }: SellerLayoutProps) {
   const [moreOpen, setMoreOpen] = useState(false)
@@ -179,7 +183,25 @@ export function SellerLayout({
         </div>
       </header>
 
-      <main className="mx-auto max-w-300 px-5 pt-5 pb-28 lg:px-6 lg:pb-10">{children}</main>
+      <main className="mx-auto max-w-300 px-5 pt-5 pb-28 lg:px-6 lg:pb-10">
+        {storeNotice && (
+          <div className="mb-5">
+            <Banner
+              tone={storeNotice.tone}
+              title={storeNotice.title}
+              action={
+                <Link
+                  to={storeNotice.action.to}
+                  className="type-body-md min-h-11 font-semibold whitespace-nowrap text-primary"
+                >
+                  {storeNotice.action.label}
+                </Link>
+              }
+            />
+          </div>
+        )}
+        {children}
+      </main>
 
       {/* Phone bottom navigation */}
       <nav

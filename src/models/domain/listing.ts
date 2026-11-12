@@ -42,6 +42,10 @@ export interface Listing {
   views: number | null
   /** What a buyer may see about the seller before paying. */
   seller: ListingSeller
+  /** M21: the seller's store. Closed, or not ready (no SMS-verified payout number): no payment. */
+  store: { status: 'none' | 'active' | 'closed'; ready: boolean }
+  /** The signed-in caller is this listing's seller: they can't buy it. */
+  isOwn: boolean
 }
 
 export interface ListingSeller {

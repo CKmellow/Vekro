@@ -2,7 +2,7 @@ import { ChevronDown, Eye, KeyRound, Lock, ShieldCheck, Smartphone } from 'lucid
 import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { useState, type ReactNode } from 'react'
 import { Controller } from 'react-hook-form'
-import { useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
 import { type PaymentMethod, usePayPage } from '@/controllers/usePayPage'
 import { cn } from '@/lib/cn'
 import { duration, ease, spring } from '@/lib/motion'
@@ -186,7 +186,10 @@ export function PayPage() {
     <>
       <form noValidate onSubmit={page.onPay} className="flex flex-col gap-4">
         <Reveal index={0}>
-          <ProductCard listing={listing} dimmed={listing.availability === 'withdrawn'} />
+          <ProductCard
+            listing={listing}
+            dimmed={listing.availability === 'withdrawn' || listing.availability === 'store_closed'}
+          />
         </Reveal>
         {listing.availability === 'sold' && (
           <div role="status" className="flex gap-3 rounded-lg bg-emerald-50 p-5">
@@ -207,6 +210,27 @@ export function PayPage() {
             <p className="type-body-sm text-ink-600">
               It can&apos;t be paid for. Ask the seller if they have another link.
             </p>
+          </div>
+        )}
+        {listing.availability === 'store_closed' && (
+          <div role="status" className="rounded-lg bg-sand-100 p-5">
+            <p className="type-body-md font-semibold text-text">This store is closed</p>
+            <p className="type-body-sm text-ink-600">It isn&apos;t taking orders right now.</p>
+          </div>
+        )}
+        {listing.availability === 'not_ready' && (
+          <div role="status" className="rounded-lg bg-sand-100 p-5">
+            <p className="type-body-md font-semibold text-text">This store isn&apos;t ready yet</p>
+            <p className="type-body-sm text-ink-600">Ask the seller to finish setting up their store.</p>
+          </div>
+        )}
+        {listing.availability === 'own' && (
+          <div role="status" className="flex flex-col gap-2 rounded-lg bg-sand-100 p-5">
+            <p className="type-body-md font-semibold text-text">This is your own listing</p>
+            <p className="type-body-sm text-ink-600">You can&apos;t buy from your own store.</p>
+            <Link to="/seller/listings" className="type-body-md font-semibold text-primary">
+              Open in your store
+            </Link>
           </div>
         )}
         {listing.description && (
