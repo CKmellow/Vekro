@@ -1,14 +1,14 @@
 import { expect, test } from '@playwright/test'
 import { paidOrder } from './support'
 
-test('a buyer finds their order in My orders and opens it by reference', async ({ browser, baseURL }) => {
+test('a buyer finds their order in Orders and opens it by reference', async ({ browser, baseURL }) => {
   const sellerContext = await browser.newContext()
   const buyerContext = await browser.newContext()
   const { orderId, reference } = await paidOrder(sellerContext, buyerContext, baseURL ?? '', false)
   const buyer = await buyerContext.newPage()
 
   await buyer.goto('/buyer/orders')
-  await expect(buyer.getByRole('heading', { name: 'My orders' })).toBeVisible()
+  await expect(buyer.getByRole('heading', { name: 'Orders', exact: true })).toBeVisible()
   await expect(buyer.getByRole('link', { name: new RegExp(reference) })).toBeVisible()
 
   await buyer.getByRole('button', { name: 'Track an order' }).click()

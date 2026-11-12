@@ -59,6 +59,8 @@ jobs:
       ALEMBIC_DATABASE_URL: postgresql+psycopg://vekro:vekro@localhost:5432/vekro
       # B8 e2e reads the SMS sign-in code from the API (never enabled in production).
       PHONE_CODE_DEV_ECHO: 'true'
+      # Every e2e seller verifies a payout number from 127.0.0.1 (backend #342): lift the per-IP cap.
+      PHONE_CODE_CLIENT_HOURLY_LIMIT: '500'
       # A throwaway support admin for the console e2e (created below with the backend's CLI).
       E2E_ADMIN_PHONE: '+254700000001'
       E2E_ADMIN_PASSWORD: ci-admin-password-1
