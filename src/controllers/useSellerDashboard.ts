@@ -189,7 +189,12 @@ export function useSellerDashboard() {
       : null,
     showTip: listingCount !== undefined && listingCount < 3,
     checklist: [
-      { label: 'Add your M-Pesa payout number', done: Boolean(user?.mpesa_phone), to: '/onboarding' },
+      {
+        // M21: a payout number counts only once an SMS code has proved it (store.payout_ready).
+        label: 'Add your M-Pesa payout number',
+        done: user?.store ? user.store.payout_ready : Boolean(user?.mpesa_phone),
+        to: '/buyer/start-selling?step=payout',
+      },
       { label: 'Create your first listing', done: (listingCount ?? 0) > 0, to: '/seller/listings/new' },
       { label: 'Share your Trust Link', done: (totalOrders ?? 0) > 0, to: '/seller/listings' },
     ],
