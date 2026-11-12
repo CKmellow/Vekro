@@ -76,7 +76,7 @@ export function BuyerHomePage() {
         />
       )}
 
-      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
         <section aria-labelledby="needs-you" className="flex flex-col gap-3">
           <h2 id="needs-you" className="type-title text-text">
             Needs you
@@ -148,7 +148,7 @@ export function BuyerHomePage() {
       {p.showStartSelling && (
         <Link
           to="/buyer/start-selling"
-          className="flex items-center gap-4 rounded-lg bg-emerald-50 p-5 text-emerald-900 hover:bg-emerald-100"
+          className="flex items-center gap-4 rounded-lg bg-emerald-50 p-5 text-emerald-800 hover:bg-emerald-100"
         >
           <Store aria-hidden="true" className="size-8 shrink-0" />
           <span className="flex flex-col">
