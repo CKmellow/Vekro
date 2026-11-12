@@ -12,7 +12,7 @@ import {
 } from '@/test/fixtures'
 import { renderWithProviders } from '@/test/render'
 import { server } from '@/test/server'
-import { signedInAs } from '@/test/session'
+import { sampleUser, signedInAs } from '@/test/session'
 import { DashboardPage } from './DashboardPage'
 
 const COUNTS = { needs_action: 1, in_transit: 2, held: 1, completed: 31, issues: 1 }
@@ -96,6 +96,28 @@ describe('S4 dashboard', () => {
     expect(await screen.findByRole('heading', { name: 'Get ready to sell' })).toBeInTheDocument()
     expect(screen.getByText('2 of 3 done')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Share your Trust Link.*to do/ })).toBeInTheDocument()
+  })
+
+  it('leaves the payout step to do while the payout number is not SMS-verified', async () => {
+    serve({
+      needs: [],
+      counts: { needs_action: 0, in_transit: 0, held: 0, completed: 0, issues: 0 },
+      listings: 1,
+    })
+    server.use(
+      http.get('/api/auth/me', () =>
+        HttpResponse.json({
+          ...sampleUser('seller'),
+          store: { status: 'active', payout_ready: false },
+        }),
+      ),
+    )
+    renderPage()
+    expect(await screen.findByText('1 of 3 done')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Add your M-Pesa payout number.*to do/ })).toHaveAttribute(
+      'href',
+      '/buyer/start-selling?step=payout',
+    )
   })
 
   it('offers a tip while the seller has few listings', async () => {
