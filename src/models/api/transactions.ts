@@ -4,6 +4,7 @@ import type {
   Order,
   OrderDeadlines,
   OrderList,
+  BuyerFilter,
   OrderListFilter,
   OrderSummary,
   PaymentInstruction,
@@ -124,6 +125,8 @@ export function toOrderSummary(raw: SummaryResponse): OrderSummary {
 export async function listOrders(filter: OrderListFilter = {}, signal?: AbortSignal): Promise<OrderList> {
   const raw = await api.get('/transactions', {
     query: {
+      as: filter.side,
+      filter: filter.buyerFilter,
       segment: filter.segment,
       status: filter.statuses,
       q: filter.q?.trim() || undefined,
@@ -141,6 +144,7 @@ export async function listOrders(filter: OrderListFilter = {}, signal?: AbortSig
     pageSize: raw.page_size,
     segmentCounts: raw.counts,
     statusCounts: raw.status_counts as Partial<Record<TransactionStatus, number>>,
+    filterCounts: (raw.filter_counts as Record<BuyerFilter, number> | null | undefined) ?? null,
     serverOffsetMs: new Date(raw.server_time).getTime() - receivedAt,
   }
 }

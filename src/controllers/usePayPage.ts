@@ -131,7 +131,7 @@ export function usePayPage(listingId: string) {
     session.status === 'loading'
       ? { kind: 'checking' }
       : session.status === 'authenticated'
-        ? session.role === 'buyer'
+        ? session.role !== 'admin'
           ? { kind: 'buyer', phoneMasked: maskPhone(session.user.mpesa_phone ?? session.user.phone) }
           : { kind: 'wrong_role' }
         : { kind: 'form', mode: formMode }

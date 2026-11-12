@@ -97,7 +97,8 @@ export function useMyOrders() {
   const [track, setTrack] = useState('')
   const [trackError, setTrackError] = useState<string | null>(null)
 
-  const buyer = session.status === 'authenticated' && session.role === 'buyer'
+  // Every member buys, a store's owner too (M21); admins have no purchases.
+  const buyer = session.status === 'authenticated' && session.role !== 'admin'
 
   function update(changes: Record<string, string | null>) {
     setParams(
@@ -122,7 +123,7 @@ export function useMyOrders() {
   })
 
   const query = useOrders(
-    { ...FILTER[segment], q: q || undefined, page, pageSize: PAGE_SIZE },
+    { ...FILTER[segment], side: 'buying', q: q || undefined, page, pageSize: PAGE_SIZE },
     { enabled: buyer },
   )
   const list = query.data
@@ -153,11 +154,9 @@ export function useMyOrders() {
     redirect:
       session.status === 'anonymous'
         ? SIGN_IN
-        : session.status === 'authenticated' && session.role === 'seller'
-          ? '/seller/orders'
-          : session.status === 'authenticated' && session.role === 'admin'
-            ? '/admin'
-            : null,
+        : session.status === 'authenticated' && session.role === 'admin'
+          ? '/admin'
+          : null,
     segments: SEGMENTS.map((s) => ({ ...s, count: segmentCount[s.value] })),
     segment,
     setSegment: (value: BuyerSegment) => update({ segment: value === 'all' ? null : value, page: null }),

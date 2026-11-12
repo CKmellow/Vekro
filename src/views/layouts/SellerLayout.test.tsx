@@ -30,4 +30,27 @@ describe('SellerLayout', () => {
     const sheet = screen.getByRole('dialog', { name: 'More' })
     expect(within(sheet).getByRole('link', { name: 'Settings' })).toBeInTheDocument()
   })
+
+  it('switches to buying from the sidebar and the More sheet, and hides the switch without a handler', async () => {
+    const onSwitchToBuying = vi.fn()
+    const { unmount } = at(
+      '/seller',
+      <SellerLayout name="Amina Gadgets" onSwitchToBuying={onSwitchToBuying}>
+        Home
+      </SellerLayout>,
+    )
+    const [sidebarSwitch] = screen.getAllByRole('group', { name: 'Switch between buying and selling' })
+    expect(within(sidebarSwitch as HTMLElement).getByRole('radio', { name: 'Selling' })).toBeChecked()
+    await userEvent.click(within(sidebarSwitch as HTMLElement).getByRole('radio', { name: 'Buying' }))
+    expect(onSwitchToBuying).toHaveBeenCalledTimes(1)
+
+    await userEvent.click(screen.getByRole('button', { name: 'More' }))
+    const sheet = screen.getByRole('dialog', { name: 'More' })
+    await userEvent.click(within(sheet).getByRole('radio', { name: 'Buying' }))
+    expect(onSwitchToBuying).toHaveBeenCalledTimes(2)
+    unmount()
+
+    at('/seller', <SellerLayout name="Amina Gadgets">Home</SellerLayout>)
+    expect(screen.queryByRole('group', { name: 'Switch between buying and selling' })).toBeNull()
+  })
 })

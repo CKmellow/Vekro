@@ -33,7 +33,7 @@ export function usePasswordLogIn({
     onBanner(null)
     try {
       const user = await signIn.mutateAsync({ phone: toE164(values.phone), password: values.password })
-      navigate(destinationFor(user.role, returnTo), { replace: true })
+      navigate(destinationFor(user, returnTo), { replace: true })
     } catch (error) {
       if (!(error instanceof ApiError)) return onBanner('server')
       if (error.kind === 'rate_limited') {

@@ -27,7 +27,7 @@ export function useHelp() {
   const sections = useMemo(() => filterHelp(HELP, search), [search])
   const matches = sections.reduce((n, s) => n + s.items.length, 0)
   const searching = search.trim().length > 0
-  const buyer = session.status === 'authenticated' && session.role === 'buyer'
+  const buyer = session.status === 'authenticated' && session.role !== 'admin'
 
   return {
     search,

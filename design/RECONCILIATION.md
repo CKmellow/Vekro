@@ -37,6 +37,12 @@ Every page compared with its approved reference on 2026-10-26. Stitch-approved p
 | X1 Landing | spec | #256 | Matches | 2 | none |
 | X2 Not found and offline | spec | #257 | Matches | 4 | none |
 | X3 Help | spec | #257 | Matches | 4 | none |
+| X4 Account shell and mode switch | spec | #315, #316 | Being built (M21) | 0 | none yet |
+| B10 Buyer Home | spec | #316 | Being built (M21) | 0 | none yet |
+| B11 Returns & disputes | spec | #316 | Being built (M21) | 0 | none yet |
+| B12 Profile & security | spec | #316 | Being built (M21) | 0 | none yet |
+| S15 Start selling | spec | #317 | Being built (M21) | 0 | none yet |
+| S16 Close store | spec | #317 | Being built (M21) | 0 | none yet |
 
 ## Shell-level differences (all seller pages)
 

@@ -45,8 +45,8 @@ const METHODS: { value: LogInMethod; label: string }[] = [
 ]
 
 /**
- * One log in for buyers, sellers and Vekro support (S2 design, design/S2-log-in): phone and password
- * for every account, or an SMS code for buyers (backend #201). Each role lands in its own area.
+ * One log in for every account (S2 design, design/S2-log-in): phone and password, an SMS code for
+ * every member (M21; never admins), or Google. Each account lands in its own area (destinationFor).
  */
 export function LogInPage() {
   const vault = useAuthShowcase()

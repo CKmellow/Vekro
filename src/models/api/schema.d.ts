@@ -54,8 +54,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Send a buyer sign-in code by SMS
-         * @description Send a one-time 6-digit code to the phone. A new code replaces the previous one. Codes expire after a few minutes; resends wait out a short cooldown and are capped per hour.
+         * Send a sign-in code by SMS
+         * @description Send a one-time 6-digit code to the phone. A new code replaces the previous one. Codes expire after a few minutes; resends wait out a short cooldown and are capped per hour and per client. Admin numbers, and members who turned SMS sign-in off, get the same answer but no SMS: admins never sign in by SMS code.
          */
         post: operations["phone_request_code_auth_phone_request_code_post"];
         delete?: never;
@@ -74,8 +74,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Verify a sign-in code and open a buyer session
-         * @description Check the SMS code. On success, find or create the buyer for this phone and set the same session and CSRF cookies as /auth/login.
+         * Verify a sign-in code and open a session
+         * @description Check the SMS code. On success, sign in the member with this phone (an account is created for a new number) and set the same session and CSRF cookies as /auth/login.
          */
         post: operations["phone_verify_auth_phone_verify_post"];
         delete?: never;
@@ -170,7 +170,7 @@ export interface paths {
         };
         /**
          * Google's redirect back (OIDC callback)
-         * @description Checks the state against this browser's cookie (single use), exchanges the code with the PKCE verifier, verifies the ID token (signature, issuer, audience, expiry, nonce, verified e-mail) and signs in by google_sub only, links it, or starts a seller sign-up.
+         * @description Checks the state against this browser's cookie (single use), exchanges the code with the PKCE verifier, verifies the ID token (signature, issuer, audience, expiry, nonce, verified e-mail) and signs in by google_sub only, links it, or starts a member sign-up.
          */
         get: operations["google_callback_auth_google_callback_get"];
         put?: never;
@@ -244,7 +244,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Send the seller's phone a sign-up code by SMS */
+        /** Send the new member's phone a sign-up code by SMS */
         post: operations["google_signup_request_code_auth_google_signup_request_code_post"];
         delete?: never;
         options?: never;
@@ -262,8 +262,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Create the seller account once the phone is verified
-         * @description Checks the SMS code, then creates the seller with this phone and the Google account, and signs in (same cookies as /auth/login). No account exists before this succeeds.
+         * Create the member account once the phone is verified
+         * @description Checks the SMS code, then creates a member (no store) with this phone and the Google account, and signs in (same cookies as /auth/login). No account exists before this succeeds. A number that already has an account is refused (409 phone_taken).
          */
         post: operations["google_signup_complete_auth_google_signup_complete_post"];
         delete?: never;
@@ -1603,7 +1603,7 @@ export interface paths {
         put?: never;
         /**
          * Text a password reset code
-         * @description Always answers 202, so it doesn't reveal which numbers have accounts; only an account's number gets the SMS.
+         * @description Always answers 202 with the same timers, so it doesn't reveal which numbers have accounts. Only a member's number gets the SMS: admin passwords are never reset by SMS code (an operator resets them with create-admin).
          */
         post: operations["post_reset_code_auth_password_reset_request_code_post"];
         delete?: never;
@@ -1721,6 +1721,177 @@ export interface paths {
          * @description The 4-digit PIN asked for before sensitive actions over USSD (*384*…#). Needs the account password. Three wrong PINs over USSD lock USSD actions for 15 minutes.
          */
         post: operations["post_ussd_pin_account_ussd_pin_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/account/sms-login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Turn signing in with an SMS code on or off
+         * @description A member's own switch (Profile & security). While off, a sign-in code request for this number answers as usual but sends nothing. It can't be turned off on an account with no password and no Google link, which would leave no way to sign in. Admins never sign in by SMS code.
+         */
+        put: operations["put_sms_login_account_sms_login_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/account/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Change the account's name */
+        patch: operations["patch_profile_account_profile_patch"];
+        trace?: never;
+    };
+    "/account/phone/request-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Text a code to a new sign-in phone */
+        post: operations["post_phone_change_code_account_phone_request_code_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/account/phone": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Change the sign-in phone with the code texted to it
+         * @description Signs out every other device and tells the old number by SMS. A store's payout number is separate (PUT /me/mpesa-number).
+         */
+        put: operations["put_phone_account_phone_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/account/store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start selling: open a store on this account
+         * @description Names the store and records the accepted seller terms; anchors store_opened. The store takes orders once its payout number is verified by SMS (PUT /me/mpesa-number with the code), then the seller adds a first listing with its dispute policy.
+         */
+        post: operations["post_store_account_store_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/account/store/close-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What must finish before the store can close */
+        get: operations["get_close_check_account_store_close_check_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/account/store/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Close the store
+         * @description Archives every listing and stops new orders (Trust Links say the store is closed). Orders, payouts, disputes and the public record all stay: stores and orders are never deleted, because buyers and Vekro's anchored audit trail rely on them. Refused (409, with what must finish first) while orders, held money, payouts or disputes are open. Anchors store_closed. The store can be reopened.
+         */
+        post: operations["post_close_account_store_close_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/account/store/reopen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reopen a closed store
+         * @description Anchors store_opened (reopened). Listings stay archived until restored.
+         */
+        post: operations["post_reopen_account_store_reopen_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/buyer/home": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The buyer area's Home: what needs you now, and recent orders
+         * @description For any member, about the orders it bought (never its store's sales). Admins have no buyer area (403).
+         */
+        get: operations["get_buyer_home_buyer_home_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2351,6 +2522,39 @@ export interface components {
             server_time: string;
         };
         /**
+         * BuyerFilter
+         * @description The buyer area's Orders filters (M28). ``cases`` is Returns & disputes: every order that
+         *     had a dispute or return, open or past.
+         * @enum {string}
+         */
+        BuyerFilter: "active" | "completed" | "refunded" | "disputed" | "cases";
+        /** BuyerHomeResponse */
+        BuyerHomeResponse: {
+            /**
+             * Needs You
+             * @description Soonest deadline first.
+             */
+            needs_you: components["schemas"]["NeedsYouItem"][];
+            /**
+             * Recent
+             * @description The 5 newest orders.
+             */
+            recent: components["schemas"]["TransactionSummaryResponse"][];
+            /**
+             * Counts
+             * @description Orders per buyer filter (Orders tab badges).
+             */
+            counts: {
+                [key: string]: number;
+            };
+            /**
+             * Server Time
+             * Format: date-time
+             * @description Server clock; offset countdowns with it.
+             */
+            server_time: string;
+        };
+        /**
          * BuyerReconfirmationRequest
          * @description Buyer response after seller remediation action.
          */
@@ -2379,6 +2583,34 @@ export interface components {
             in_app: boolean;
             /** Sms */
             sms: boolean;
+        };
+        /**
+         * CloseBlockersResponse
+         * @description What must finish before the store can close. Empty lists and 0 mean it can close now.
+         */
+        CloseBlockersResponse: {
+            /** Can Close */
+            can_close: boolean;
+            /**
+             * Open Orders
+             * @description References of funded orders not yet final.
+             */
+            open_orders: string[];
+            /**
+             * Held Amount
+             * @description KES still held in escrow for this store's orders.
+             */
+            held_amount: string;
+            /**
+             * Unsettled Payouts
+             * @description References with a payout not yet settled.
+             */
+            unsettled_payouts: string[];
+            /**
+             * Open Disputes
+             * @description References with an open return or dispute.
+             */
+            open_disputes: string[];
         };
         /**
          * CollectionOutcome
@@ -2932,6 +3164,25 @@ export interface components {
             photos: components["schemas"]["ListingPhotoResponse"][];
             seller: components["schemas"]["ListingSellerSummary"];
             /**
+             * Store Ready
+             * @description False while the seller's store can't take orders (no SMS-verified payout number, or the store is closed): show the listing, refuse payment.
+             * @default true
+             */
+            store_ready: boolean;
+            /**
+             * Store Status
+             * @description closed: show "This store is closed" and take no payment.
+             * @default active
+             * @enum {string}
+             */
+            store_status: "none" | "active" | "closed";
+            /**
+             * Is Own Listing
+             * @description True when the signed-in caller is this listing's seller (they can't buy it).
+             * @default false
+             */
+            is_own_listing: boolean;
+            /**
              * Created At
              * Format: date-time
              */
@@ -3004,7 +3255,18 @@ export interface components {
             name: string;
             /** Phone */
             phone: string;
-            role: components["schemas"]["UserRole"];
+            /**
+             * @deprecated
+             * @description Kept for clients from before M28: admin, seller (store active) or buyer. Use account_type and store.
+             */
+            role: components["schemas"]["PartyRole"];
+            /**
+             * @description member (buys, and sells with a store) or admin.
+             * @default member
+             */
+            account_type: components["schemas"]["UserRole"];
+            /** @description The account's store; null for admins. */
+            store?: components["schemas"]["StoreSummary"] | null;
             /** Mpesa Phone */
             mpesa_phone: string | null;
             /** Mpesa Account Name */
@@ -3028,10 +3290,16 @@ export interface components {
             google_email?: string | null;
             /**
              * Has Password
-             * @description False for a seller who signed up with Google and has not set a password yet.
+             * @description False for an account made by Google sign-up or by an SMS code that has not set a password yet.
              * @default true
              */
             has_password: boolean;
+            /**
+             * Sms Login Enabled
+             * @description Whether this account may sign in with an SMS code (always false for admins).
+             * @default true
+             */
+            sms_login_enabled: boolean;
         };
         /**
          * LoopCollectionWebhookResponse
@@ -3223,6 +3491,27 @@ export interface components {
             /** Orders */
             orders: number;
         };
+        /** NeedsYouItem */
+        NeedsYouItem: {
+            /**
+             * Kind
+             * @description pay: complete payment; at_door: the item is at the door (inspect before due_at); hold_check: the 24-hour check on a serialized item (report before due_at); send_return: send the item back (before due_at); confirm_return: answer on a return.
+             * @enum {string}
+             */
+            kind: "pay" | "at_door" | "hold_check" | "send_return" | "confirm_return";
+            /**
+             * Due At
+             * @description When the order times out, if it does.
+             */
+            due_at: string | null;
+            order: components["schemas"]["TransactionSummaryResponse"];
+        };
+        /**
+         * NotificationAudience
+         * @description Which shell a notification belongs in: the account's purchases or its store's sales.
+         * @enum {string}
+         */
+        NotificationAudience: "buying" | "selling";
         /**
          * NotificationChannel
          * @enum {string}
@@ -3296,6 +3585,11 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+            /**
+             * Audience
+             * @description buying: about an order this account paid for; selling: about its store's order. Each shell lists its own.
+             */
+            audience?: ("buying" | "selling") | null;
         };
         /** OrderRef */
         OrderRef: {
@@ -3328,6 +3622,11 @@ export interface components {
             /** Issues */
             issues: number;
         };
+        /**
+         * OrderSide
+         * @enum {string}
+         */
+        OrderSide: "buying" | "selling";
         /**
          * OrderSort
          * @enum {string}
@@ -3374,6 +3673,15 @@ export interface components {
             /** Disputed */
             disputed: number;
         };
+        /**
+         * PartyRole
+         * @description How someone takes part: the side of an order they are on, or the area a login opens.
+         *
+         *     ``role`` in the auth API is derived from it (admin, seller when the store is active, else
+         *     buyer), so clients written before M28 keep working.
+         * @enum {string}
+         */
+        PartyRole: "buyer" | "seller" | "admin";
         /** PasswordChange */
         PasswordChange: {
             /** Current Password */
@@ -3565,6 +3873,27 @@ export interface components {
              */
             status: number;
         };
+        /** PhoneChange */
+        PhoneChange: {
+            /**
+             * Phone
+             * @description The new sign-in phone.
+             */
+            phone: string;
+            /**
+             * Code
+             * @description The code texted to the new phone.
+             */
+            code: string;
+        };
+        /** PhoneChangeCodeRequest */
+        PhoneChangeCodeRequest: {
+            /**
+             * Phone
+             * @description The new sign-in phone.
+             */
+            phone: string;
+        };
         /**
          * PhoneCodeRequest
          * @description Ask for a one-time sign-in code by SMS.
@@ -3613,6 +3942,23 @@ export interface components {
              * @description The 6-digit code from the SMS.
              */
             code: string;
+        };
+        /** ProfileResponse */
+        ProfileResponse: {
+            /** Name */
+            name: string;
+            /** Phone */
+            phone: string;
+            /** Google Email */
+            google_email: string | null;
+        };
+        /** ProfileUpdate */
+        ProfileUpdate: {
+            /**
+             * Name
+             * @description The name sellers and Vekro see.
+             */
+            name: string;
         };
         /** ProofStepResponse */
         ProofStepResponse: {
@@ -3732,7 +4078,8 @@ export interface components {
              * @description Primary login phone number in digits with optional leading +.
              */
             phone: string;
-            role: components["schemas"]["UserRole"];
+            /** @description buyer: an account that buys; seller: the same, with a store opened at sign-up. */
+            role: components["schemas"]["PartyRole"];
             /**
              * Password
              * @description Account password.
@@ -3763,7 +4110,7 @@ export interface components {
             name: string;
             /** Phone */
             phone: string;
-            role: components["schemas"]["UserRole"];
+            role: components["schemas"]["PartyRole"];
             /** Mpesa Phone */
             mpesa_phone: string | null;
             /** Mpesa Account Name */
@@ -4027,10 +4374,67 @@ export interface components {
              */
             sales: components["schemas"]["VerificationEventResponse"][];
             /**
+             * Store History
+             * @description M28: when the store opened (store_opened, reopened or not) and closed (store_closed), oldest first, each with its proof. Payloads hold the seller's UUID and times only.
+             */
+            store_history?: components["schemas"]["VerificationEventResponse"][];
+            /**
              * Server Time
              * Format: date-time
              */
             server_time: string;
+        };
+        /** SmsLoginSetting */
+        SmsLoginSetting: {
+            /**
+             * Enabled
+             * @description Whether this account may sign in with an SMS code.
+             */
+            enabled: boolean;
+        };
+        /** StartSellingRequest */
+        StartSellingRequest: {
+            /**
+             * Shop Name
+             * @description The store's name.
+             */
+            shop_name: string;
+            /**
+             * Shop Area
+             * @description Where it sells.
+             */
+            shop_area?: string | null;
+            /**
+             * Terms Version
+             * @description The seller terms version accepted; must be the current one (2026-11).
+             */
+            terms_version: string;
+        };
+        /**
+         * StoreStatus
+         * @enum {string}
+         */
+        StoreStatus: "none" | "active" | "closed";
+        /**
+         * StoreSummary
+         * @description The account's store (M28): selling is a capability of the account.
+         */
+        StoreSummary: {
+            status: components["schemas"]["StoreStatus"];
+            /**
+             * Name
+             * @description The shop name, once set.
+             */
+            name: string | null;
+            /** Opened At */
+            opened_at: string | null;
+            /** Closed At */
+            closed_at: string | null;
+            /**
+             * Payout Ready
+             * @description True when an SMS code has proved the payout number. Until then the store takes no new orders and the seller sees "Finish setup: add payout number (SMS-verified)".
+             */
+            payout_ready: boolean;
         };
         /** SumLeafResponse */
         SumLeafResponse: {
@@ -4280,7 +4684,7 @@ export interface components {
              */
             updated_at: string;
             /** @description How the caller relates to this transaction. */
-            viewer_role: components["schemas"]["UserRole"];
+            viewer_role: components["schemas"]["PartyRole"];
             listing: components["schemas"]["TransactionListingSummary"];
             buyer: components["schemas"]["TransactionParty"];
             seller: components["schemas"]["TransactionParty"];
@@ -4325,6 +4729,13 @@ export interface components {
             status_counts: {
                 [key: string]: number;
             };
+            /**
+             * Filter Counts
+             * @description Buying side only: orders per buyer filter (active, completed, refunded, disputed, cases), before filters.
+             */
+            filter_counts?: {
+                [key: string]: number;
+            } | null;
             /**
              * Server Time
              * Format: date-time
@@ -4475,7 +4886,7 @@ export interface components {
             status: components["schemas"]["TransactionStatus"];
             /** Amount */
             amount: string;
-            viewer_role: components["schemas"]["UserRole"];
+            viewer_role: components["schemas"]["PartyRole"];
             listing: components["schemas"]["TransactionSummaryListing"];
             /** @description The other party: the buyer for a seller, the seller for a buyer. */
             counterpart: components["schemas"]["TransactionParty"];
@@ -4556,9 +4967,11 @@ export interface components {
         };
         /**
          * UserRole
+         * @description What an account is (M28, docs/accounts-and-modes.md): every member can buy, and sells when
+         *     it has a store. Admin is separate: never a store, never an order.
          * @enum {string}
          */
-        UserRole: "buyer" | "seller" | "admin";
+        UserRole: "member" | "admin";
         /** UssdPinRequest */
         UssdPinRequest: {
             /**
@@ -4789,13 +5202,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["LoginResponse"];
                 };
-            };
-            /** @description The number belongs to a seller or admin, who log in with a password. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description No active code: it expired or was already used. */
             410: {
@@ -5623,6 +6029,8 @@ export interface operations {
                 unread?: boolean;
                 /** @description Only this channel. */
                 channel?: components["schemas"]["NotificationChannel"] | null;
+                /** @description Only the buying or only the selling side (one shell each). */
+                audience?: components["schemas"]["NotificationAudience"] | null;
             };
             header?: never;
             path?: never;
@@ -5657,7 +6065,10 @@ export interface operations {
     };
     get_unread_count_notifications_unread_count_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Only the buying or only the selling side (one shell each). */
+                audience?: components["schemas"]["NotificationAudience"] | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -5679,6 +6090,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
@@ -5874,6 +6294,10 @@ export interface operations {
                 sort?: components["schemas"]["OrderSort"];
                 page?: number;
                 page_size?: number;
+                /** @description buying: orders this account paid for; selling: its store's orders. Default: selling for an account with a store, else buying. */
+                as?: components["schemas"]["OrderSide"] | null;
+                /** @description Buying side (the buyer area's Orders): active, completed, refunded, disputed, or cases (any order with a return or dispute, open or past). */
+                filter?: components["schemas"]["BuyerFilter"] | null;
             };
             header?: never;
             path?: never;
@@ -8855,6 +9279,324 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    put_sms_login_account_sms_login_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SmsLoginSetting"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmsLoginSetting"];
+                };
+            };
+            /** @description Admin accounts never sign in by SMS code. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No other way to sign in yet. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    patch_profile_account_profile_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_phone_change_code_account_phone_request_code_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PhoneChangeCodeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResetCodeResponse"];
+                };
+            };
+            /** @description Another account uses this number. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Same number, or invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many codes. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    put_phone_account_phone_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PhoneChange"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileResponse"];
+                };
+            };
+            /** @description Another account uses this number. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No active code. */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong code, or same number. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many wrong tries. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_store_account_store_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartSellingRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StoreSummary"];
+                };
+            };
+            /** @description Admin accounts can't open a store. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Already open or closed (reopen it). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Terms not accepted. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_close_check_account_store_close_check_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CloseBlockersResponse"];
+                };
+            };
+        };
+    };
+    post_close_account_store_close_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StoreSummary"];
+                };
+            };
+            /** @description Something must finish first; the body lists it. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CloseBlockersResponse"];
+                };
+            };
+        };
+    };
+    post_reopen_account_store_reopen_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StoreSummary"];
+                };
+            };
+            /** @description The store is not closed. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_buyer_home_buyer_home_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuyerHomeResponse"];
                 };
             };
         };

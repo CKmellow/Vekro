@@ -1,3 +1,4 @@
+import { hasStore, homeFor } from '@/models/domain/roleHome'
 import { useEffect, useState } from 'react'
 import { useInstallHint } from './useInstallHint'
 import { useReducedMotionPreference } from './useReducedMotionPreference'
@@ -25,11 +26,9 @@ export function useLanding() {
   }, [reduce])
 
   const redirect =
-    session.status === 'authenticated' && session.role === 'seller'
-      ? '/seller'
-      : session.status === 'authenticated' && session.role === 'admin'
-        ? '/admin'
-        : null
+    session.status === 'authenticated' && (session.role === 'admin' || hasStore(session.account))
+      ? homeFor(session.account)
+      : null
 
   return {
     redirect,
