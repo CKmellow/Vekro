@@ -20,8 +20,24 @@ export function useShell() {
   const status = orders.data?.statusCounts
   const name = session.status === 'authenticated' ? session.user.name : ''
   const signOut = useSignOut()
+  const store = session.status === 'authenticated' ? session.user.store : null
   return {
     name,
+    /** M21: a closed store, or one whose payout number isn't verified yet, says so on every page. */
+    storeNotice:
+      store?.status === 'closed'
+        ? {
+            tone: 'info' as const,
+            title: 'Your store is closed. Buyers can’t order until you reopen it.',
+            action: { label: 'Reopen in Settings', to: '/seller/settings' },
+          }
+        : store?.status === 'active' && !store.payout_ready
+          ? {
+              tone: 'warning' as const,
+              title: 'Finish setup: add your payout number (SMS-verified). Buyers can’t pay until you do.',
+              action: { label: 'Add payout number', to: '/buyer/start-selling?step=payout' },
+            }
+          : null,
     queueCount: queue.data?.counters.open,
     hasUnreadNotifications: (unread.data ?? 0) > 0,
     ordersNeedingAction: orders.data?.segmentCounts.needs_action,

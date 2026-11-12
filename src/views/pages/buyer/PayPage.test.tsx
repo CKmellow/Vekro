@@ -197,6 +197,16 @@ describe('B1 order summary and pay', () => {
     expect(await screen.findByRole('dialog', { name: 'Terms' })).toBeInTheDocument()
   })
 
+  it.each([
+    [{ store_status: 'closed' as const, store_ready: false }, 'This store is closed'],
+    [{ store_ready: false }, "This store isn't ready yet"],
+    [{ is_own_listing: true }, 'This is your own listing'],
+  ])('takes no payment when the store says so (%o)', async (store, message) => {
+    renderPay(store)
+    expect(await screen.findByText(message)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Pay KES/ })).not.toBeInTheDocument()
+  })
+
   it('says when the item is already paid for, with no way to pay', async () => {
     renderPay({ status: 'sold' })
     expect(await screen.findByText('This item has already been paid for')).toBeInTheDocument()

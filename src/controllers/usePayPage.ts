@@ -33,8 +33,11 @@ export interface PayListingView {
   promise: { title: string; line: string }
   /** For a link meant for one buyer. */
   reservedFor: string | null
-  /** open: payable. sold: someone paid. withdrawn: the seller archived it (#140). */
-  availability: 'open' | 'sold' | 'withdrawn'
+  /**
+   * open: payable. sold: someone paid. withdrawn: the seller archived it (#140). M21: store_closed,
+   * not_ready (the store's payout number isn't verified yet) and own (the caller's own listing).
+   */
+  availability: 'open' | 'sold' | 'withdrawn' | 'store_closed' | 'not_ready' | 'own'
 }
 
 /** The seller's fix in buyer words (the seller-facing labels say what happens to the payout). */
@@ -90,7 +93,18 @@ export function toPayListingView(listing: Listing, verifiedSales: number | null 
           line: policySummary({ isSerialized: false, ...listing.policy }),
         },
     reservedFor: listing.buyerName,
-    availability: listing.status === 'sold' ? 'sold' : listing.status === 'archived' ? 'withdrawn' : 'open',
+    availability:
+      listing.status === 'sold'
+        ? 'sold'
+        : listing.isOwn
+          ? 'own'
+          : listing.store.status === 'closed'
+            ? 'store_closed'
+            : listing.status === 'archived'
+              ? 'withdrawn'
+              : !listing.store.ready
+                ? 'not_ready'
+                : 'open',
   }
 }
 

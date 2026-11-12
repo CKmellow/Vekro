@@ -77,6 +77,8 @@ export function toListing(response: ListingResponse): Listing {
       memberSince: response.seller.member_since,
       completedSales: response.seller.completed_sales,
     },
+    store: { status: response.store_status ?? 'active', ready: response.store_ready ?? true },
+    isOwn: response.is_own_listing ?? false,
   }
 }
 

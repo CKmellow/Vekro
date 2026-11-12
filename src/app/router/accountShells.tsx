@@ -16,6 +16,7 @@ export function SellerShell() {
       hasUnreadNotifications={shell.hasUnreadNotifications}
       onSearch={shell.onSellerSearch}
       onSwitchToBuying={shell.onSwitchToBuying}
+      storeNotice={shell.storeNotice}
     >
       <Outlet />
     </SellerLayout>
