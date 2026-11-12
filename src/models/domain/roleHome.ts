@@ -12,7 +12,7 @@ export interface Account {
 }
 
 /** The buyer area's first page. */
-export const BUYER_HOME = '/buyer/orders'
+export const BUYER_HOME = '/buyer'
 export const SELLER_HOME = '/seller'
 export const ADMIN_HOME = '/admin'
 

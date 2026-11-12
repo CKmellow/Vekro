@@ -5,29 +5,31 @@ import {
   markNotificationRead,
   NOTIFICATION_PAGE,
   unreadCount,
+  type NotificationAudience,
 } from '@/models/api/notifications'
 
 export const notificationKeys = {
   all: ['notifications'] as const,
-  list: (unread: boolean) => ['notifications', 'list', unread] as const,
-  unread: ['notifications', 'unread'] as const,
+  list: (unread: boolean, audience?: NotificationAudience) =>
+    ['notifications', 'list', unread, audience ?? 'all'] as const,
+  unread: (audience?: NotificationAudience) => ['notifications', 'unread', audience ?? 'all'] as const,
 }
 
 /** Pages of 50, newest first; "Load more" asks for the next page. */
-export const useNotifications = (unread: boolean) =>
+export const useNotifications = (unread: boolean, audience?: NotificationAudience) =>
   useInfiniteQuery({
-    queryKey: notificationKeys.list(unread),
-    queryFn: ({ pageParam, signal }) => listNotifications({ unread, offset: pageParam }, signal),
+    queryKey: notificationKeys.list(unread, audience),
+    queryFn: ({ pageParam, signal }) => listNotifications({ unread, offset: pageParam, audience }, signal),
     initialPageParam: 0,
     getNextPageParam: (last, pages) =>
       last.length === NOTIFICATION_PAGE ? pages.length * NOTIFICATION_PAGE : undefined,
   })
 
 /** The bell dot. Polls gently while the tab is visible. */
-export const useUnreadCount = (options: { enabled?: boolean } = {}) =>
+export const useUnreadCount = (options: { enabled?: boolean; audience?: NotificationAudience } = {}) =>
   useQuery({
-    queryKey: notificationKeys.unread,
-    queryFn: ({ signal }) => unreadCount(signal),
+    queryKey: notificationKeys.unread(options.audience),
+    queryFn: ({ signal }) => unreadCount(options.audience, signal),
     enabled: options.enabled ?? true,
     refetchInterval: 60_000,
     refetchIntervalInBackground: false,

@@ -14,7 +14,7 @@ export function useShell() {
   const seller = session.status === 'authenticated' && hasStore(session.account)
   // One small request; it shares the orders cache, so badges update with every order change.
   const orders = useOrders({ side: 'selling', pageSize: 1 }, { enabled: seller, refetchInterval: 60_000 })
-  const unread = useUnreadCount({ enabled: seller })
+  const unread = useUnreadCount({ enabled: seller, audience: 'selling' })
   const admin = session.status === 'authenticated' && session.role === 'admin'
   const queue = useCases('open', 1, { enabled: admin })
   const status = orders.data?.statusCounts

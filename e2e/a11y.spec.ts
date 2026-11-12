@@ -31,7 +31,15 @@ test('buyer and seller pages have no axe violations', async ({ browser, baseURL 
   const seller = await browser.newContext()
   const buyer = await browser.newContext()
   const { orderId } = await paidOrder(seller, buyer, baseURL ?? '', true)
-  await check(buyer, ['/buyer/orders', `/order/${orderId}`, `/order/${orderId}/timeline`])
+  await check(buyer, [
+    '/buyer',
+    '/buyer/orders',
+    '/buyer/cases',
+    '/buyer/notifications',
+    '/buyer/profile',
+    `/order/${orderId}`,
+    `/order/${orderId}/timeline`,
+  ])
   await check(seller, [
     '/seller',
     '/seller/orders',

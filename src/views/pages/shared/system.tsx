@@ -109,10 +109,16 @@ export const notReady = (area: NotReadyArea, name: string) =>
     return <NotReadyPage area={area} name={name} />
   }
 
-export function NoPermissionPage({ area }: { area: 'seller' | 'admin' }) {
+const NO_PERMISSION = {
+  admin: "This account doesn't have console access",
+  seller: 'This area is for accounts with a store',
+  buyer: 'The admin console has no buyer area',
+}
+
+export function NoPermissionPage({ area }: { area: 'seller' | 'admin' | 'buyer' }) {
   return (
     <StatusPage
-      title={area === 'admin' ? "This account doesn't have console access" : 'This area is for sellers'}
+      title={NO_PERMISSION[area]}
       body="You're signed in with an account that can't open this page."
       primary={{ label: 'Go home', to: '/' }}
     />

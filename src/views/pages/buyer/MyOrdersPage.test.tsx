@@ -52,7 +52,7 @@ describe('B9 my orders', () => {
         seen.push(new URL(request.url))
         return HttpResponse.json(
           orderListResponse([bought], {
-            counts: { needs_action: 1, in_transit: 2, held: 0, completed: 3, issues: 1 },
+            filter_counts: { active: 3, completed: 2, refunded: 1, disputed: 1, cases: 2 },
           }),
         )
       }),
@@ -64,10 +64,13 @@ describe('B9 my orders', () => {
     expect(within(card).getByText('VK-7K3P9Q')).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: /Active\s*3/ })).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: /All\s*7/ })).toBeInTheDocument()
-    expect(seen[0]?.searchParams.get('segment')).toBeNull()
+    expect(screen.getByRole('radio', { name: /Refunded\s*1/ })).toBeInTheDocument()
+    // Always the account's purchases, never its store's sales (M21).
+    expect(seen[0]?.searchParams.get('as')).toBe('buying')
+    expect(seen[0]?.searchParams.get('filter')).toBeNull()
   })
 
-  it('sends the active statuses as a filter and keeps it in the URL', async () => {
+  it("sends the server's active filter and keeps it in the URL", async () => {
     const seen: URL[] = []
     server.use(
       http.get('/api/transactions', ({ request }) => {
@@ -78,7 +81,7 @@ describe('B9 my orders', () => {
     const { user, router } = renderAt()
     await screen.findByRole('link', { name: /iPhone 13/ })
     await user.click(screen.getByRole('radio', { name: /Active/ }))
-    await vi.waitFor(() => expect(seen.at(-1)?.searchParams.getAll('status')).toContain('hold_24h'))
+    await vi.waitFor(() => expect(seen.at(-1)?.searchParams.get('filter')).toBe('active'))
     expect(router.state.location.search).toBe('?segment=active')
   })
 
@@ -87,7 +90,7 @@ describe('B9 my orders', () => {
       http.get('/api/transactions', () =>
         HttpResponse.json(
           orderListResponse([], {
-            counts: { needs_action: 0, in_transit: 0, held: 0, completed: 0, issues: 0 },
+            filter_counts: { active: 0, completed: 0, refunded: 0, disputed: 0, cases: 0 },
           }),
         ),
       ),
@@ -139,14 +142,27 @@ describe('B9 my orders', () => {
     expect(await screen.findByRole('heading', { name: 'Order page' })).toBeInTheDocument()
   })
 
-  it('signs out to the home page', async () => {
+  it('lists returns and disputes, open first, then every case', async () => {
+    const seen: URL[] = []
     server.use(
-      http.get('/api/transactions', () => HttpResponse.json(orderListResponse([bought]))),
-      http.post('/api/auth/logout', () => new HttpResponse(null, { status: 204 })),
+      http.get('/api/transactions', ({ request }) => {
+        seen.push(new URL(request.url))
+        return HttpResponse.json(
+          orderListResponse([bought], {
+            filter_counts: { active: 0, completed: 0, refunded: 1, disputed: 1, cases: 2 },
+          }),
+        )
+      }),
     )
-    const { user } = renderAt()
+    const router = createMemoryRouter([{ path: '/buyer/cases', element: <MyOrdersPage view="cases" /> }], {
+      initialEntries: ['/buyer/cases'],
+    })
+    server.use(http.get('/api/auth/me', () => HttpResponse.json(me('buyer'))))
+    const { user } = renderWithProviders(<RouterProvider router={router} />)
+    expect(await screen.findByRole('heading', { name: 'Returns & disputes' })).toBeInTheDocument()
     await screen.findByRole('link', { name: /iPhone 13/ })
-    await user.click(screen.getByRole('button', { name: 'Sign out' }))
-    expect(await screen.findByRole('heading', { name: 'Home' })).toBeInTheDocument()
+    expect(seen[0]?.searchParams.get('filter')).toBe('disputed')
+    await user.click(screen.getByRole('radio', { name: /All cases\s*2/ }))
+    await vi.waitFor(() => expect(seen.at(-1)?.searchParams.get('filter')).toBe('cases'))
   })
 })

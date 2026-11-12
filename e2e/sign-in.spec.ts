@@ -27,7 +27,8 @@ test('a buyer signs in with an SMS code and no password', async ({ page }) => {
   await expect(page.getByRole('alert')).toHaveText(/That code doesn't match/)
   await page.keyboard.type(code ?? '')
 
-  await expect(page).toHaveURL(/\/buyer\/orders$/)
+  // A member without a store lands on the buyer area's Home (M21).
+  await expect(page).toHaveURL(/\/buyer$/)
   const me = await page.request.get('/api/auth/me')
   expect(await me.json()).toMatchObject({ role: 'buyer', phone: `+254${national}` })
 })

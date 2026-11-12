@@ -169,7 +169,9 @@ describe('router', () => {
   it('shows a friendly no-permission page for the wrong role', async () => {
     signedInAs('buyer')
     renderAt('/seller')
-    expect(await screen.findByRole('heading', { name: 'This area is for sellers' })).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: 'This area is for accounts with a store' }),
+    ).toBeInTheDocument()
   })
 
   it('keeps sellers out of the admin console', async () => {

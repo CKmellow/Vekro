@@ -1,15 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   changePassword,
+  changePhone,
   getNotificationPrefs,
   listSessions,
+  requestPhoneChangeCode,
   requestResetCode,
   resetPassword,
   revokeOtherSessions,
   revokeSession,
   saveNotificationPrefs,
+  setSmsLogin,
+  setUssdPin,
+  updateName,
   type NotificationPrefs,
 } from '@/models/api/account'
+import { sessionKeys } from './session'
 
 export const accountKeys = {
   prefs: ['account', 'prefs'] as const,
@@ -51,3 +57,24 @@ export const useResetPassword = () =>
       resetPassword(v.phone, v.code, v.password),
     meta: { auth: true },
   })
+
+/** Profile writes change what /auth/me says: refresh the session afterwards. */
+function useProfileMutation<V, R>(run: (v: V) => Promise<R>) {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: run,
+    onSettled: () => {
+      void client.invalidateQueries({ queryKey: sessionKeys.me })
+      void client.invalidateQueries({ queryKey: accountKeys.sessions })
+    },
+  })
+}
+
+export const useUpdateName = () => useProfileMutation((name: string) => updateName(name))
+export const useRequestPhoneChangeCode = () =>
+  useMutation({ mutationFn: (phone: string) => requestPhoneChangeCode(phone) })
+export const useChangePhone = () =>
+  useProfileMutation((v: { phone: string; code: string }) => changePhone(v.phone, v.code))
+export const useSetSmsLogin = () => useProfileMutation((enabled: boolean) => setSmsLogin(enabled))
+export const useSetUssdPin = () =>
+  useMutation({ mutationFn: (v: { pin: string; password: string }) => setUssdPin(v.pin, v.password) })

@@ -320,7 +320,7 @@ function NotificationsTab({ p }: { p: Notifications }) {
 }
 
 /** Link or unlink Google (#312); hidden while the server has no Google sign-in and nothing is linked. */
-function GoogleSection() {
+export function GoogleSection() {
   const g = useGoogleAccount()
   if (!g.show) return null
   return (
@@ -337,7 +337,7 @@ function GoogleSection() {
   )
 }
 
-function SecurityTab({ p }: { p: Security }) {
+export function SecurityTab({ p }: { p: Security }) {
   return (
     <div className="flex flex-col gap-8">
       <form

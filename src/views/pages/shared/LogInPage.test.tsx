@@ -37,6 +37,7 @@ function renderAt(url: string, me: object | null = null) {
       { path: '/login', element: <LogInPage /> },
       { path: '/seller/*', element: <h1>Seller area</h1> },
       { path: '/admin/*', element: <h1>Console</h1> },
+      { path: '/buyer', element: <h1>My orders</h1> },
       { path: '/buyer/orders', element: <h1>My orders</h1> },
       { path: '/order/:id', element: <h1>Order page</h1> },
     ],
@@ -59,7 +60,7 @@ describe('log in for every role', () => {
   it.each([
     ['seller', 'Seller area', '/seller'],
     ['admin', 'Console', '/admin'],
-    ['buyer', 'My orders', '/buyer/orders'],
+    ['buyer', 'My orders', '/buyer'],
   ])('sends a %s to their own area', async (role, heading, path) => {
     server.use(http.post('/api/auth/login', () => HttpResponse.json(user(role))))
     const { user: u, router } = renderAt('/login')
@@ -90,7 +91,7 @@ describe('log in for every role', () => {
     const { user: u, router } = renderAt('/login?returnTo=https%3A%2F%2Fevil.example')
     await logIn(u)
     await screen.findByRole('heading', { name: 'My orders' })
-    expect(router.state.location.pathname).toBe('/buyer/orders')
+    expect(router.state.location.pathname).toBe('/buyer')
   })
 
   it('sends someone already signed in straight to their area', async () => {

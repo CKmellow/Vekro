@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router'
 import type { StatusView } from '@/lib/status'
 import { formatEat, formatEatFull } from '@/lib/time'
 import { currentDeadline, type Deadline } from '@/models/domain/deadlines'
-import { BUYER_ACTIVE_STATUSES, type OrderListFilter, type OrderSummary } from '@/models/domain/order'
+import type { OrderListFilter, OrderSummary } from '@/models/domain/order'
 import { statusView } from '@/models/domain/stateMeta'
 import { useFindOwnOrder, useOrders } from '@/models/queries/orders'
 import { useSignOut } from '@/models/queries/session'
@@ -11,20 +11,32 @@ import { useOnline } from './useOnline'
 import { progress } from './useOrderTracker'
 import { useSession } from './useSession'
 
-export type BuyerSegment = 'all' | 'active' | 'completed' | 'issues'
+export type BuyerSegment = 'all' | 'active' | 'completed' | 'refunded' | 'disputed' | 'cases'
+/** B9 Orders, or B11 Returns & disputes (the same list, scoped to cases). */
+export type BuyerListView = 'orders' | 'cases'
 
-const SEGMENTS: { value: BuyerSegment; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'active', label: 'Active' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'issues', label: 'Issues' },
-]
+const SEGMENTS: Record<BuyerListView, { value: BuyerSegment; label: string }[]> = {
+  orders: [
+    { value: 'all', label: 'All' },
+    { value: 'active', label: 'Active' },
+    { value: 'completed', label: 'Completed' },
+    { value: 'refunded', label: 'Refunded' },
+    { value: 'disputed', label: 'Disputed' },
+  ],
+  cases: [
+    { value: 'disputed', label: 'Open' },
+    { value: 'cases', label: 'All cases' },
+  ],
+}
 
+// The server's buyer filters (backend #336), so counts and lists always agree.
 const FILTER: Record<BuyerSegment, OrderListFilter> = {
   all: {},
-  active: { statuses: BUYER_ACTIVE_STATUSES },
-  completed: { segment: 'completed' },
-  issues: { segment: 'issues' },
+  active: { buyerFilter: 'active' },
+  completed: { buyerFilter: 'completed' },
+  refunded: { buyerFilter: 'refunded' },
+  disputed: { buyerFilter: 'disputed' },
+  cases: { buyerFilter: 'cases' },
 }
 
 const DEADLINE_LABEL: Record<Deadline['kind'], string> = {
@@ -36,7 +48,7 @@ const DEADLINE_LABEL: Record<Deadline['kind'], string> = {
 }
 
 export const PAGE_SIZE = 20
-const SIGN_IN = `/login?method=code&returnTo=${encodeURIComponent('/buyer/orders')}`
+const signInFor = (path: string) => `/login?method=code&returnTo=${encodeURIComponent(path)}`
 
 export interface BuyerOrderCard {
   id: string
@@ -79,17 +91,19 @@ export function parseTrackInput(raw: string): { orderId: string } | { reference:
   return null
 }
 
-const isSegment = (v: string | null): v is BuyerSegment => SEGMENTS.some((s) => s.value === v)
-
-/** B9 My orders (design/B9-my-orders). Route /buyer/orders. The server scopes the list to the buyer. */
-export function useMyOrders() {
+/** B9 Orders (route /buyer/orders) or B11 Returns & disputes (/buyer/cases): the orders this account
+ * bought (`as=buying`), never its store's sales. */
+export function useMyOrders(view: BuyerListView = 'orders') {
+  const segments = SEGMENTS[view]
+  const firstSegment = segments[0]?.value ?? 'all'
+  const isSegment = (v: string | null): v is BuyerSegment => segments.some((s) => s.value === v)
   const navigate = useNavigate()
   const online = useOnline()
   const session = useSession()
   const signOut = useSignOut()
   const find = useFindOwnOrder()
   const [params, setParams] = useSearchParams()
-  const segment = isSegment(params.get('segment')) ? (params.get('segment') as BuyerSegment) : 'all'
+  const segment = isSegment(params.get('segment')) ? (params.get('segment') as BuyerSegment) : firstSegment
   const q = params.get('q') ?? ''
   const page = Math.max(1, Number(params.get('page')) || 1)
   const [search, setSearch] = useState(q)
@@ -127,13 +141,15 @@ export function useMyOrders() {
     { enabled: buyer },
   )
   const list = query.data
-  const counts = list?.segmentCounts
-  const allOrders = counts ? Object.values(counts).reduce((a, b) => a + b, 0) : undefined
+  const counts = list?.filterCounts
+  const allOrders = counts ? counts.active + counts.completed + counts.refunded + counts.disputed : undefined
   const segmentCount: Record<BuyerSegment, number | undefined> = {
     all: allOrders,
-    active: counts && counts.needs_action + counts.in_transit + counts.held,
+    active: counts?.active,
     completed: counts?.completed,
-    issues: counts?.issues,
+    refunded: counts?.refunded,
+    disputed: counts?.disputed,
+    cases: counts?.cases,
   }
 
   const openTrack = async () => {
@@ -153,13 +169,15 @@ export function useMyOrders() {
   return {
     redirect:
       session.status === 'anonymous'
-        ? SIGN_IN
+        ? signInFor(view === 'cases' ? '/buyer/cases' : '/buyer/orders')
         : session.status === 'authenticated' && session.role === 'admin'
           ? '/admin'
           : null,
-    segments: SEGMENTS.map((s) => ({ ...s, count: segmentCount[s.value] })),
+    view,
+    segments: segments.map((s) => ({ ...s, count: segmentCount[s.value] })),
     segment,
-    setSegment: (value: BuyerSegment) => update({ segment: value === 'all' ? null : value, page: null }),
+    setSegment: (value: BuyerSegment) =>
+      update({ segment: value === firstSegment ? null : value, page: null }),
     search,
     setSearch,
     clearSearch: () => {
@@ -173,7 +191,7 @@ export function useMyOrders() {
     pageCount: list ? Math.max(1, Math.ceil(list.total / PAGE_SIZE)) : 1,
     setPage: (next: number) => update({ page: next > 1 ? String(next) : null }),
     state: list
-      ? allOrders === 0
+      ? (view === 'cases' ? counts?.cases === 0 : allOrders === 0)
         ? ('no_orders' as const)
         : list.items.length === 0
           ? q
