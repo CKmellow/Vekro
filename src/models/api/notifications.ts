@@ -2,6 +2,8 @@ import type { AppNotification } from '@/models/domain/notification'
 import { api, type Schemas } from './client'
 
 export const NOTIFICATION_PAGE = 50
+/** Which shell a notification belongs in (M21): the account's purchases or its store's sales. */
+export type NotificationAudience = 'buying' | 'selling'
 
 const toNotification = (raw: Schemas['NotificationResponse']): AppNotification => ({
   id: raw.id,
@@ -16,12 +18,13 @@ const toNotification = (raw: Schemas['NotificationResponse']): AppNotification =
 
 /** GET /notifications: in-app only (SMS copies of the same events are not repeated), newest first. */
 export async function listNotifications(
-  options: { unread?: boolean; offset?: number } = {},
+  options: { unread?: boolean; offset?: number; audience?: NotificationAudience } = {},
   signal?: AbortSignal,
 ): Promise<AppNotification[]> {
   const raw = await api.get('/notifications', {
     query: {
       channel: 'in_app',
+      audience: options.audience,
       unread: options.unread || undefined,
       limit: NOTIFICATION_PAGE,
       offset: options.offset || undefined,
@@ -31,8 +34,8 @@ export async function listNotifications(
   return raw.map(toNotification)
 }
 
-export async function unreadCount(signal?: AbortSignal): Promise<number> {
-  return (await api.get('/notifications/unread-count', { signal })).unread_count
+export async function unreadCount(audience?: NotificationAudience, signal?: AbortSignal): Promise<number> {
+  return (await api.get('/notifications/unread-count', { query: { audience }, signal })).unread_count
 }
 
 export async function markNotificationRead(id: string): Promise<void> {

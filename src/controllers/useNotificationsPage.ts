@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { formatEat, formatEatFull, formatRelative } from '@/lib/time'
 import { toast } from '@/lib/toast'
+import type { NotificationAudience } from '@/models/api/notifications'
 import type { AppNotification, NotificationEvent } from '@/models/domain/notification'
 import { useMarkAllRead, useMarkRead, useNotifications } from '@/models/queries/notifications'
 import { useOnline } from './useOnline'
@@ -45,15 +46,24 @@ const dayKey = new Intl.DateTimeFormat('en-CA', {
   day: '2-digit',
 })
 
-/** Return and dispute events open the return case; everything else opens the order. */
-export function linkFor(n: Pick<AppNotification, 'event' | 'orderId'>): string {
+/** Return and dispute events open the return case; everything else opens the order. A buyer's
+ * notifications open the order tracker (B3), which carries the case too. */
+export function linkFor(
+  n: Pick<AppNotification, 'event' | 'orderId'>,
+  side: NotificationAudience = 'selling',
+): string {
+  if (side === 'buying') return `/order/${n.orderId}`
   return n.event === 'dispute_opened' || n.event === 'dispute_updated'
     ? `/seller/returns/${n.orderId}`
     : `/seller/orders/${n.orderId}`
 }
 
 /** Today, Yesterday and Earlier by the EAT calendar day, newest first, empty groups dropped. */
-export function groupByDay(items: AppNotification[], now = new Date()): NotificationGroup[] {
+export function groupByDay(
+  items: AppNotification[],
+  now = new Date(),
+  side: NotificationAudience = 'selling',
+): NotificationGroup[] {
   const today = dayKey.format(now)
   const yesterday = dayKey.format(new Date(now.getTime() - 86_400_000))
   const groups: NotificationGroup[] = [
@@ -74,18 +84,19 @@ export function groupByDay(items: AppNotification[], now = new Date()): Notifica
       timeFull: formatEatFull(n.createdAt),
       at: n.createdAt,
       unread: !n.read,
-      to: linkFor(n),
+      to: linkFor(n, side),
     })
   }
   return groups.filter((g) => g.rows.length > 0)
 }
 
-/** S14 Notifications (design/S14-notifications). Route /seller/notifications. */
-export function useNotificationsPage() {
+/** S14 Notifications (design/S14-notifications): /seller/notifications (the store's sales) and, since
+ * M21, /buyer/notifications (the account's purchases). */
+export function useNotificationsPage(side: NotificationAudience = 'selling') {
   const online = useOnline()
   const [filter, setFilter] = useState<'all' | 'unread'>('all')
-  const all = useNotifications(false)
-  const unread = useNotifications(true)
+  const all = useNotifications(false, side)
+  const unread = useNotifications(true, side)
   const shown = filter === 'all' ? all : unread
   const markRead = useMarkRead()
   const markAll = useMarkAllRead()
@@ -99,7 +110,7 @@ export function useNotificationsPage() {
       { value: 'all' as const, label: 'All' },
       { value: 'unread' as const, label: 'Unread', count: unreadItems },
     ],
-    groups: groupByDay(items),
+    groups: groupByDay(items, new Date(), side),
     state: shown.data
       ? items.length === 0
         ? ('empty' as const)

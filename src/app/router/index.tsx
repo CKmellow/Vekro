@@ -6,6 +6,7 @@ import { BuyerShell } from './shells'
 
 // Lazy page modules: one chunk per buyer page (a buyer from an SMS link loads only that page), one per
 // seller, admin and shared area.
+const buyer = () => import('./screens/buyer')
 const seller = () => import('./screens/seller')
 const admin = () => import('./screens/admin')
 const shared = () => import('./screens/shared')
@@ -64,9 +65,22 @@ export const routes: RouteObject[] = [
             path: '/order/:orderId/timeline',
             lazy: page(() => import('@/views/pages/buyer/TimelinePage'), 'TimelinePage'),
           },
+        ],
+      },
+
+      // Buyer area (M21, X4): every member, a store's owner too; admins have none.
+      {
+        element: <RequireRole allow="buyer" />,
+        children: [
           {
-            path: '/buyer/orders',
-            lazy: page(() => import('@/views/pages/buyer/MyOrdersPage'), 'MyOrdersPage'),
+            lazy: page(() => import('./accountShells'), 'BuyerAppShell'),
+            children: [
+              { path: '/buyer', lazy: page(buyer, 'B10') },
+              { path: '/buyer/orders', lazy: page(buyer, 'B9') },
+              { path: '/buyer/cases', lazy: page(buyer, 'B11') },
+              { path: '/buyer/notifications', lazy: page(buyer, 'BuyerNotifications') },
+              { path: '/buyer/profile', lazy: page(buyer, 'B12') },
+            ],
           },
         ],
       },

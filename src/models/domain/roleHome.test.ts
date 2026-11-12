@@ -19,8 +19,8 @@ describe('destinationFor', () => {
   })
 
   it('never sends anyone into an area that is not theirs', () => {
-    expect(destinationFor(member, '/seller/orders', null)).toBe('/buyer/orders')
-    expect(destinationFor(member, '/admin', null)).toBe('/buyer/orders')
+    expect(destinationFor(member, '/seller/orders', null)).toBe('/buyer')
+    expect(destinationFor(member, '/admin', null)).toBe('/buyer')
     expect(destinationFor(seller, '/admin', null)).toBe('/seller')
     expect(destinationFor('admin', '/seller')).toBe('/admin')
     expect(destinationFor('admin', '/order/abc')).toBe('/admin')
@@ -30,8 +30,8 @@ describe('destinationFor', () => {
   it('ignores missing, off-site and sign-in return URLs', () => {
     expect(destinationFor(seller, null, null)).toBe('/seller')
     expect(destinationFor('admin', 'https://evil.example')).toBe('/admin')
-    expect(destinationFor(member, '//evil.example/x', null)).toBe('/buyer/orders')
-    expect(destinationFor(member, '/login?returnTo=%2Forder%2Fx', null)).toBe('/buyer/orders')
+    expect(destinationFor(member, '//evil.example/x', null)).toBe('/buyer')
+    expect(destinationFor(member, '/login?returnTo=%2Forder%2Fx', null)).toBe('/buyer')
     expect(destinationFor('admin', '/admin/login')).toBe('/admin')
   })
 })
@@ -40,9 +40,9 @@ describe('homeFor', () => {
   it('lands an account with a store in its last mode, Selling when none is saved', () => {
     expect(homeFor(seller, null)).toBe('/seller')
     expect(homeFor(seller, 'selling')).toBe('/seller')
-    expect(homeFor(seller, 'buying')).toBe('/buyer/orders')
-    expect(homeFor(closed, 'buying')).toBe('/buyer/orders')
-    expect(homeFor(member, 'selling')).toBe('/buyer/orders')
+    expect(homeFor(seller, 'buying')).toBe('/buyer')
+    expect(homeFor(closed, 'buying')).toBe('/buyer')
+    expect(homeFor(member, 'selling')).toBe('/buyer')
     expect(homeFor('admin', 'buying')).toBe('/admin')
   })
 

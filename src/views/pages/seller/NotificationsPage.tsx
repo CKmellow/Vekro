@@ -86,8 +86,8 @@ function Row({ row, onOpen }: { row: NotificationRow; onOpen: () => void }) {
 }
 
 /** S14 Notifications (design/S14-notifications). Route /seller/notifications. */
-export function NotificationsPage() {
-  const p = useNotificationsPage()
+export function NotificationsPage({ side = 'selling' }: { side?: 'buying' | 'selling' }) {
+  const p = useNotificationsPage(side)
   return (
     <div className="mx-auto flex w-full max-w-180 flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">

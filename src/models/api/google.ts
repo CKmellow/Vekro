@@ -34,8 +34,8 @@ export async function requestGoogleSignupCode(phone: string): Promise<SentCode> 
   }
 }
 
-export const completeGoogleSignup = (phone: string, code: string): Promise<CurrentUser> =>
-  api.post('/auth/google/signup/complete', { body: { phone, code } })
+export const completeGoogleSignup = (phone: string, code: string, name?: string): Promise<CurrentUser> =>
+  api.post('/auth/google/signup/complete', { body: { phone, code, name: name?.trim() || undefined } })
 
 /** Linking happens on Google's page: the server returns where to send the browser. */
 export const startGoogleLink = async (returnTo: string): Promise<string> =>

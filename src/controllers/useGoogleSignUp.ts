@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router'
+import { destinationFor } from '@/models/domain/roleHome'
 import {
   useCompleteGoogleSignup,
   usePendingGoogleSignup,
@@ -7,16 +9,18 @@ import {
 import { usePhoneSignIn } from './usePhoneSignIn'
 
 /**
- * /register/google (#312): a Google account with no Vekro account yet becomes a seller only after an
- * SMS-verified phone (backend #324), so nobody sells or pays out unverified. Same phone and code
- * steps as the SMS sign-in.
+ * /register/google: a Google account with no Vekro account yet becomes a member (no store; selling
+ * starts later from the buyer area) only after an SMS-verified phone (backend #324, #338). A number
+ * that already has an account is refused: sign in with it, then link Google in Profile & security.
  */
 export function useGoogleSignUp() {
   const navigate = useNavigate()
   const pending = usePendingGoogleSignup()
-  const flow = usePhoneSignIn(() => navigate('/onboarding', { replace: true }), {
+  const [name, setName] = useState<string | null>(null)
+  const typedName = name ?? pending.data?.name ?? ''
+  const flow = usePhoneSignIn((user) => navigate(destinationFor(user ?? 'buyer', null), { replace: true }), {
     request: useRequestGoogleSignupCode(),
-    verify: useCompleteGoogleSignup(),
+    verify: useCompleteGoogleSignup(() => typedName),
   })
   return {
     status: pending.isPending
@@ -26,7 +30,8 @@ export function useGoogleSignUp() {
         : ('expired' as const),
     error: pending.isError,
     email: pending.data?.email ?? null,
-    name: pending.data?.name ?? null,
+    name: typedName,
+    setName,
     flow,
   }
 }

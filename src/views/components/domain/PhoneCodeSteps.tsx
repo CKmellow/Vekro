@@ -14,7 +14,8 @@ const BANNERS: Record<Exclude<SignInBanner, null>, { tone: 'danger' | 'escalatio
   seller: { tone: 'escalation', title: 'This number has a seller account. Log in with your password.' },
   taken: {
     tone: 'escalation',
-    title: 'This number already has a Vekro account. Log in with it, then link Google in settings.',
+    title:
+      'This number already has a Vekro account. Sign in with password or SMS code, then link Google in Profile & security.',
   },
 }
 

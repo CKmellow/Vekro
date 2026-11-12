@@ -4,12 +4,13 @@ import { useGoogleSignUp } from '@/controllers/useGoogleSignUp'
 import { GoogleMark } from '../../components/domain/GoogleButton'
 import { PhoneCodeSteps } from '../../components/domain/PhoneCodeSteps'
 import { Banner } from '../../components/ui/Banner'
+import { TextField } from '../../components/ui/Field'
 import { Skeleton } from '../../components/ui/Skeleton'
 import { AuthLayout } from '../../layouts/AuthLayout'
 
 /**
- * /register/google (#312): Continue with Google found no Vekro account. A seller account is created
- * only after the phone is verified by SMS (backend #324). Buyers link Google from their account instead.
+ * /register/google: Continue with Google found no Vekro account. A Vekro account (buy, and sell
+ * once a store is opened) is created only after the phone is verified by SMS (backend #324, #338).
  */
 export function GoogleSignUpPage() {
   const vault = useAuthShowcase()
@@ -17,13 +18,13 @@ export function GoogleSignUpPage() {
 
   return (
     <AuthLayout
-      headline="Sell with Google"
-      lead="One more step: verify your phone. Buyers' payments and your payouts go through it."
+      headline="Continue with Google"
+      lead="One more step: verify your phone. Payments and SMS updates go through it."
       vault={vault}
     >
-      <title>Create a seller account · Vekro</title>
+      <title>Create your Vekro account · Vekro</title>
       <div className="flex flex-col gap-5">
-        <h2 className="type-headline text-text">Create your seller account</h2>
+        <h2 className="type-headline text-text">Create your Vekro account</h2>
         {p.status === 'loading' ? (
           <Skeleton className="h-40 w-full" />
         ) : p.status === 'expired' ? (
@@ -41,9 +42,15 @@ export function GoogleSignUpPage() {
                 <span className="font-semibold break-all">{p.email}</span>
               </p>
             </div>
+            <TextField
+              label="Your name"
+              value={p.name}
+              onChange={(e) => p.setName(e.target.value)}
+              autoComplete="name"
+            />
             <p className="type-body-md text-text-muted">
-              We'll text a code to your phone. Your account is created once you enter it. Buying, not selling?
-              Log in with your phone, then link Google in My orders.
+              We'll text a code to your phone. Your account is created once you enter it. You can buy straight
+              away, and open a store later.
             </p>
             <PhoneCodeSteps flow={p.flow} sendLabel="Text me a code" />
           </>

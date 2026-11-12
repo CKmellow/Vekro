@@ -42,10 +42,12 @@ export const usePendingGoogleSignup = () =>
 export const useRequestGoogleSignupCode = () =>
   useMutation({ mutationFn: (phone: string) => requestGoogleSignupCode(phone), meta: { auth: true } })
 
-export function useCompleteGoogleSignup() {
+/** `nameOf` reads the name typed on the sign-up page when the code is entered. */
+export function useCompleteGoogleSignup(nameOf: () => string | undefined = () => undefined) {
   const client = useQueryClient()
   return useMutation({
-    mutationFn: ({ phone, code }: { phone: string; code: string }) => completeGoogleSignup(phone, code),
+    mutationFn: ({ phone, code }: { phone: string; code: string }) =>
+      completeGoogleSignup(phone, code, nameOf()),
     meta: { auth: true },
     onSuccess: (user) => {
       client.setQueryData(sessionKeys.expired, false)

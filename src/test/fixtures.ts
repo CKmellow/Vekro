@@ -117,6 +117,7 @@ export const orderListResponse = (
   page_size: 20,
   counts: { needs_action: 1, in_transit: 0, held: 0, completed: 0, issues: 0 },
   status_counts: { locked: 1 },
+  filter_counts: { active: 1, completed: 0, refunded: 0, disputed: 0, cases: 0 },
   server_time: '2026-10-24T09:00:00Z',
   ...overrides,
 })

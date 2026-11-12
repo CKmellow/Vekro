@@ -62,3 +62,38 @@ export const requestResetCode = async (phone: string) => {
 export const resetPassword = async (phone: string, code: string, newPassword: string) => {
   await api.post('/auth/password/reset', { body: { phone, code, new_password: newPassword } })
 }
+
+export interface Profile {
+  name: string
+  phone: string
+  googleEmail: string | null
+}
+
+const toProfile = (raw: Schemas['ProfileResponse']): Profile => ({
+  name: raw.name,
+  phone: raw.phone,
+  googleEmail: raw.google_email ?? null,
+})
+
+/** PATCH /account/profile (M21, B12): the account's name. */
+export const updateName = async (name: string) =>
+  toProfile(await api.patch('/account/profile', { body: { name } }))
+
+/** POST /account/phone/request-code: a code to the new sign-in number. 409 taken, 422 same number. */
+export const requestPhoneChangeCode = async (phone: string) => {
+  const r = await api.post('/account/phone/request-code', { body: { phone } })
+  return { resendAfterSeconds: r.resend_after_seconds, devCode: r.dev_code ?? undefined }
+}
+
+/** PUT /account/phone: the new sign-in number with its code; other devices are signed out. */
+export const changePhone = async (phone: string, code: string) =>
+  toProfile(await api.put('/account/phone', { body: { phone, code } }))
+
+/** PUT /account/sms-login: SMS-code sign-in on or off. 409 while it is the only way in. */
+export const setSmsLogin = async (enabled: boolean) =>
+  (await api.put('/account/sms-login', { body: { enabled } })).enabled
+
+/** POST /account/ussd-pin: the 4-digit PIN for sensitive USSD actions; needs the password (403 wrong). */
+export const setUssdPin = async (pin: string, password: string) => {
+  await api.post('/account/ussd-pin', { body: { pin, password } })
+}
