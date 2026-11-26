@@ -35,6 +35,24 @@ describe('notification groups', () => {
     expect(groups[2]?.rows[0]).toMatchObject({ kind: 'support', unread: false })
   })
 
+  it('shows the delivery-code message whole, and cuts the others to one line', () => {
+    const now = new Date('2026-10-24T09:00:00Z')
+    const [today] = groupByDay(
+      [
+        n('code', '2026-10-24T08:00:00Z', {
+          event: 'delivery_arrived',
+          message: 'Your delivery code is 246810. Enter it in Vekro only after you have inspected the item.',
+        }),
+        n('other', '2026-10-24T07:00:00Z'),
+      ],
+      now,
+    )
+    expect(today?.rows.map((r) => [r.id, r.wrap])).toEqual([
+      ['code', true],
+      ['other', false],
+    ])
+  })
+
   it('opens disputes as return cases and everything else as orders', () => {
     expect(linkFor({ event: 'dispute_opened', orderId: 'o1' })).toBe('/seller/returns/o1')
     expect(linkFor({ event: 'delivery_arrived', orderId: 'o1' })).toBe('/seller/orders/o1')
