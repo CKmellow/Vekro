@@ -60,7 +60,7 @@ function Row({ row, onOpen }: { row: NotificationRow; onOpen: () => void }) {
           >
             {row.title}
           </span>
-          <span className="type-body-sm block truncate text-text-muted">
+          <span className={cn('type-body-sm block text-text-muted', row.wrap ? 'break-words' : 'truncate')}>
             {row.reference && <span className="type-mono text-ink-600">{row.reference} · </span>}
             {row.detail}
           </span>

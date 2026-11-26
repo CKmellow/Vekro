@@ -27,6 +27,8 @@ export interface NotificationRow {
   title: string
   reference: string | null
   detail: string
+  /** The message is shown whole, not cut to one line (the delivery-code message: its code is at the end). */
+  wrap: boolean
   time: string
   timeFull: string
   at: string
@@ -80,6 +82,7 @@ export function groupByDay(
       title: n.title,
       reference: n.reference,
       detail: n.message,
+      wrap: n.event === 'delivery_arrived',
       time: formatRelative(n.createdAt, now),
       timeFull: formatEatFull(n.createdAt),
       at: n.createdAt,
